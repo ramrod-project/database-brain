@@ -13,9 +13,9 @@ def verify(value, msg):
         False: If invalid input
     """
     from google.protobuf.message import EncodeError
-    from dict_to_protobuf import dict_to_protobuf as d2p
+    from protobuf_to_dict import dict_to_protobuf as d2p
     result = True
-    d2p(value, msg)
+    d2p(msg, value)
     try:
         msg.SerializeToString()
     except EncodeError:
