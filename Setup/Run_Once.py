@@ -11,7 +11,6 @@ except Exception as Ex:
 
 try:
 	r.db_create("Plugins").run()
-	r.db("Plugins").table_create("plugin_A").run()
 	
 except Exception as Ex:
 	print (Ex)
@@ -19,7 +18,7 @@ except Exception as Ex:
 try:
 	r.db_create("Brain").run()
 	r.db("Brain").table_create("Targets").run()
-	r.db("Brain").table_create("OutPut").run()
+	r.db("Brain").table_create("Outputs").run()
 except Exception as Ex:
 	print (Ex)
 
@@ -39,9 +38,7 @@ except Exception as Ex:
 	print (Ex)
 	
 try:
-	r.db("Brain").table("Jobs").insert({"Job_Entry": "Job_One", "Content": "StringContent"}).run()
 except Exception as Ex:
 	print (Ex)
 	
 print("complete")
-	
