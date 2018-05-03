@@ -1,12 +1,17 @@
 FROM rethinkdb:2.3.6
 
 RUN apt-get update && \
-    apt-get install python3 && \
-    apt-get install python-pip
+    apt-get install -y python3 && \
+    apt-get install -y python-pip && \
+    apt-get install -y virtualenv
 
-COPY ./requirements.txt /tmp
+WORKDIR /scripts
 
-RUN pip install -r /tmp/requirements.txt
+COPY . .
+
+RUN ./initialize.sh
+
+WORKDIR /data
 
 CMD ["rethinkdb", "--bind", "all"]
 
