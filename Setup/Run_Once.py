@@ -38,6 +38,7 @@ except Exception as Ex:
 	print (Ex)
 	
 try:
+	r.db("Brain").table("Outputs").insert({"Job_Entry": "Job_One", "Content": "StringContent"}).run()
 except Exception as Ex:
 	print (Ex)
 	
