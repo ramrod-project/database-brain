@@ -1,2 +1,2 @@
 protobuf>=2.3.0
-protobuf-to-dict>=0.1.0
+dict-to-protobuf>=0.0.3.4
