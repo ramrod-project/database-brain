@@ -1,4 +1,8 @@
 from brain import brain_pb2 as b
+from google.protobuf.message import EncodeError
+import dict_to_protobuf
+
+dict_to_protobuf.l.setLevel("ERROR")
 
 SAMPLE_TARGET = {
     "PluginName": "WaterBalloon",
@@ -25,9 +29,6 @@ def verify(value, msg):
         True: If valid input
         False: If invalid input
     """
-    from google.protobuf.message import EncodeError
-    import dict_to_protobuf
-    dict_to_protobuf.l.setLevel("ERROR")
     result = True
     dict_to_protobuf.dict_to_protobuf(value, msg)
     try:
