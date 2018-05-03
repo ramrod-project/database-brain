@@ -10,6 +10,10 @@ SAMPLE_TARGET = {
     "Port": "West",
     "CompletelyUnrelatedKey": False,
 }
+SAMPLE_BAD_TARGET = {
+    "PluginName": "WaterBalloon",
+    "CompletelyUnrelatedKey": False,
+}
 FILTERED_OUTPUT = {
     "PluginName": "WaterBalloon",
     "Location": "Patio",
@@ -42,6 +46,11 @@ def filter(value, msg):
 
 def test_verify():
     assert (verify(SAMPLE_TARGET, b.Target()))
+
+def test_no_verify():
+    assert (not verify(SAMPLE_BAD_TARGET, b.Target()))
+
+
 def test_filter():
     from pytest import raises
     with raises(NotImplementedError):
