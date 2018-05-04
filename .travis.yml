@@ -27,7 +27,9 @@ script:
   - docker stop Brain
 
 after_success:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker push ramrodpcp/database-brain:$TRAVIS_BRANCH;
+  - if [ "$TRAVIS_BRANCH" = "qa"  ] || [ "$TRAVIS_BRANCH" = "master"  ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
+  - if [ "$TRAVIS_BRANCH" = "qa"  ]; then docker push ramrodpcp/database-brain:$TRAVIS_BRANCH; fi
+  - if [ "$TRAVIS_BRANCH" = "master"  ]; then docker push ramrodpcp/database-brain:latest; fi
 
-  slack: ramrod-project:GDF82rRYDg3KSekrT3GA24qO
+
+slack: ramrod-project:GDF82rRYDg3KSekrT3GA24qO
