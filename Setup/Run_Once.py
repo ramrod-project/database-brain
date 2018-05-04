@@ -14,9 +14,10 @@ def something():
 		ports={"28015/tcp": 28015},
 		remove=True
 	)
+	T.sleep(1)
 	yield "127.0.0.1"
 
-	containers=CLIENT.containers.list()
+	containers = CLIENT.containers.list()
 	for container in containers:
 		if container.name == "Brain": 
 			container.stop()
