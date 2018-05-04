@@ -26,5 +26,8 @@ script:
   - docker logs Brain
   - docker stop Brain
 
-notifications:
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push ramrodpcp/database-brain:$TRAVIS_BRANCH;
+
   slack: ramrod-project:GDF82rRYDg3KSekrT3GA24qO
