@@ -12,8 +12,13 @@ services:
 install:
   - pip install -r requirements.txt
 # command to run tests
-script:
+
+
+before_script:
   - pytest
+
+
+script:
   - if [ "$TRAVIS_BRANCH" != "master"  ]; then docker build -t ramrodpcp/backend-interpreter:$TRAVIS_BRANCH .; else docker build -t ramrodpcp/backend-interpreter:latest .; fi
   - docker run -d --rm --name Brain -e "STAGE=DEV" -e "LOGLEVEL=DEBUG" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/backend-interpreter
   - sleep 30
