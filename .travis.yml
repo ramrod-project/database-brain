@@ -23,8 +23,7 @@ script:
   - docker run -d --rm --name Brain -e "STAGE=DEV" -e "LOGLEVEL=DEBUG" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/database-brain:$TRAVIS_BRANCH
   - sleep 30
   - docker ps
-  - containers=$(docker ps | grep -vi "\(Brain\)" | awk '{print $1}')
-  - for c in "${containers[@]}"; do docker logs $c; done
+  - docker logs Brain
   - docker stop Brain
 
 notifications:
