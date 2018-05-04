@@ -1,9 +1,15 @@
 #!/bin/bash
+set -e
 
-virtualenv venv --python=python3
+rethinkdb --daemon --bind all
 
-source venv/bin/activate
+sleep 1
 
-pip install -r requirements.txt
+source /scripts/venv/bin/activate
 
-python3 Setup/Run_Once.py
+python3 /scripts/setup/run_once.py
+
+while true
+do
+    sleep 1
+done

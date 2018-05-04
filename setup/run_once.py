@@ -2,7 +2,7 @@ import rethinkdb as r
 
 
 def connect():
-	return r.connect("127.0.0.1").repl()
+	return r.connect("localhost").repl()
 
 def plugincreate():
 	return r.db_create("Plugins").run()
