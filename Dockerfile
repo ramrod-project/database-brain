@@ -7,12 +7,16 @@ RUN apt-get update && \
 
 WORKDIR /scripts
 
-COPY . .
+COPY ./requirements.txt .
+COPY ./setup.sh .
 
-RUN ./initialize.sh
+RUN ./setup.sh
+
+COPY . .
 
 WORKDIR /data
 
-CMD ["rethinkdb", "--bind", "all"]
-
 EXPOSE 28015
+
+ENTRYPOINT [ "/scripts/initialize.sh" ]
+CMD ["rethinkdb", "--bind", "all"]
