@@ -3,7 +3,7 @@ import docker
 import rethinkdb as r
 import time as T
 
-from Setup import run_once
+from setup import run_once
 
 CLIENT = docker.from_env()
 
