@@ -1,9 +1,31 @@
+sudo: required
+
 language: python
+
 python:
   - "3.6"
+
+services:
+- docker
+
 # command to install dependencies
 install:
   - pip install -r requirements.txt
 # command to run tests
-script:
+
+
+before_script:
   - pytest
+
+
+script:
+  - if [ "$TRAVIS_BRANCH" != "master"  ]; then docker build -t ramrodpcp/database-brain:$TRAVIS_BRANCH . ; else docker build -t ramrodpcp/database-brain:latest . ; fi
+  - docker run -d --rm --name Brain -e "STAGE=DEV" -e "LOGLEVEL=DEBUG" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/database-brain:$TRAVIS_BRANCH
+  - sleep 30
+  - containers=$(docker ps | grep -vi "\(Brain\)" | awk '{print $1}')
+  - for c in "${containers[@]}";
+    do docker logs $c; done
+  - docker stop Brain
+
+notifications:
+  slack: ramrod-project:GDF82rRYDg3KSekrT3GA24qO
