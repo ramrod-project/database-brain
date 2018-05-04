@@ -14,3 +14,12 @@ install:
 # command to run tests
 script:
   - pytest
+  - if [ "$TRAVIS_BRANCH" != "master"  ]; then docker build -t ramrodpcp/backend-interpreter:$TRAVIS_BRANCH .; else docker build -t ramrodpcp/backend-interpreter:latest .; fi
+  - docker run -d --rm --name Brain -e "STAGE=DEV" -e "LOGLEVEL=DEBUG" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/backend-interpreter
+  - sleep 30
+  - containers=$(docker ps | grep -vi "\(Brain\)" | awk '{print $1}')
+  - for c in "${containers[@]}"; do docker logs $c; done
+  - docker stop Brain
+
+notifications:
+  slack: ramrod-project:GDF82rRYDg3KSekrT3GA24qO
