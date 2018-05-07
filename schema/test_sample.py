@@ -1,7 +1,6 @@
 from brain import brain_pb2 as b
 from google.protobuf.message import EncodeError
-import dict_to_protobuf
-
+import dict_to_protobuf #this lib allows extra keys
 dict_to_protobuf.l.setLevel("ERROR")
 
 SAMPLE_TARGET = {
@@ -41,8 +40,11 @@ def verify(value, msg):
         result = False
     return result
 
-def filter(value, msg):
-    raise NotImplementedError("filtering implemented later")
+def strip(value, msg):
+    dict_to_protobuf.dict_to_protobuf(value, msg)
+    msg.SerializeToString()  #raise error for insufficient input
+    output = dict_to_protobuf.protobuf_to_dict(msg)
+    return output
 
 def test_verify():
     assert (verify(SAMPLE_TARGET, b.Target()))
@@ -51,14 +53,15 @@ def test_no_verify():
     assert (not verify(SAMPLE_BAD_TARGET, b.Target()))
 
 
-def test_filter():
-    from pytest import raises
-    with raises(NotImplementedError):
-        output = filter(SAMPLE_TARGET, b.Target())
+def test_strip():
+    output = strip(SAMPLE_TARGET, b.Target())
+    for key, value in output.items():
+        assert ( output[key] == FILTERED_OUTPUT[key] )
 
 
 if __name__ == "__main__":
     from sys import stderr, argv
     stderr.write("run tests with 'pytest %s'" %(argv[0]))
     test_verify()
-    test_filter()
+    test_no_verify()
+    test_strip()
