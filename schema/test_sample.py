@@ -55,7 +55,6 @@ def test_no_verify():
 
 def test_strip():
     output = strip(SAMPLE_TARGET, b.Target())
-    print(output)
     for key, value in output.items():
         assert ( output[key] == FILTERED_OUTPUT[key] )
 
