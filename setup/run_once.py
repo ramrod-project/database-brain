@@ -19,7 +19,13 @@ def outputscreate():
 def jobcreate():
 	return r.db("Brain").table_create("Jobs").run()
 
-if __name__ == "__main__": 	
+def auditcreate():
+	return r.db("Audit").run()
+
+def auditjobcreate():
+	return r.db("Audit").table_create("Jobs").run()
+
+if __name__ == "__main__":
 
 	connect()
 	plugincreate()
@@ -27,5 +33,7 @@ if __name__ == "__main__":
 	targetcreate()
 	outputscreate()
 	jobcreate()
+	auditcreate()
+	auditjobcreate()
 
 	print("complete")

@@ -61,3 +61,9 @@ def test_clearjobs(something):
 
 def test_clearoutput(something):
 	return r.db("Brain").table("Outputs").delete().run()
+
+def test_auditcreate(something):
+	return r.db("Audit").run()
+
+def test_auditjobcreate(something):
+	return r.db("Audit").table_create("Jobs").run()
