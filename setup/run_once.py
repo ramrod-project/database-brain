@@ -20,7 +20,7 @@ def jobcreate():
 	return r.db("Brain").table_create("Jobs").run()
 
 def auditcreate():
-	return r.db("Audit").run()
+	return r.db_create("Audit").run()
 
 def auditjobcreate():
 	return r.db("Audit").table_create("Jobs").run()

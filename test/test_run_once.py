@@ -16,7 +16,7 @@ def something():
 		ports={"28015/tcp": 28015},
 		remove=True
 	)
-	T.sleep(1)
+	T.sleep(8)
 	yield "127.0.0.1"
 
 	containers = CLIENT.containers.list()
@@ -27,7 +27,7 @@ def something():
 
 
 def test_connect(something):
-	run_once.connect()
+	return r.connect(something).repl()
 
 def test_plugincreate(something):
 	run_once.plugincreate()
@@ -63,7 +63,7 @@ def test_clearoutput(something):
 	return r.db("Brain").table("Outputs").delete().run()
 
 def test_auditcreate(something):
-	return r.db("Audit").run()
+	run_once.auditcreate()
 
 def test_auditjobcreate(something):
-	return r.db("Audit").table_create("Jobs").run()
+	run_once.auditjobcreate()
