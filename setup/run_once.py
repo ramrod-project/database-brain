@@ -1,6 +1,5 @@
 import rethinkdb as r
 
-
 def connect():
 	return r.connect("localhost").repl()
 
