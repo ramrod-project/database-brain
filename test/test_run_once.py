@@ -10,7 +10,7 @@ CLIENT = docker.from_env()
 @fixture(scope="module")
 def something():
 	CLIENT.containers.run(
-		"rethinkdb",
+		"rethinkdb:2.3.6",
 		name="Brain",
 		detach=True,
 		ports={"28015/tcp": 28015},
