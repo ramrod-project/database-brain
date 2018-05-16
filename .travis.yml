@@ -11,6 +11,9 @@ services:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+  - if [ "$TRAVIS_BRANCH" == "master"  ]; 
+    then travis_wait 10 docker pull ramrodpcp/database-brain:latest; 
+    else travis_wait 10 docker pull ramrodpcp/database-brain:$TRAVIS_BRANCH; fi
 # command to run tests
 
 
