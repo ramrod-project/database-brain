@@ -6,7 +6,7 @@ from time import sleep
 
 _AUDIT_DB = "AUDIT"
 global _CONNECTION_STR
-_CONNECTION_STR = "localhost:28015"
+_CONNECTION_STR = "127.0.0.1:28015"
 DEBUG = True
 _CONTINUE = True
 
