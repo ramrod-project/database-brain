@@ -1,6 +1,5 @@
 import rethinkdb as r
 
-
 def connect():
 	return r.connect("localhost").repl()
 
@@ -19,7 +18,13 @@ def outputscreate():
 def jobcreate():
 	return r.db("Brain").table_create("Jobs").run()
 
-if __name__ == "__main__": 	
+def auditcreate():
+	return r.db_create("Audit").run()
+
+def auditjobcreate():
+	return r.db("Audit").table_create("Jobs").run()
+
+if __name__ == "__main__":
 
 	connect()
 	plugincreate()
@@ -27,5 +32,7 @@ if __name__ == "__main__":
 	targetcreate()
 	outputscreate()
 	jobcreate()
+	auditcreate()
+	auditjobcreate()
 
 	print("complete")

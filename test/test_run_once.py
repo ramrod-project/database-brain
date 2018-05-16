@@ -10,13 +10,13 @@ CLIENT = docker.from_env()
 @fixture(scope="module")
 def something():
 	CLIENT.containers.run(
-		"rethinkdb",
+		"rethinkdb:2.3.6",
 		name="Brain",
 		detach=True,
 		ports={"28015/tcp": 28015},
 		remove=True
 	)
-	T.sleep(1)
+	T.sleep(8)
 	yield "127.0.0.1"
 
 	containers = CLIENT.containers.list()
@@ -27,7 +27,7 @@ def something():
 
 
 def test_connect(something):
-	run_once.connect()
+	return r.connect(something).repl()
 
 def test_plugincreate(something):
 	run_once.plugincreate()
@@ -61,3 +61,9 @@ def test_clearjobs(something):
 
 def test_clearoutput(something):
 	return r.db("Brain").table("Outputs").delete().run()
+
+def test_auditcreate(something):
+	run_once.auditcreate()
+
+def test_auditjobcreate(something):
+	run_once.auditjobcreate()
