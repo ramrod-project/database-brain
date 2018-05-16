@@ -18,17 +18,19 @@ TS = "ts"
 def run_audit(namespace):
     if DEBUG:
         print(namespace)
-
+        
     #some helpful (and parsed) variables.
     host, port = _CONNECTION_STR.split(":")
     db, table = namespace.split(".")
     conn = r.connect(host, port) #conn object is not thread safe
     cursor = r.db(db).table(table).changes().run(conn)
     for document in cursor: 
+        if DEBUG:
+            print(document) 
         document[TS] = time()
-        if not r.db(db).table_list().contains(table).run(conn): 
+        if not r.db("Audit").table_list().contains(table).run(conn): 
             r.db("Audit").table_create(table).run(conn)
-        r.db("Audit").table(table).insert(document)
+        r.db("Audit").table(table).insert(document).run(conn)
 
     #-----this was just here for an example
     return namespace #this allows the function to restart.
