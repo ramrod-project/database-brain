@@ -1,7 +1,7 @@
 from multiprocessing import Pool
 from sys import argv, stderr
 import rethinkdb as r
-from time import sleep
+from time import sleep, time
 
 
 _AUDIT_DB = "AUDIT"
@@ -9,7 +9,7 @@ global _CONNECTION_STR
 _CONNECTION_STR = "127.0.0.1:28015"
 DEBUG = True
 _CONTINUE = True
-
+TS = "ts"
 
 
 #---------------------------------------------
@@ -23,19 +23,13 @@ def run_audit(namespace):
     host, port = _CONNECTION_STR.split(":")
     db, table = namespace.split(".")
     conn = r.connect(host, port) #conn object is not thread safe
+    cursor = r.db(db).table(table).changes().run(conn)
+    for document in cursor: 
+        document[TS] = time()
+        if not r.db(db).table_list().contains(table).run(conn): 
+            r.db("Audit").table_create(table).run(conn)
+        r.db("Audit").table(table).insert(document)
 
-    # 1. Setup the Change Feed
-    # 2. Tail the changefeed
-    # 3. For each change coming down the feed
-    #       a. Sort out the destination db.table
-    #       b. call the add_to_audit function?
-    # 4. Catch some rethink exceptions?
-
-
-
-    #-----This is just here for an example
-    from random import randint
-    sleep(randint(1,4))
     #-----this was just here for an example
     return namespace #this allows the function to restart.
 
