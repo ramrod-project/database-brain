@@ -22,7 +22,7 @@ def run_audit(namespace):
     #some helpful (and parsed) variables.
     host, port = _CONNECTION_STR.split(":")
     db, table = namespace.split(".")
-    conn = r.connect(host, port)
+    conn = r.connect(host, port) #conn object is not thread safe
 
     # 1. Setup the Change Feed
     # 2. Tail the changefeed
