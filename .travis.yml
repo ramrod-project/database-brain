@@ -11,6 +11,9 @@ services:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+  - if [ "$TRAVIS_BRANCH" == "master"  ]; 
+    then travis_wait 10 docker pull ramrodpcp/database-brain:latest; 
+    else travis_wait 10 docker pull ramrodpcp/database-brain:$TRAVIS_BRANCH; fi
 # command to run tests
 
 
@@ -33,7 +36,7 @@ script:
   - docker stop Brain
 
 after_success:
-  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin; fi
+  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   - if [ "$TRAVIS_BRANCH" == "master"  ];
     then docker push ramrodpcp/database-brain:latest;
     else docker push ramrodpcp/database-brain:$TRAVIS_BRANCH; fi
