@@ -3,6 +3,7 @@ from pytest import fixture, raises
 from setup import run_once
 import docker
 from os import environ
+CLIENT = docker.from_env()
 
 @fixture(scope="module")
 def rethink():
