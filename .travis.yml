@@ -8,6 +8,12 @@ python:
 services:
 - docker
 
+branches:
+  only:
+  - master
+  - dev
+  - qa
+
 # command to install dependencies
 install:
   - pip install -r requirements.txt
