@@ -41,7 +41,7 @@ def test_brain_jobs(rethink):
     r.db("Brain").table('Jobs').run(rethink)
 
 def test_audit(rethink):
-    r.db_list().contains('Audit').run(rethink)
+    r.db_list().contains('Audit').run()
 
 def test_audit_jobs(rethink):
-    r.db("Audit").table('Jobs').run(rethink)
+    r.db("Audit").table('Jobs').run()
