@@ -12,12 +12,12 @@ def rethink():
         tag=environ["TRAVIS_BRANCH"]
     except KeyError:
         tag="latest"
-    containers = CLIENT.containers.run(("".join("ramrodpcp/database-brain:"),tag), name="rethinkdb", detach=True, ports={"28015/tcp":28015}, remove=True)
+    CLIENT.containers.run("".join(("ramrodpcp/database-brain:",tag)), name="rethinkdb", detach=True, ports={"28015/tcp":28015}, remove=True)
     sleep(8)
     yield
     try:
         environ["LOGLEVEL"]=""
-        CLIENT.containers.list()
+        containers = CLIENT.containers.list()
         for container in containers:
             if container.name == "rethinkdb":
                 container.stop()
@@ -26,26 +26,25 @@ def rethink():
         pass
 
 def test_connect_good(rethink):
-    good = r.connect("127.0.0.1", 28015).repl()
-    assert isinstance(good, r.Connection)
+    good = r.connect("127.0.0.1", 28015).run().repl() 
 
 def test_brain(rethink):
-    r.db_list().contains('Brain')
+    r.db_list().contains('Brain').run()
 
 def test_plugins(rethink):
-    r.db_list().contains('Plugins')
+    r.db_list().contains('Plugins').run()
 
 def test_brain_targets(rethink):
-    r.db("Brain").contains('Targets')
+    r.db("Brain").contains('Targets').run()
 
 def test_brain_output(rethink):
-    r.db("Brain").contains('Outputs')
+    r.db("Brain").contains('Outputs').run()
 
 def test_brain_jobs(rethink):
-    r.db("Brain").contains('Jobs')
+    r.db("Brain").contains('Jobs').run()
 
 def test_audit(rethink):
-    r.db_list().contains('Audit')
+    r.db_list().contains('Audit').run()
 
 def test_audit_jobs(rethink):
-    r.db("Audit").contains('Jobs')
+    r.db("Audit").contains('Jobs').run()
