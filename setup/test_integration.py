@@ -1,6 +1,7 @@
 import rethinkdb as r
 from pytest import fixture, raises
 from setup import run_once
+from time import sleep
 import docker
 from os import environ
 CLIENT = docker.from_env()
@@ -11,7 +12,7 @@ def rethink():
         tag=environ["TRAVIS_BRANCH"]
     except KeyError:
         tag="latest"
-    CLIENT.containers.run("".join("ramrodpcp/database-brain:",tag), name="rethinkdb", detach=True, ports={"28015/tcp":28015}, remove=True)
+    containers = CLIENT.containers.run(("".join("ramrodpcp/database-brain:"),tag), name="rethinkdb", detach=True, ports={"28015/tcp":28015}, remove=True)
     sleep(8)
     yield
     try:
