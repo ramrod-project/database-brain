@@ -26,7 +26,7 @@ def rethink():
         pass
 
 def test_connect_good(rethink):
-    r.connect("127.0.0.1", 28015).run().repl() 
+    r.connect("localhost", 28015).run().repl() 
 
 def test_brain(rethink):
     r.db_list().contains('Brain').run()
