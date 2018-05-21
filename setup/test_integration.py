@@ -26,22 +26,29 @@ def rethink():
         pass
 
 def test_brain(rethink):
+    r.connect("127.0.0.1", 28015)
     r.db('Brain').run(rethink)
 
 def test_plugins(rethink):
+    r.connect("127.0.0.1", 28015)
     r.db('Plugins').run(rethink)
 
 def test_brain_targets(rethink):
+    r.connect("127.0.0.1", 28015)
     r.db("Brain").table('Targets').run(rethink)
 
 def test_brain_output(rethink):
+    r.connect("127.0.0.1", 28015)
     r.db("Brain").table('Outputs').run(rethink)
 
 def test_brain_jobs(rethink):
+    r.connect("127.0.0.1", 28015)
     r.db("Brain").table('Jobs').run(rethink)
 
 def test_audit(rethink):
+    r.connect("127.0.0.1", 28015)
     r.db('Audit').run(rethink)
 
 def test_audit_jobs(rethink):
+    r.connect("127.0.0.1", 28015)
     r.db("Audit").table('Jobs').run(rethink)
