@@ -32,16 +32,16 @@ def test_plugins(rethink):
     r.db_list().contains('Plugins').run(rethink)
 
 def test_brain_targets(rethink):
-    r.db("Brain").contains('Targets').run(rethink)
+    r.db("Brain").table('Targets').run(rethink)
 
 def test_brain_output(rethink):
-    r.db("Brain").contains('Outputs').run(rethink)
+    r.db("Brain").table('Outputs').run(rethink)
 
 def test_brain_jobs(rethink):
-    r.db("Brain").contains('Jobs').run(rethink)
+    r.db("Brain").table('Jobs').run(rethink)
 
 def test_audit(rethink):
     r.db_list().contains('Audit').run(rethink)
 
 def test_audit_jobs(rethink):
-    r.db("Audit").contains('Jobs').run(rethink)
+    r.db("Audit").table('Jobs').run(rethink)
