@@ -8,11 +8,13 @@ RUN apt-get update && \
 WORKDIR /scripts
 
 COPY ./requirements.txt .
-COPY ./setup.sh .
+COPY ./prep.sh .
 
-RUN ./setup.sh
+RUN ./prep.sh
 
 COPY . .
+
+RUN ./setup.sh
 
 WORKDIR /data
 
