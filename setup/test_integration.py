@@ -25,10 +25,6 @@ def rethink():
     except SystemExit:
         pass
 
-def test_connect(rethink):
-    with raises(ConnectionError):
-        r.connect("", 28015).repl()
-
 def test_connect_good(rethink):
     good = r.connect("127.0.0.1", 28015).repl()
     assert isinstance(good, r.Connection)
