@@ -1,0 +1,10 @@
+[run]
+include = 
+    # audit package
+    *auditpool*
+    # setup package
+    *setup*
+
+omit =
+    *venv*
+    *test*
