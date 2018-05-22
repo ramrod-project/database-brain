@@ -2,11 +2,17 @@ sudo: required
 
 language: python
 
+cache: pip
+
 python:
   - "3.6"
 
 services:
-- docker
+  - docker
+
+env:
+  global:
+    - CC_TEST_REPORTER_ID=910515cd7273349a55fdee48d849f5d53a2cabe16c23c74747d1213157512bbc
 
 branches:
   only:
