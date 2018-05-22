@@ -1,7 +1,12 @@
 #!/bin/bash
-
-virtualenv venv --python=python3
+# test comment
 
 source venv/bin/activate
 
-pip install -r requirements.txt
+rethinkdb --daemon --bind all
+
+sleep 1
+
+python3 ./setup/run_once.py
+
+rethinkdb dump -f db-template.tar.gz

@@ -6,6 +6,9 @@ def connect():
 def plugincreate():
 	return r.db_create("Plugins").run()
 
+def placeholdercreate():
+	return r.db("Plugins").table_create("Placeholder").run()
+
 def braincreate():
 	return r.db_create("Brain").run()
 
@@ -24,15 +27,20 @@ def auditcreate():
 def auditjobcreate():
 	return r.db("Audit").table_create("Jobs").run()
 
+def printdb():
+	print(r.db_list().run())
+
 if __name__ == "__main__":
 
 	connect()
 	plugincreate()
+	placeholdercreate()
 	braincreate()
 	targetcreate()
 	outputscreate()
 	jobcreate()
 	auditcreate()
 	auditjobcreate()
+	printdb()
 
 	print("complete")
