@@ -42,10 +42,12 @@ script:
   - docker stop Brain
 
 after_success:
-  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-  - if [ "$TRAVIS_BRANCH" == "master"  ];
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; 
+    then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
+  - if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; 
     then docker push ramrodpcp/database-brain:latest;
-    else docker push ramrodpcp/database-brain:$TRAVIS_BRANCH; fi
+    elif [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; 
+    then docker push ramrodpcp/database-brain:$TRAVIS_BRANCH; fi
 
 
 slack: ramrod-project:GDF82rRYDg3KSekrT3GA24qO
