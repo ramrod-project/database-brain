@@ -1,9 +1,58 @@
+sudo: required
+
 language: python
+
+cache: pip
+
 python:
   - "3.6"
+
+services:
+  - docker
+
+env:
+  global:
+    - CC_TEST_REPORTER_ID=edcf89b102b70b78638e9217f0ee4b66dbcc01dd90527259774c374fa545e313
+
+branches:
+  only:
+  - master
+  - dev
+  - qa
+
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-# command to run tests
+  - pip install pytest-cov
+  - if [ "$TRAVIS_BRANCH" != "master"  ];
+    then docker build -t ramrodpcp/database-brain:$TRAVIS_BRANCH . ;
+    else docker build -t ramrodpcp/database-brain:latest . ;
+    fi
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+before_script:
+  - pytest --cov --cov-config .coveragerc --cov-report xml schema/test_sample.py setup/test_integration.py test/
+  - ./cc-test-reporter after-build -t coverage.py --exit-code 0
+
 script:
-  - pytest
+  - if [ "$TRAVIS_BRANCH" != "master"  ];
+    then docker run -d --rm --name Brain -e "STAGE=DEV" -e "LOGLEVEL=DEBUG" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/database-brain:$TRAVIS_BRANCH ;
+    else docker run -d --rm --name Brain -e "STAGE=PROD" -e "LOGLEVEL=CRITICAL" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/database-brain:latest ;
+    fi
+  - sleep 30
+  - docker ps
+  - docker logs Brain
+  - docker stop Brain
+
+after_success:
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; 
+    then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
+  - if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; 
+    then docker push ramrodpcp/database-brain:latest;
+    elif [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; 
+    then docker push ramrodpcp/database-brain:$TRAVIS_BRANCH; fi
+
+
+slack: ramrod-project:GDF82rRYDg3KSekrT3GA24qO
