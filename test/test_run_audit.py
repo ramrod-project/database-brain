@@ -1,16 +1,25 @@
+from os import environ
+import time as T
+
 import docker
 import rethinkdb as r
 from pytest import fixture
-import time as T
-
 
 
 CLIENT = docker.from_env()
 
 @fixture(scope="module")
 def something():
+	tag = ":latest"
+	try:
+		if environ["TRAVIS_BRANCH"] == "dev":
+			tag = ":dev"
+		elif environ["TRAVIS_BRANCH"] == "qa":
+			tag = ":qa"
+	except KeyError:
+		pass
 	CLIENT.containers.run(
-		"ramrodpcp/database-brain:dev",
+		"".join(("ramrodpcp/database-brain", tag)),
 		name="Brain",
 		detach=True,
 		ports={"28015/tcp": 28015},
