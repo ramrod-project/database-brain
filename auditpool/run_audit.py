@@ -48,8 +48,8 @@ def add_to_audit(conn, db, table, document):
 def test_audit_targets():
     run_audit("Brain.Targets")
 
-def test_audit_Jobs():
-    assert(1==1)
+# def test_audit_jobs():
+#     assert(1==1)
 
 #---    Create a couple Test cases Above
 #---------------------------------------------
