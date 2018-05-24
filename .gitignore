@@ -4,6 +4,6 @@ venv*
 .idea*
 *pytest*
 coverage*
-.coverage*
+.coverage
 .travis_*
 cc-test-reporter
