@@ -33,7 +33,7 @@ install:
   - ./cc-test-reporter before-build
 
 before_script:
-  - pytest --cov --cov-config .coveragerc --cov-report xml schema/test_sample.py setup/test_integration.py test/
+  - pytest --cov auditpool --cov setup --cov schema --cov-config .coveragerc schema/test_sample.py setup/test_integration.py test/
   - ./cc-test-reporter after-build -t coverage.py --exit-code 0
 
 script:
