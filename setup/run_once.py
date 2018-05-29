@@ -30,7 +30,7 @@ def auditjobcreate():
 def printdb():
 	print(r.db_list().run())
 
-if __name__ == "__main__":
+if __name__ == "__main__":	# pragma: no cover
 
 	connect()
 	plugincreate()
