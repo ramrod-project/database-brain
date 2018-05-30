@@ -18,7 +18,7 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='brain.proto',
   package='brain',
-  serialized_pb=_b('\n\x0b\x62rain.proto\x12\x05\x62rain\"\xe4\x01\n\x07\x43ommand\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0b\x43ommandName\x18\x02 \x02(\t\x12\x0f\n\x07Tooltip\x18\x03 \x02(\t\x12\x0e\n\x06Output\x18\x04 \x02(\x08\x12$\n\x06Inputs\x18\x05 \x03(\x0b\x32\x14.brain.Command.Input\x12,\n\x0eOptionalInputs\x18\x06 \x03(\x0b\x32\x14.brain.Command.Input\x1a\x43\n\x05Input\x12\x0c\n\x04Name\x18\x01 \x02(\t\x12\x0c\n\x04Type\x18\x02 \x02(\t\x12\x0f\n\x07Tooltip\x18\x03 \x02(\t\x12\r\n\x05Value\x18\x04 \x02(\t\"H\n\x06Target\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nPluginName\x18\x02 \x02(\t\x12\x10\n\x08Location\x18\x03 \x02(\t\x12\x0c\n\x04Port\x18\x04 \x02(\t\"z\n\x03Job\x12\n\n\x02id\x18\x01 \x01(\t\x12 \n\tJobTarget\x18\x02 \x02(\x0b\x32\r.brain.Target\x12\x0e\n\x06Status\x18\x03 \x02(\t\x12\x11\n\tStartTime\x18\x04 \x02(\x05\x12\"\n\nJobCommand\x18\x05 \x02(\x0b\x32\x0e.brain.Command\")\n\x07Targets\x12\x1e\n\x07Targets\x18\x01 \x03(\x0b\x32\r.brain.Target\" \n\x04Jobs\x12\x18\n\x04Jobs\x18\x01 \x03(\x0b\x32\n.brain.Job\",\n\x08\x43ommands\x12 \n\x08\x43ommands\x18\x01 \x03(\x0b\x32\x0e.brain.Command')
+  serialized_pb=_b('\n\x0b\x62rain.proto\x12\x05\x62rain\"\xe4\x01\n\x07\x43ommand\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0b\x43ommandName\x18\x02 \x02(\t\x12\x0f\n\x07Tooltip\x18\x03 \x02(\t\x12\x0e\n\x06Output\x18\x04 \x02(\x08\x12$\n\x06Inputs\x18\x05 \x03(\x0b\x32\x14.brain.Command.Input\x12,\n\x0eOptionalInputs\x18\x06 \x03(\x0b\x32\x14.brain.Command.Input\x1a\x43\n\x05Input\x12\x0c\n\x04Name\x18\x01 \x02(\t\x12\x0c\n\x04Type\x18\x02 \x02(\t\x12\x0f\n\x07Tooltip\x18\x03 \x02(\t\x12\r\n\x05Value\x18\x04 \x02(\t\"H\n\x06Target\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nPluginName\x18\x02 \x02(\t\x12\x10\n\x08Location\x18\x03 \x02(\t\x12\x0c\n\x04Port\x18\x04 \x02(\t\"z\n\x03Job\x12\n\n\x02id\x18\x01 \x01(\t\x12 \n\tJobTarget\x18\x02 \x02(\x0b\x32\r.brain.Target\x12\x0e\n\x06Status\x18\x03 \x02(\t\x12\x11\n\tStartTime\x18\x04 \x02(\x05\x12\"\n\nJobCommand\x18\x05 \x02(\x0b\x32\x0e.brain.Command\"D\n\x06Output\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1d\n\tOutputJob\x18\x02 \x02(\x0b\x32\n.brain.Job\x12\x0f\n\x07\x43ontent\x18\x03 \x02(\t\"e\n\x08JobAudit\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0b\x63hange_time\x18\x02 \x02(\x02\x12\x1b\n\x07old_val\x18\x03 \x02(\x0b\x32\n.brain.Job\x12\x1b\n\x07new_val\x18\x04 \x02(\x0b\x32\n.brain.Job\"n\n\x0bTargetAudit\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0b\x63hange_time\x18\x02 \x02(\x02\x12\x1e\n\x07old_val\x18\x03 \x02(\x0b\x32\r.brain.Target\x12\x1e\n\x07new_val\x18\x04 \x02(\x0b\x32\r.brain.Target\"e\n\x0bOutputAudit\x12\n\n\x02id\x18\x01 \x01(\t\x12\n\n\x02ts\x18\x02 \x02(\x02\x12\x1e\n\x07old_val\x18\x03 \x02(\x0b\x32\r.brain.Output\x12\x1e\n\x07new_val\x18\x04 \x02(\x0b\x32\r.brain.Output\"\x89\x01\n\x05\x41udit\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1e\n\x03Job\x18\x02 \x01(\x0b\x32\x0f.brain.JobAuditH\x00\x12$\n\x06Target\x18\x03 \x01(\x0b\x32\x12.brain.TargetAuditH\x00\x12$\n\x06Output\x18\x04 \x01(\x0b\x32\x12.brain.OutputAuditH\x00\x42\x08\n\x06record\")\n\x07Targets\x12\x1e\n\x07Targets\x18\x01 \x03(\x0b\x32\r.brain.Target\" \n\x04Jobs\x12\x18\n\x04Jobs\x18\x01 \x03(\x0b\x32\n.brain.Job\",\n\x08\x43ommands\x12 \n\x08\x43ommands\x18\x01 \x03(\x0b\x32\x0e.brain.Command')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -249,6 +249,257 @@ _JOB = _descriptor.Descriptor(
 )
 
 
+_OUTPUT = _descriptor.Descriptor(
+  name='Output',
+  full_name='brain.Output',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='brain.Output.id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='OutputJob', full_name='brain.Output.OutputJob', index=1,
+      number=2, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='Content', full_name='brain.Output.Content', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=451,
+  serialized_end=519,
+)
+
+
+_JOBAUDIT = _descriptor.Descriptor(
+  name='JobAudit',
+  full_name='brain.JobAudit',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='brain.JobAudit.id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='change_time', full_name='brain.JobAudit.change_time', index=1,
+      number=2, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='old_val', full_name='brain.JobAudit.old_val', index=2,
+      number=3, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='new_val', full_name='brain.JobAudit.new_val', index=3,
+      number=4, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=521,
+  serialized_end=622,
+)
+
+
+_TARGETAUDIT = _descriptor.Descriptor(
+  name='TargetAudit',
+  full_name='brain.TargetAudit',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='brain.TargetAudit.id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='change_time', full_name='brain.TargetAudit.change_time', index=1,
+      number=2, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='old_val', full_name='brain.TargetAudit.old_val', index=2,
+      number=3, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='new_val', full_name='brain.TargetAudit.new_val', index=3,
+      number=4, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=624,
+  serialized_end=734,
+)
+
+
+_OUTPUTAUDIT = _descriptor.Descriptor(
+  name='OutputAudit',
+  full_name='brain.OutputAudit',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='brain.OutputAudit.id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ts', full_name='brain.OutputAudit.ts', index=1,
+      number=2, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='old_val', full_name='brain.OutputAudit.old_val', index=2,
+      number=3, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='new_val', full_name='brain.OutputAudit.new_val', index=3,
+      number=4, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=736,
+  serialized_end=837,
+)
+
+
+_AUDIT = _descriptor.Descriptor(
+  name='Audit',
+  full_name='brain.Audit',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='brain.Audit.id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='Job', full_name='brain.Audit.Job', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='Target', full_name='brain.Audit.Target', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='Output', full_name='brain.Audit.Output', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='record', full_name='brain.Audit.record',
+      index=0, containing_type=None, fields=[]),
+  ],
+  serialized_start=840,
+  serialized_end=977,
+)
+
+
 _TARGETS = _descriptor.Descriptor(
   name='Targets',
   full_name='brain.Targets',
@@ -274,8 +525,8 @@ _TARGETS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=451,
-  serialized_end=492,
+  serialized_start=979,
+  serialized_end=1020,
 )
 
 
@@ -304,8 +555,8 @@ _JOBS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=494,
-  serialized_end=526,
+  serialized_start=1022,
+  serialized_end=1054,
 )
 
 
@@ -334,8 +585,8 @@ _COMMANDS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=528,
-  serialized_end=572,
+  serialized_start=1056,
+  serialized_end=1100,
 )
 
 _COMMAND_INPUT.containing_type = _COMMAND
@@ -343,12 +594,36 @@ _COMMAND.fields_by_name['Inputs'].message_type = _COMMAND_INPUT
 _COMMAND.fields_by_name['OptionalInputs'].message_type = _COMMAND_INPUT
 _JOB.fields_by_name['JobTarget'].message_type = _TARGET
 _JOB.fields_by_name['JobCommand'].message_type = _COMMAND
+_OUTPUT.fields_by_name['OutputJob'].message_type = _JOB
+_JOBAUDIT.fields_by_name['old_val'].message_type = _JOB
+_JOBAUDIT.fields_by_name['new_val'].message_type = _JOB
+_TARGETAUDIT.fields_by_name['old_val'].message_type = _TARGET
+_TARGETAUDIT.fields_by_name['new_val'].message_type = _TARGET
+_OUTPUTAUDIT.fields_by_name['old_val'].message_type = _OUTPUT
+_OUTPUTAUDIT.fields_by_name['new_val'].message_type = _OUTPUT
+_AUDIT.fields_by_name['Job'].message_type = _JOBAUDIT
+_AUDIT.fields_by_name['Target'].message_type = _TARGETAUDIT
+_AUDIT.fields_by_name['Output'].message_type = _OUTPUTAUDIT
+_AUDIT.oneofs_by_name['record'].fields.append(
+  _AUDIT.fields_by_name['Job'])
+_AUDIT.fields_by_name['Job'].containing_oneof = _AUDIT.oneofs_by_name['record']
+_AUDIT.oneofs_by_name['record'].fields.append(
+  _AUDIT.fields_by_name['Target'])
+_AUDIT.fields_by_name['Target'].containing_oneof = _AUDIT.oneofs_by_name['record']
+_AUDIT.oneofs_by_name['record'].fields.append(
+  _AUDIT.fields_by_name['Output'])
+_AUDIT.fields_by_name['Output'].containing_oneof = _AUDIT.oneofs_by_name['record']
 _TARGETS.fields_by_name['Targets'].message_type = _TARGET
 _JOBS.fields_by_name['Jobs'].message_type = _JOB
 _COMMANDS.fields_by_name['Commands'].message_type = _COMMAND
 DESCRIPTOR.message_types_by_name['Command'] = _COMMAND
 DESCRIPTOR.message_types_by_name['Target'] = _TARGET
 DESCRIPTOR.message_types_by_name['Job'] = _JOB
+DESCRIPTOR.message_types_by_name['Output'] = _OUTPUT
+DESCRIPTOR.message_types_by_name['JobAudit'] = _JOBAUDIT
+DESCRIPTOR.message_types_by_name['TargetAudit'] = _TARGETAUDIT
+DESCRIPTOR.message_types_by_name['OutputAudit'] = _OUTPUTAUDIT
+DESCRIPTOR.message_types_by_name['Audit'] = _AUDIT
 DESCRIPTOR.message_types_by_name['Targets'] = _TARGETS
 DESCRIPTOR.message_types_by_name['Jobs'] = _JOBS
 DESCRIPTOR.message_types_by_name['Commands'] = _COMMANDS
@@ -381,6 +656,41 @@ Job = _reflection.GeneratedProtocolMessageType('Job', (_message.Message,), dict(
   # @@protoc_insertion_point(class_scope:brain.Job)
   ))
 _sym_db.RegisterMessage(Job)
+
+Output = _reflection.GeneratedProtocolMessageType('Output', (_message.Message,), dict(
+  DESCRIPTOR = _OUTPUT,
+  __module__ = 'brain_pb2'
+  # @@protoc_insertion_point(class_scope:brain.Output)
+  ))
+_sym_db.RegisterMessage(Output)
+
+JobAudit = _reflection.GeneratedProtocolMessageType('JobAudit', (_message.Message,), dict(
+  DESCRIPTOR = _JOBAUDIT,
+  __module__ = 'brain_pb2'
+  # @@protoc_insertion_point(class_scope:brain.JobAudit)
+  ))
+_sym_db.RegisterMessage(JobAudit)
+
+TargetAudit = _reflection.GeneratedProtocolMessageType('TargetAudit', (_message.Message,), dict(
+  DESCRIPTOR = _TARGETAUDIT,
+  __module__ = 'brain_pb2'
+  # @@protoc_insertion_point(class_scope:brain.TargetAudit)
+  ))
+_sym_db.RegisterMessage(TargetAudit)
+
+OutputAudit = _reflection.GeneratedProtocolMessageType('OutputAudit', (_message.Message,), dict(
+  DESCRIPTOR = _OUTPUTAUDIT,
+  __module__ = 'brain_pb2'
+  # @@protoc_insertion_point(class_scope:brain.OutputAudit)
+  ))
+_sym_db.RegisterMessage(OutputAudit)
+
+Audit = _reflection.GeneratedProtocolMessageType('Audit', (_message.Message,), dict(
+  DESCRIPTOR = _AUDIT,
+  __module__ = 'brain_pb2'
+  # @@protoc_insertion_point(class_scope:brain.Audit)
+  ))
+_sym_db.RegisterMessage(Audit)
 
 Targets = _reflection.GeneratedProtocolMessageType('Targets', (_message.Message,), dict(
   DESCRIPTOR = _TARGETS,
