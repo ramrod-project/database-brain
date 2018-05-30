@@ -1,0 +1,10 @@
+[run]
+include = 
+    # setup package
+    *setup*
+
+omit =
+    *venv*
+    *test*
+    # audit package - omit until tests call run_audit.py
+    *auditpool*

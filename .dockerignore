@@ -2,3 +2,7 @@ LICENSE
 .travis.yml
 REAME.md
 venv*
+coverage*
+.coverage*
+.travis_*
+cc-test-reporter

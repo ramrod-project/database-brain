@@ -3,3 +3,7 @@ venv*
 .vscode*
 .idea*
 *pytest*
+coverage*
+.coverage
+.travis_*
+cc-test-reporter

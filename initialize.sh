@@ -7,11 +7,8 @@ sleep 1
 
 source /scripts/venv/bin/activate
 
-python3 /scripts/setup/run_once.py
+rethinkdb restore /scripts/db-template.tar.gz
 
-python3 /scripts/auditpool/run_audit.py 127.0.0.1:28015 Brain.Jobs 
+python3 /scripts/setup/remove_placeholder.py
 
-while true
-do
-    sleep 1
-done
+python3 /scripts/auditpool/run_audit.py 127.0.0.1:28015 Brain.Jobs
