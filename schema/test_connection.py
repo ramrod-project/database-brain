@@ -5,12 +5,9 @@ Pytest file for the connection wrapper
 from os import environ
 from pytest import fixture, raises
 import docker
-try:
-    from brain import connect, r
-    from brain.connection import DefaultConnection, BrainNotReady
-except ImportError:
-    from .brain import connect, r
-    from .brain.connection import DefaultConnection, BrainNotReady
+
+from .brain import connect, r
+from .brain.connection import DefaultConnection, BrainNotReady
 CLIENT = docker.from_env()
 
 

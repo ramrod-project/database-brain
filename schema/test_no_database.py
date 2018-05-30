@@ -1,11 +1,8 @@
 from pytest import raises
 import docker
-try:
-    from brain import connect, r
-    from brain.connection import DefaultConnection, BrainNotReady
-except ImportError:
-    from .brain import connect, r
-    from .brain.connection import DefaultConnection, BrainNotReady
+
+from .brain import connect, r
+from .brain.connection import DefaultConnection, BrainNotReady
 CLIENT = docker.from_env()
 
 
