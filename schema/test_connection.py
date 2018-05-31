@@ -35,6 +35,9 @@ def rethink():
 def test_brain_interface(rethink):
     return connect()
 
+def test_brain_interface_with_host(rethink):
+    import rethinkdb
+    return connect("localhost", rethinkdb.DEFAULT_PORT)
 
 
 def test_direct_interface(rethink):

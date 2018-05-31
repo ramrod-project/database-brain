@@ -7,7 +7,10 @@ SAMPLE_TARGET = {
     "Location": "Patio",
     "Port": "West",
     "CompletelyUnrelatedKey": False,
+    "CompletelyUnrelatedDoc": {"don't worry": True},
+    "CompletelyUnrelatedList": ["stuff in the list"],
 }
+
 SAMPLE_BAD_TARGET = {
     "PluginName": "WaterBalloon",
     "CompletelyUnrelatedKey": False,
