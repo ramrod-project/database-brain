@@ -8,8 +8,7 @@ import docker
 from types import GeneratorType
 from .brain import connect, r
 from .brain.connection import DefaultConnection, BrainNotReady
-from brain import queries
-#from .brain import queries
+from .brain import queries
 CLIENT = docker.from_env()
 
 
