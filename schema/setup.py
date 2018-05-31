@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from setuptools import setup, find_packages
 
-VERSION = "0.1.8"
+VERSION = "0.1.12"
 
 setup(
     name="ramrodbrain",
@@ -18,6 +18,7 @@ setup(
         'rethinkdb',
         "protobuf",
         "dict-to-protobuf"
+        "decorator"
     ],
     classifiers=[
                        'License :: OSI Approved :: MIT License',
