@@ -17,7 +17,8 @@ def wrap_rethink_errors(f, *args, **kwargs):
     try:
         return f(*args, **kwargs)
     except (r.errors.ReqlOpFailedError,
-            r.errors.ReqlError) as e:
+            r.errors.ReqlError,
+            r.errors.ReqlDriverError) as e:
         raise ValueError(str(e))
 
 @decorator
@@ -189,6 +190,7 @@ def create_plugin(plugin_name, conn=None):
                          ).run(conn)
     return True
 
+@wrap_rethink_errors
 @wrap_connection
 def advertise_plugin_commands(plugin_name, commands,
                               verify_commands=False,
@@ -210,12 +212,14 @@ def advertise_plugin_commands(plugin_name, commands,
                                   ).run(conn)
 
 @wrap_connection
-def get_next_job_for(plugin_name, verify_job=False, conn=None):
+def get_next_job(plugin_name,
+                 verify_job=False, conn=None):
     """
 
-    :param plugin_name:
-    :param conn:
-    :return:
+    :param plugin_name: <str>
+    :param verify_job: <bool>
+    :param conn: <connection> or <NoneType>
+    :return: <generator> yields <dict>
     """
     job_cur = RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
                          (r.row["Status"] == "Ready")).run(conn)
