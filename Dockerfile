@@ -1,9 +1,8 @@
-FROM rethinkdb:2.3.6
+FROM alpine:3.7
 
-RUN apt-get update && \
-    apt-get install -y python3 && \
-    apt-get install -y python-pip && \
-    apt-get install -y virtualenv
+RUN apk add --update bash rethinkdb py-pip python3 && rm -rf /var/cache/apk/*
+
+RUN pip install --upgrade virtualenv==15.1.0
 
 WORKDIR /scripts
 
