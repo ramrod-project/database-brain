@@ -5,7 +5,7 @@ Pytest file should error if the database is not a brain
 from os import environ
 from pytest import fixture, raises
 import docker
-
+from time import sleep
 from .brain import connect
 from .brain.connection import DefaultConnection, BrainNotReady
 CLIENT = docker.from_env()
@@ -14,15 +14,15 @@ CLIENT = docker.from_env()
 
 @fixture(scope='module')
 def default_rethink():
-    tag = environ.get("TRAVIS_BRANCH", "latest")
     container_name = "brainmoduledefaulttest"
     CLIENT.containers.run(
-        "rethinkdb:{}".format(tag),
+        "rethinkdb",
         name=container_name,
         detach=True,
         ports={"28015/tcp": 28015},
         remove=True
     )
+    sleep(5)
     yield True
     # Teardown for module tests
     containers = CLIENT.containers.list()
