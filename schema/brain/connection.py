@@ -27,11 +27,15 @@ DEFAULT_HOSTS = {"PROD": "rethinkdb",
 @decorator
 def wrap_self_test(f, *args, **kwargs):
     """
+    should be applied as decorator to functions
+    requiring a SELF_TEST dict
 
-    :param f:
-    :param args:
-    :param kwargs:
-    :return:
+    If the caller does not supply a self_test dict, it supplies one
+
+    :param f: <function>
+    :param args: <tuple> positional arguments
+    :param kwargs: <dict> keyword arguments
+    :return: return value of the called function
     """
     if not args[-1]:
         new_args = list(args)
