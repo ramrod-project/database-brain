@@ -9,5 +9,15 @@ Goodjob = {"id": "string",
            "StartTime": 0,
            "JobCommand": GoodCommand,}
 
+Badjob = {"id": "string",
+           "JobTarget": None,
+           "Status": "string",
+           "StartTime": 0,
+           "JobCommand": GoodCommand,
+           "testcase": None}
+
 def test_good_job():
     assert verify(Goodjob, b.Job())
+
+def test_bad_job():
+    assert not verify(Badjob, b.Job())
