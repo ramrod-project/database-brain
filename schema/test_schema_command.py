@@ -1,7 +1,7 @@
 from .brain.checks import verify, strip
 from .brain import brain_pb2 as b
 
-Dictionary = {"CommandName": "anystring", 
+GoodCommand = {"CommandName": "anystring", 
               "Tooltip": "otherstring",
               "Output": True,
               "Inputs": [{"Name" : "string", 
@@ -13,5 +13,4 @@ Dictionary = {"CommandName": "anystring",
                                   "Tooltip": "String",
                                   "Value": "String"}]}
 def test_good_command():
-    assert verify(Dictionary, b.Command())
-
+    assert verify(GoodCommand, b.Command())
