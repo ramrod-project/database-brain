@@ -1,8 +1,10 @@
 from time import sleep, time
 from uuid import uuid4
 import rethinkdb
+from decorator import decorator
 from rethinkdb.net import DefaultConnection
 from .environment import check_stage_env
+
 #Recursive imports at bottom of file
 
 BRAIN_DB = "Brain"
@@ -22,6 +24,21 @@ DEFAULT_HOSTS = {"PROD": "rethinkdb",
                  "": "localhost", #environment not configured, try anyway
                 }
 
+@decorator
+def wrap_self_test(f, *args, **kwargs):
+    """
+
+    :param f:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    if not args[-1]:
+        new_args = list(args)
+        new_args[-1] = SELF_TEST
+        args = tuple(new_args)
+    return f(*args, **kwargs)
+
 
 class BrainNotReady(Exception):
     """
@@ -30,7 +47,7 @@ class BrainNotReady(Exception):
     pass
 
 
-def validate_brain(connection, requirements=SELF_TEST):
+def validate_brain(connection, requirements=None):
     """
     Alias to brain_post function
 
@@ -44,7 +61,8 @@ def validate_brain(connection, requirements=SELF_TEST):
     """
     return brain_post(connection, requirements)
 
-def brain_post(connection, requirements=SELF_TEST):
+@wrap_self_test
+def brain_post(connection, requirements=None):
     """
     Power On Self Test for the brain.
 
