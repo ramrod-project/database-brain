@@ -208,4 +208,7 @@ def test_verify_output_content(rethink):
     oo = queries.get_output_content(job['id'], max_size=1028)
     assert "[truncated]" not in oo
 
-
+def test_destroy_plugin(rethink):
+    assert TEST_TARGET['PluginName'] in list(queries.RPX.table_list().run(connect()))
+    assert queries.destroy_plugin(TEST_TARGET['PluginName'])
+    assert TEST_TARGET['PluginName'] not in list(queries.RPX.table_list().run(connect()))
