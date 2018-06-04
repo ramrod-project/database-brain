@@ -2,7 +2,7 @@
 from pytest import raises
 from .brain.jobs import verify_state, transition_success, transition_fail, \
     transition, InvalidStateTransition, InvalidState, JobsError
-from .brain.jobs import STATES, TRANSITION
+from .brain.jobs import STATES, TRANSITION, BEGIN, READY, ERROR
 
 INVALID_STATE = "INVALID SATE"
 
@@ -63,3 +63,10 @@ def test_next_state_from_bad_state_broad_error():
 def test_error_state_from_bad_state_broad_error():
     with raises(JobsError):
         transition_fail("Invalid_state")
+
+def test_begin_state_SUCCESS():
+    assert transition_success(BEGIN) == READY
+
+def test_begin_state_Error():
+    assert transition_fail(BEGIN) == ERROR
+

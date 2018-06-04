@@ -6,6 +6,7 @@ from .brain_pb2 import Job, Jobs
 from .queries import insert_jobs, is_job_done, get_next_job
 from .checks import verify
 
+BEGIN = ""
 READY = "Ready"
 STOP = "Stopped"
 PENDING = "Pending"
@@ -42,9 +43,16 @@ class InvalidState(JobsError):
     pass
 
 
-STATES = {READY: {SUCCESS: PENDING,
+STATES = {BEGIN: {SUCCESS: READY,
                   FAILURE: ERROR,
-                  TRANSITION: frozenset([STOP])},
+                  TRANSITION: frozenset([READY,
+                                         ERROR,
+                                         STOP])},
+          READY: {SUCCESS: PENDING,
+                  FAILURE: ERROR,
+                  TRANSITION: frozenset([STOP,
+                                         PENDING,
+                                         ERROR])},
           PENDING: {SUCCESS: DONE,
                     FAILURE: ERROR,
                     TRANSITION: frozenset([STOP,
