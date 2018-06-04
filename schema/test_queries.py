@@ -51,7 +51,6 @@ def rethink():
         ports={"28015/tcp": 28015},
         remove=True
     )
-    sleep(4)
     yield True
     # Teardown for module tests
     containers = CLIENT.containers.list()
