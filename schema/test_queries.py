@@ -42,6 +42,7 @@ TEST_JOB = {
 
 @fixture(scope='module')
 def rethink():
+    sleep(3) #prior test docker needs to shut down
     tag = environ.get("TRAVIS_BRANCH", "latest")
     container_name = "brainmodule_query_test"
     CLIENT.containers.run(
@@ -51,7 +52,6 @@ def rethink():
         ports={"28015/tcp": 28015},
         remove=True
     )
-    sleep(4)
     yield True
     # Teardown for module tests
     containers = CLIENT.containers.list()
@@ -208,4 +208,7 @@ def test_verify_output_content(rethink):
     oo = queries.get_output_content(job['id'], max_size=1028)
     assert "[truncated]" not in oo
 
-
+def test_destroy_plugin(rethink):
+    assert TEST_TARGET['PluginName'] in list(queries.RPX.table_list().run(connect()))
+    assert queries.destroy_plugin(TEST_TARGET['PluginName'])
+    assert TEST_TARGET['PluginName'] not in list(queries.RPX.table_list().run(connect()))
