@@ -58,7 +58,6 @@ def test_dev_env():
         del (environ['STAGE'])
     assert check_dev_env()
     assert not check_prod_env()
-    del (environ['LOGLEVEL'])
     environ['STAGE'] = old_stage
 
 
