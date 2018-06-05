@@ -1,9 +1,13 @@
+"""
+functions to perform checks used by other areas of the brain
 
+functions should all return a boolean if possible.
+"""
 
 from google.protobuf.message import EncodeError
 import dict_to_protobuf #this lib allows extra keys
-from .connection import validate_brain
 dict_to_protobuf.l.setLevel("ERROR")
+
 
 def verify(value, msg):
     """
@@ -17,13 +21,45 @@ def verify(value, msg):
         True: If valid input
         False: If invalid input
     """
+    return converts_to_proto(value, msg) and successfuly_encodes(msg)
+
+
+def converts_to_proto(value, msg, raise_err=False):
+    """
+    Boolean response if a dictionary can convert into the proto's schema
+
+    :param value: <dict>
+    :param msg: <proto object>
+    :param raise_err: <bool> (default false) raise for troubleshooting
+    :return: <bool> whether the dict can covert
+    """
     result = True
-    dict_to_protobuf.dict_to_protobuf(value, msg)
     try:
-        msg.SerializeToString()
-    except EncodeError:
+        dict_to_protobuf.dict_to_protobuf(value, msg)
+    except TypeError as type_error:
+        if raise_err:
+            raise type_error
         result = False
     return result
+
+
+def successfuly_encodes(msg, raise_err=False):
+    """
+    boolean response if a message contains correct information to serialize
+
+    :param msg: <proto object>
+    :param raise_err: <bool>
+    :return: <bool>
+    """
+    result = True
+    try:
+        msg.SerializeToString()
+    except EncodeError as encode_error:
+        if raise_err:
+            raise encode_error
+        result = False
+    return result
+
 
 def strip(value, msg):
     """
