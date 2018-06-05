@@ -65,19 +65,19 @@ def test_bad_job():
     assert not verify(Badjob, b.Job())
 
 def test_bad_job2():
-    assert not verify(Badjob2, b.Job)
+    assert not verify(Badjob2, b.Job())
 
 def test_bad_job3():
-    assert not verify(Badjob3, b.Job)
+    assert not verify(Badjob3, b.Job())
 
 def test_bad_job4():
-    assert not verify(Badjob4, b.Job)
+    assert not verify(Badjob4, b.Job())
 
 def test_bad_job5():
-    assert not verify(Badjob5, b.Job)
+    assert not verify(Badjob5, b.Job())
 
 def test_bad_job6():
-    assert not verify(Badjob6, b.Job)
+    assert not verify(Badjob6, b.Job())
 
 def test_bad_job7():
-    assert not verify(Badjob7, b.Job)
+    assert not verify(Badjob7, b.Job())
