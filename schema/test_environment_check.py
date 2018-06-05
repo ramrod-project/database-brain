@@ -15,6 +15,7 @@ def test_emergency_loglevel():
     assert not log_env_gte("TEST")
     assert not check_prod_env()
     assert check_dev_env()
+    del (environ['LOGLEVEL'])
 
 def test_warning_loglevel():
     environ['LOGLEVEL'] = "WARNING"
@@ -22,6 +23,7 @@ def test_warning_loglevel():
     assert not log_env_gte("TEST")
     assert not check_prod_env()
     assert check_dev_env()
+    del (environ['LOGLEVEL'])
 
 def test_debug_loglevel():
     environ['LOGLEVEL'] = "DEBUG"
@@ -30,6 +32,7 @@ def test_debug_loglevel():
     assert not log_env_gte("TEST")
     assert not check_prod_env()
     assert check_dev_env()
+    del (environ['LOGLEVEL'])
 
 def test_test_loglevel():
     environ['LOGLEVEL'] = "TEST"
@@ -38,38 +41,52 @@ def test_test_loglevel():
     assert log_env_gte("TEST")
     assert not check_prod_env()
     assert check_dev_env()
+    del (environ['LOGLEVEL'])
 
 def test_stage_env():
+    old_stage = environ.get("STAGE", "")
     if "STAGE" in environ:
         del(environ['STAGE'])
     assert check_stage_env() == "TESTING"
     assert not check_prod_env()
     assert check_dev_env()
+    environ['STAGE'] = old_stage
 
 def test_dev_env():
+    old_stage = environ.get("STAGE", "")
     if "STAGE" in environ:
         del (environ['STAGE'])
     assert check_dev_env()
     assert not check_prod_env()
+    del (environ['LOGLEVEL'])
+    environ['STAGE'] = old_stage
 
 
 def test_not_dev_env():
+    old_stage = environ.get("STAGE", "")
     if "STAGE" in environ:
         del (environ['STAGE'])
     assert not check_prod_env()
     assert check_dev_env()
+    environ['STAGE'] = old_stage
 
 def test_set_bad_stage():
+    old_stage = environ.get("STAGE", "")
     environ['STAGE'] = "PRODUCTION"
     assert not check_prod_env()
     assert check_dev_env()
+    environ['STAGE'] = old_stage
 
 def test_set_dev_check_stage():
+    old_stage = environ.get("STAGE", "")
     environ['STAGE'] = "DEV"
     assert check_dev_env()
     assert not check_prod_env()
+    environ['STAGE'] = old_stage
 
 def test_set_prod__check_stage():
+    old_stage = environ.get("STAGE", "")
     environ['STAGE'] = "PROD"
     assert not check_dev_env()
     assert check_prod_env()
+    environ['STAGE'] = old_stage
