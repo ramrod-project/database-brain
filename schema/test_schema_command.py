@@ -26,7 +26,7 @@ BadCommand = {"CommandName": 135465134,
                                   "Value": "String"}]}
 
 BadCommand2 = {"CommandName": "string", 
-              "Tooltip": tooooltip,
+              "Tooltip": 465,
               "Output": True,
               "Inputs": [{"Name" : "string", 
                           "Type": "String",
