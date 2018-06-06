@@ -37,5 +37,7 @@ def test_run_cursor(something):
 
 def test_audit_contains(something):
     cursor = r.db("Audit").table("Targets").run()
+    document = None
     for document in cursor:
          print(document)
+    assert document
