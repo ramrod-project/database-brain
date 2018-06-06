@@ -42,6 +42,7 @@ TEST_JOB = {
 
 @fixture(scope='module')
 def rethink():
+    sleep(3) #prior test docker needs to shut down
     tag = environ.get("TRAVIS_BRANCH", "latest")
     container_name = "brainmodule_query_test"
     CLIENT.containers.run(
@@ -51,7 +52,6 @@ def rethink():
         ports={"28015/tcp": 28015},
         remove=True
     )
-    sleep(4)
     yield True
     # Teardown for module tests
     containers = CLIENT.containers.list()
