@@ -22,7 +22,7 @@ DEFAULT_HOSTS = {"PROD": "rethinkdb",
                  "DEV": "localhost",
                  "TESTING": "localhost",
                  "": "localhost", #environment not configured, try anyway
-                }
+                 }
 
 @decorator
 def wrap_self_test(f, *args, **kwargs):
