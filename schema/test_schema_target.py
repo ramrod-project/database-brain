@@ -40,13 +40,13 @@ def test_good_target():
     assert verify(Good_TARGET, b.Target())
 
 def test_bad_target():
-    assert verify(Bad_TARGET, b.Target())
+    assert not verify(Bad_TARGET, b.Target())
 
 def test_bad_target2():
-    assert verify(Bad_TARGET2, b.Target())
+    assert not verify(Bad_TARGET2, b.Target())
 
 def test_bad_target3():
-    assert verify(Bad_TARGET3, b.Target())
+    assert not verify(Bad_TARGET3, b.Target())
 
 def test_bad_target4():
-    assert verify(Bad_TARGET4, b.Target())
+    assert not verify(Bad_TARGET4, b.Target())
