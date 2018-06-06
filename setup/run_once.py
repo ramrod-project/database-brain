@@ -8,7 +8,7 @@ def plugincreate():
 
 def placeholdercreate():
 	return r.db("Plugins").table_create("Placeholder").run()
-
+ 
 def braincreate():
 	return r.db_create("Brain").run()
 
