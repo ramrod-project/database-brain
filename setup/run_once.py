@@ -8,7 +8,7 @@ def plugincreate():
 
 def placeholdercreate():
 	return r.db("Plugins").table_create("Placeholder").run()
-
+ 
 def braincreate():
 	return r.db_create("Brain").run()
 
@@ -27,6 +27,9 @@ def auditcreate():
 def auditjobcreate():
 	return r.db("Audit").table_create("Jobs").run()
 
+def audittargetcreate():
+	return r.db("Audit").table_create("Targets").run()
+
 def printdb():
 	print(r.db_list().run())
 
@@ -41,6 +44,7 @@ if __name__ == "__main__":	# pragma: no cover
 	jobcreate()
 	auditcreate()
 	auditjobcreate()
+	audittargetcreate()
 	printdb()
 
 	print("complete")
