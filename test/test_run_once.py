@@ -9,9 +9,10 @@ CLIENT = docker.from_env()
 
 @fixture(scope="module")
 def something():
+	container_name = "BrainRO"
 	CLIENT.containers.run(
 		"rethinkdb:2.3.6",
-		name="Brain",
+		name=container_name,
 		detach=True,
 		ports={"28015/tcp": 28015},
 		remove=True
@@ -21,7 +22,7 @@ def something():
 
 	containers = CLIENT.containers.list()
 	for container in containers:
-		if container.name == "Brain": 
+		if container.name == container_name:
 			container.stop()
 			break
 
