@@ -73,7 +73,10 @@ def test_auditjobcreate(something):
 	run_once.auditjobcreate()
 
 def test_remove_placeholder(something):
-	r.db("Plugins").table_create("Placeholder").run()
+	try:
+		r.db("Plugins").table_create("Placeholder").run()
+	except r.errors.ReqlOpFailedError:
+		pass
 	T.sleep(1)
 	remove_placeholder.main()
 	T.sleep(1)
