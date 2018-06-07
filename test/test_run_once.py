@@ -33,6 +33,9 @@ def test_connect(something):
 def test_plugincreate(something):
 	run_once.plugincreate()
 
+def test_placeholdercreate(something):
+	run_once.placeholdercreate()
+
 def test_braincreate(something):
 	run_once.braincreate()
 
@@ -55,13 +58,13 @@ def test_outputinsert(something):
 	r.db("Brain").table("Outputs").insert({"Job_Entry": "Job_One", "Content": "StringContent"}).run()
 
 def test_cleartarget(something):
-	return r.db("Brain").table("Targets").delete().run()
+	r.db("Brain").table("Targets").delete().run()
 
 def test_clearjobs(something):
-	return r.db("Brain").table("Jobs").delete().run()
+	r.db("Brain").table("Jobs").delete().run()
 
 def test_clearoutput(something):
-	return r.db("Brain").table("Outputs").delete().run()
+	r.db("Brain").table("Outputs").delete().run()
 
 def test_auditcreate(something):
 	run_once.auditcreate()
