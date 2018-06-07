@@ -28,6 +28,7 @@ install:
     then docker build -t ramrodpcp/database-brain:$TRAVIS_BRANCH . ;
     else docker build -t ramrodpcp/database-brain:latest . ;
     fi
+  - docker pull rethinkdb
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
