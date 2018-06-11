@@ -28,12 +28,13 @@ install:
     then docker build -t ramrodpcp/database-brain:$TRAVIS_BRANCH . ;
     else docker build -t ramrodpcp/database-brain:latest . ;
     fi
+  - docker pull rethinkdb
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
 before_script:
-  - pytest --cov --cov-config .coveragerc --cov-report xml schema/test_sample.py setup/test_integration.py test/
+  - pytest --cov auditpool --cov setup --cov schema --cov-config .coveragerc --cov-report xml schema/ setup/test_integration.py test/
   - ./cc-test-reporter after-build -t coverage.py --exit-code 0
 
 script:
