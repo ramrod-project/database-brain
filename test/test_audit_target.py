@@ -10,8 +10,12 @@ CLIENT = docker.from_env()
 @fixture(scope="module")
 def something():
 	container_name = "BrainAT"
+	try:
+		tag = environ.get("TRAVIS_BRANCH", "dev").replace("master", "latest")
+	except KeyError:
+		tag = "latest"
 	CLIENT.containers.run(
-		"ramrodpcp/database-brain:dev",
+		"".join(("ramrodpcp/database-brain:", tag)),
 		name=container_name,
 		detach=True,
 		ports={"28015/tcp": 28015},

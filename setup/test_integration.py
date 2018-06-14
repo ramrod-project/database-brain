@@ -8,16 +8,12 @@ CLIENT = docker.from_env()
 
 @fixture(scope="module")
 def rethink():
-    tag = ":latest"
     try:
-        if environ["TRAVIS_BRANCH"] == "dev":
-            tag = ":dev"
-        elif environ["TRAVIS_BRANCH"] == "qa":
-            tag = ":qa"
+        tag = environ.get("TRAVIS_BRANCH", "dev").replace("master", "latest")
     except KeyError:
-        pass
+        tag = "latest"
     CLIENT.containers.run(
-        "".join(("ramrodpcp/database-brain", tag)),
+        "".join(("ramrodpcp/database-brain:", tag)),
         name="rethinkdb",
         detach=True,
         ports={"28015/tcp":28015},
