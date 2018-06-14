@@ -13,7 +13,10 @@ CLIENT = docker.from_env()
 
 @fixture(scope='module')
 def rethink():
-    tag = environ.get("TRAVIS_BRANCH", "latest")
+    try:
+        tag = environ.get("TRAVIS_BRANCH", "dev").replace("master", "latest")
+    except KeyError:
+        tag = "latest"
     container_name = "brainmoduletest"
     CLIENT.containers.run(
         "ramrodpcp/database-brain:{}".format(tag),

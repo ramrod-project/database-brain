@@ -43,7 +43,10 @@ TEST_JOB = {
 @fixture(scope='module')
 def rethink():
     sleep(3) #prior test docker needs to shut down
-    tag = environ.get("TRAVIS_BRANCH", "latest")
+    try:
+        tag = environ.get("TRAVIS_BRANCH", "dev").replace("master", "latest")
+    except KeyError:
+        tag = "latest"
     container_name = "brainmodule_query_test"
     CLIENT.containers.run(
         "ramrodpcp/database-brain:{}".format(tag),

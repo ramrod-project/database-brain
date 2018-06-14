@@ -16,7 +16,7 @@ CLIENT = docker.from_env()
 def default_rethink():
     container_name = "brainmoduledefaulttest"
     CLIENT.containers.run(
-        "rethinkdb",
+        "rethinkdb:2.3.6",
         name=container_name,
         detach=True,
         ports={"28015/tcp": 28015},
