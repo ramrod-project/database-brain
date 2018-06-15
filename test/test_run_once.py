@@ -3,15 +3,16 @@ import docker
 import rethinkdb as r
 import time as T
 
-from setup import run_once
+from setup import run_once, remove_placeholder
 
 CLIENT = docker.from_env()
 
 @fixture(scope="module")
 def something():
+	container_name = "BrainRO"
 	CLIENT.containers.run(
 		"rethinkdb:2.3.6",
-		name="Brain",
+		name=container_name,
 		detach=True,
 		ports={"28015/tcp": 28015},
 		remove=True
@@ -21,7 +22,7 @@ def something():
 
 	containers = CLIENT.containers.list()
 	for container in containers:
-		if container.name == "Brain": 
+		if container.name == container_name:
 			container.stop()
 			break
 
@@ -70,3 +71,14 @@ def test_auditcreate(something):
 
 def test_auditjobcreate(something):
 	run_once.auditjobcreate()
+
+def test_remove_placeholder(something):
+	try:
+		r.db("Plugins").table_create("Placeholder").run()
+	except r.errors.ReqlOpFailedError:
+		pass
+	T.sleep(1)
+	remove_placeholder.main()
+	T.sleep(1)
+	with raises(r.ReqlOpFailedError):
+		r.db("Plugins").table("Placeholder").run()
