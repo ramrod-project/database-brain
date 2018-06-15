@@ -5,7 +5,9 @@ from .brain_pb2 import Job, Jobs, Target, Commands
 from .checks import verify
 from .connection import rethinkdb as r
 from .connection import connect
+from .connection import validate_get_dbs
 from decorator import decorator
+from rethinkdb.errors import ReqlDriverError
 
 RBT = r.db("Brain").table("Targets")
 RBJ = r.db("Brain").table("Jobs")
@@ -48,6 +50,35 @@ def wrap_rethink_generator_errors(f, *args, **kwargs):
 
 
 @decorator
+def wrap_connection_reconnect_test(f, *args, **kwargs):
+    """
+    if a connection argument is passed, verify connection is good
+    if not connected, attempt reconnect
+    if reconnect fails, raises the rethink error
+    other decorator will translate to standard error
+
+    note: <rethinkdb.DefaultConnection>.is_open() appears to hang
+            when the database is pulled out from under conn obj
+
+    should be decorated prior to wrap_connection
+
+    :param f: <function> to call
+    :param args:  <tuple> positional arguments
+    :param kwargs: <dict> keyword arguments
+    :return:
+    :raises: ReqlDriverError or ConnectionRefusedError if reconnect failed.
+    """
+    if args[-1]:  # conn object attempted
+        try:
+            validate_get_dbs(args[-1])
+        except ReqlDriverError as RDE:
+            if "Connection is closed" in str(RDE):
+                args[-1].reconnect()  #throw may occur here
+    return f(*args, **kwargs)
+
+
+@decorator
+@wrap_connection_reconnect_test
 def wrap_connection(f, *args, **kwargs):
     """
     conn (connection) must be the last positional argument
