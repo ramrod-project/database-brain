@@ -6,46 +6,44 @@ from ..connection import rethinkdb as r, connect
 from ..connection import validate_get_dbs
 from decorator import decorator
 
-
+WRAP_RETHINK_ERRORS = (r.errors.ReqlOpFailedError,
+                       r.errors.ReqlError,
+                       r.errors.ReqlDriverError)
 
 
 @decorator
-def wrap_rethink_errors(f, *args, **kwargs):
+def wrap_rethink_errors(func_, *args, **kwargs):
     """
     Wraps rethinkdb specific errors as builtin/Brain errors
 
-    :param f: <function> to call
+    :param func_: <function> to call
     :param args:  <tuple> positional arguments
     :param kwargs: <dict> keyword arguments
     :return: inherits from the called function
     """
     try:
-        return f(*args, **kwargs)
-    except (r.errors.ReqlOpFailedError,
-            r.errors.ReqlError,
-            r.errors.ReqlDriverError) as e:
+        return func_(*args, **kwargs)
+    except WRAP_RETHINK_ERRORS as e:
         raise ValueError(str(e))
 
 @decorator
-def wrap_rethink_generator_errors(f, *args, **kwargs):
+def wrap_rethink_generator_errors(func_, *args, **kwargs):
     """
 
-    :param f:
-    :param args:
-    :param kwargs:
-    :return:
+    :param func_: <function> to call
+    :param args:  <tuple> positional arguments
+    :param kwargs: <dict> keyword arguments
+    :return: inherits from the called function
     """
     try:
-        for data in f(*args, **kwargs):
+        for data in func_(*args, **kwargs):
             yield data
-    except (r.errors.ReqlOpFailedError,
-            r.errors.ReqlError,
-            r.errors.ReqlDriverError) as e:
+    except WRAP_RETHINK_ERRORS as e:
         raise ValueError(str(e))
 
 
 @decorator
-def wrap_connection_reconnect_test(f, *args, **kwargs):
+def wrap_connection_reconnect_test(func_, *args, **kwargs):
     """
     if a connection argument is passed, verify connection is good
     if not connected, attempt reconnect
@@ -57,7 +55,7 @@ def wrap_connection_reconnect_test(f, *args, **kwargs):
 
     should be decorated prior to wrap_connection
 
-    :param f: <function> to call
+    :param func_: <function> to call
     :param args:  <tuple> positional arguments
     :param kwargs: <dict> keyword arguments
     :return:
@@ -67,19 +65,19 @@ def wrap_connection_reconnect_test(f, *args, **kwargs):
     if conn:  # conn object attempted
         try:
             validate_get_dbs(conn)
-        except r.errors.ReqlDriverError:
+        except WRAP_RETHINK_ERRORS:
             conn.reconnect()  #throw may occur here
-    return f(*args, **kwargs)
+    return func_(*args, **kwargs)
 
 
 @decorator
 @wrap_connection_reconnect_test
-def wrap_connection(f, *args, **kwargs):
+def wrap_connection(func_, *args, **kwargs):
     """
     conn (connection) must be the last positional argument
     in all wrapped functions
 
-    :param f: <function> to call
+    :param func_: <function> to call
     :param args:  <tuple> positional arguments
     :param kwargs: <dict> keyword arguments
     :return:
@@ -88,4 +86,4 @@ def wrap_connection(f, *args, **kwargs):
         new_args = list(args)
         new_args[-1] = connect()
         args = tuple(new_args)
-    return f(*args, **kwargs)
+    return func_(*args, **kwargs)

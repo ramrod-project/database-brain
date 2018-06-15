@@ -102,12 +102,17 @@ def get_output_content(job_id, max_size=1024, conn=None):
     content = None
     check_status = RBO.filter({"OutputJob": {'id': job_id}}).run(conn)
     for status_item in check_status:
-        if max_size and "Content" in status_item and len(status_item['Content']) > max_size:
-            content = "{}\n[truncated]".format(status_item['Content'][:max_size])
-        elif "Content" in status_item:
-            content = status_item['Content']
-        else:
-            content = ""
+        content = _truncate_output_content_if_required(status_item, max_size)
+    return content
+
+
+def _truncate_output_content_if_required(item, max_size):
+    if max_size and "Content" in item and len(item['Content']) > max_size:
+        content = "{}\n[truncated]".format(item['Content'][:max_size])
+    elif "Content" in item:
+        content = item['Content']
+    else:
+        content = ""
     return content
 
 
