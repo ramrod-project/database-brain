@@ -27,11 +27,22 @@ def insert_new_target(plugin_name, location_num,
               "Location": str(location_num),
               "Port": str(port_num),
               "Optional": {"init": str(optional)}}
+    return insert_target(target, verify_target, conn)
+
+@wrap_rethink_errors
+@wrap_connection
+def insert_target(target, verify_target=False,
+                  conn=None):
+    """
+
+    :param target:  <dict> of Target() format
+    :param verify_target: <bool>
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <dict> rethinkdb insert response value
+    """
     if verify_target and not verify(target, Target()):
         raise ValueError("Invalid Target")
-    output = RBT.insert([target]).run(conn)
-    return output
-
+    return RBT.insert([target]).run(conn)
 
 @wrap_rethink_errors
 @wrap_connection
