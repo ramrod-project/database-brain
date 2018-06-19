@@ -4,6 +4,8 @@ RUN apk add --update bash rethinkdb py-pip python3 && rm -rf /var/cache/apk/*
 
 RUN pip install --upgrade virtualenv==15.1.0
 
+VOLUME [ "/logs" ]
+
 WORKDIR /scripts
 
 COPY ./requirements.txt .
