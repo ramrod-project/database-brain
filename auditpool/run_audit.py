@@ -13,6 +13,7 @@ DEBUG = True
 _CONTINUE = True
 TS = "ts"
 LOG_DIR = "/logs/"
+LOG_KEY = "new_val"
 DAY_STRING = "_".join((
     asctime(gmtime(time())).split(" ")[1],
     asctime(gmtime(time())).split(" ")[2],
@@ -60,10 +61,14 @@ def format_dictionary(input_dict):
     """
     formatted_list = []
     for key, value in input_dict.items():
-        if key != "TS" and key != "id" and not isinstance(value, dict):
-            formatted_list.append((key, value))
+        if key == "ts" or key == "id" or key == "Tooltip":
+            continue
+        elif isinstance(value, list):
+            formatted_list.append((key, [format_dictionary(val) for val in value]))
         elif isinstance(value, dict):
             formatted_list.append((key, format_dictionary(value)))
+        else:
+            formatted_list.append((key, value))
     return formatted_list
 
 
@@ -79,7 +84,7 @@ def write_log_file(namespace, document):
         log_string = _LOG_TEMPLATE.render(
             date_string=log_timestamp.upper(),
             namespace_string=namespace,
-            other_stuff=format_list(format_dictionary(document))[1:-1]
+            other_stuff=format_list(format_dictionary(document[LOG_KEY]))[1:-1]
         )
         f.write("{}\n".format(log_string))
 
