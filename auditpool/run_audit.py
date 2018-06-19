@@ -12,6 +12,7 @@ _CONNECTION_STR = "127.0.0.1:28015"
 DEBUG = True
 _CONTINUE = True
 TS = "ts"
+LOG_DIR = "/logs/"
 DAY_STRING = "_".join((
     asctime(gmtime(time())).split(" ")[1],
     asctime(gmtime(time())).split(" ")[2],
@@ -74,7 +75,7 @@ def write_log_file(namespace, document):
         document {dict} -- document to write to the logs
     """
     log_timestamp = asctime(gmtime(document[TS]))
-    with open("/logs/{}.{}.log".format(namespace, DAY_STRING), "a") as f:
+    with open("{}{}.{}.log".format(LOG_DIR, namespace, DAY_STRING), "a") as f:
         log_string = _LOG_TEMPLATE.render(
             date_string=log_timestamp.upper(),
             namespace_string=namespace,
