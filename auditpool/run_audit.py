@@ -27,7 +27,8 @@ LOGGER_KNOWN_EXCEPTIONS = (AttributeError,
                            KeyError,
                            ValueError,
                            IOError,
-                           IndexError)
+                           IndexError,
+                           TypeError)
 
 def format_list(input_list):
     """Formats lists for rendering
