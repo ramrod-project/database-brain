@@ -23,6 +23,12 @@ _LOG_TEMPLATE = Template(
     """[{{ date_string }}] - ({{ namespace_string }}) ---- {{ other_stuff }}"""
 )
 
+LOGGER_KNOWN_EXCEPTIONS = (AttributeError,
+                           KeyError,
+                           ValueError,
+                           IOError,
+                           IndexError,
+                           TypeError)
 
 def format_list(input_list):
     """Formats lists for rendering
@@ -91,24 +97,35 @@ def write_log_file(namespace, document):
 
 #---------------------------------------------
 #---    Modify Below Code
+def print_debug_data(printable):
+    """
+    If debug is set to true, printable will go to stdout
+    :param printable: something that can be printed
+    :return: None
+    """
+    if DEBUG:
+        print(printable)
+
 
 def run_audit(namespace):
-    if DEBUG:
-        print(namespace)
-        
+    print_debug_data(namespace)
     #some helpful (and parsed) variables.
     host, port = _CONNECTION_STR.split(":")
     db, table = namespace.split(".")
     conn = r.connect(host, port) #conn object is not thread safe
     cursor = r.db(db).table(table).changes().run(conn)
     for document in cursor: 
-        if DEBUG:
-            print(document)
+        print_debug_data(document)
         document[TS] = time()
         if not r.db("Audit").table_list().contains(table).run(conn): 
             r.db("Audit").table_create(table).run(conn)
         r.db("Audit").table(table).insert(document).run(conn)
-        write_log_file(namespace, document)
+        try:
+            write_log_file(namespace, document)
+        except LOGGER_KNOWN_EXCEPTIONS as lke:
+            stderr.write("LogggerError: {}\n".format(str(lke)))
+            stderr.write("\t{}\n".format(namespace))
+            stderr.write("\t\t{}\n".format(document))
     #-----this was just here for an example
     return namespace #this allows the function to restart.
 
