@@ -23,6 +23,10 @@ _LOG_TEMPLATE = Template(
     """[{{ date_string }}] - ({{ namespace_string }}) ---- {{ other_stuff }}"""
 )
 
+LOGGER_KNOWN_EXCEPTIONS = (AttributeError,
+                           KeyError,
+                           ValueError,
+                           IOError)
 
 def format_list(input_list):
     """Formats lists for rendering
@@ -108,7 +112,12 @@ def run_audit(namespace):
         if not r.db("Audit").table_list().contains(table).run(conn): 
             r.db("Audit").table_create(table).run(conn)
         r.db("Audit").table(table).insert(document).run(conn)
-        write_log_file(namespace, document)
+        try:
+            write_log_file(namespace, document)
+        except LOGGER_KNOWN_EXCEPTIONS as lke:
+            stderr.write("LogggerError: {}\n".format(str(lke)))
+            stderr.write("\t{}\n".format(namespace))
+            stderr.write("\t\t{}\n".format(document))
     #-----this was just here for an example
     return namespace #this allows the function to restart.
 
