@@ -26,7 +26,8 @@ _LOG_TEMPLATE = Template(
 LOGGER_KNOWN_EXCEPTIONS = (AttributeError,
                            KeyError,
                            ValueError,
-                           IOError)
+                           IOError,
+                           IndexError)
 
 def format_list(input_list):
     """Formats lists for rendering
