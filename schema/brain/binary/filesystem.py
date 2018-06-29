@@ -5,7 +5,6 @@ requires fuse
 from sys import stderr
 import stat
 from multiprocessing import Lock
-from threading import Thread
 from time import time
 from collections import defaultdict
 from io import BytesIO
@@ -31,6 +30,8 @@ from .data import get, put, BINARY
 VERBOSE = False
 GET_DIR = [".", "..", "GOOD_TEST"]
 READ_ONLY = False
+MAX_CACHE_TIME = 600
+
 
 class NoStat(c_stat):
     def __init__(self):
@@ -70,29 +71,16 @@ class BrainStore(LoggingMixIn, Operations):
         self.attr = defaultdict(dict)
         self.attr_lock = Lock()
 
-    def _cleanup(self):
-        #print("entering cleaner")
-        while True:
-            print("looping cleaner")
-            with self.attr_lock:
-                for path in self.attr:
-                    now_time = time()
-                    if now_time - self.attr[path].get("ts", 0) > 600:
-                        del self.cache[path]
-                        del self.attr[path]
-            sleep(60)
-
-
     def read(self, path, size, offset, fh):
-        #print("read {}".format(path))
+        # print("read {}".format(path))
         return self.cache[path][offset:offset+size]
 
     def getattr(self, path, fh=None):
-        #print("attr {}".format(path))
+        # print("attr {}".format(path))
         with self.attr_lock:
             filename = path.strip("/")
             now_time = time()
-            if now_time - self.attr[path].get("ts", 0) > 600:
+            if now_time - self.attr[path].get("ts", 0) > MAX_CACHE_TIME:
                 base = NoStat()
                 brain_data = get(filename) or {}
                 if not brain_data and not READ_ONLY:
@@ -114,7 +102,7 @@ class BrainStore(LoggingMixIn, Operations):
         if getattr raises FuseOSError(ENOENT)
         OS may call this function and the write function
         """
-        #print("create {}".format(path))
+        # print("create {}".format(path))
         now_time = time()
         with self.attr_lock:
             base = NoStat()
@@ -129,7 +117,7 @@ class BrainStore(LoggingMixIn, Operations):
         """
         This is a readonly filesystem right now
         """
-        #print("write {}".format(path))
+        # print("write {}".format(path))
         with self.attr_lock:
             base = self.attr[path]['base']
             staged = self.attr[path]['staged']
@@ -139,7 +127,7 @@ class BrainStore(LoggingMixIn, Operations):
         return len(data)
 
     def release(self, path, fh):
-        #print("release {}".format(path))
+        # print("release {}".format(path))
         with self.attr_lock:
             base = self.attr[path]['base']
             filename = path.strip("/")
@@ -149,7 +137,25 @@ class BrainStore(LoggingMixIn, Operations):
                 staged.close()
                 put({"id": filename, "Name": filename, "Content": BINARY(io_val)})
                 del self.attr[path]
+        self._cleanup()
         return 0
+
+    def _cleanup(self):
+        """
+        cleans up data that's been in the cache for a while
+
+        should be called from an async OS call like release? to not impact user
+        :return:
+        """
+        need_to_delete = []  # can't delete from a dict while iterating
+        with self.attr_lock:
+            now_time = time()
+            for path in self.cache:
+                if now_time - self.attr[path]['ts'] >= MAX_CACHE_TIME:
+                    need_to_delete.append(path)
+            for path in need_to_delete:
+                del self.attr[path]
+                del self.cache[path]
 
 
 def start_filesystem(mountpoint):
