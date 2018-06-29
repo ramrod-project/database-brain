@@ -8,7 +8,6 @@ from multiprocessing import Lock
 from time import time
 from collections import defaultdict
 from io import BytesIO
-from time import sleep
 
 noop = lambda *args, **kwargs: None  # :pragma-nocover #PEP-559
 
@@ -25,13 +24,14 @@ except ImportError as import_error:
     Operations = object
     c_stat = object
 
-from .data import get, put, BINARY
+from .data import get, put, list_dir, BINARY
 
 VERBOSE = False
-GET_DIR = [".", "..", "GOOD_TEST"]
-READ_ONLY = False
+GET_DIR = [".", ".."]
+ALLOW_LIST_DIR = True
+READ_ONLY = True
 MAX_CACHE_TIME = 600
-
+OBJ_PERMISSION = 0o755
 
 class NoStat(c_stat):
     def __init__(self):
@@ -75,24 +75,32 @@ class BrainStore(LoggingMixIn, Operations):
         # print("read {}".format(path))
         return self.cache[path][offset:offset+size]
 
+    def readdir(self, path, fh):
+        # print("readdir {}".format(path))
+        return GET_DIR + list_dir() if ALLOW_LIST_DIR else []
+
     def getattr(self, path, fh=None):
         # print("attr {}".format(path))
-        with self.attr_lock:
-            filename = path.strip("/")
-            now_time = time()
-            if now_time - self.attr[path].get("ts", 0) > MAX_CACHE_TIME:
-                base = NoStat()
-                brain_data = get(filename) or {}
-                if not brain_data and not READ_ONLY:
-                    raise FuseOSError(ENOENT)
-                buf = brain_data.get("Content", b"")
-                base.st_mode = stat.S_IFREG | 0o755
-                base.st_nlink = 1
-                base.st_size = len(buf)
-                self.cache[path] = buf
-                self.attr[path] = {"ts": now_time, "base": base, "staged": None}
-            else:
-                base = self.attr[path]['base']
+        base = NoStat()
+        if path == "/":
+            base.st_mode = int(stat.S_IFDIR | OBJ_PERMISSION)
+            base.st_nlink = 2
+        else:
+            with self.attr_lock:
+                filename = path.strip("/")
+                now_time = time()
+                if now_time - self.attr[path].get("ts", 0) > MAX_CACHE_TIME:
+                    brain_data = get(filename) or {}
+                    if not brain_data and not READ_ONLY:
+                        raise FuseOSError(ENOENT)
+                    buf = brain_data.get("Content", b"")
+                    base.st_mode = stat.S_IFREG | OBJ_PERMISSION
+                    base.st_nlink = 1
+                    base.st_size = len(buf)
+                    self.cache[path] = buf
+                    self.attr[path] = {"ts": now_time, "base": base, "staged": None}
+                else:
+                    base = self.attr[path]['base']
         return base.as_dict()
 
     def create(self, path, mode):
@@ -163,5 +171,3 @@ def start_filesystem(mountpoint):
         FUSE(BrainStore(), mountpoint,  foreground=True)
     else:
         raise ImportError(err_str)
-
-
