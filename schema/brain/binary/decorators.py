@@ -41,7 +41,7 @@ def wrap_guess_content_type(func_, *args, **kwargs):
         content = args[0].get(CONTENT_FIELD, b"")
         try:
             args[0][CONTENTTYPE_FIELD] = magic.from_buffer(content)
-        except magic.MagicException:
+        except magic.MagicException:  # pragma: no cover
             args[0][CONTENTTYPE_FIELD] = "data"
     return func_(*args, **kwargs)
 
