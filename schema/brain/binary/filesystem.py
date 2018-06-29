@@ -22,7 +22,7 @@ noop = lambda *args, **kwargs: None  # :pragma-nocover #PEP-559
 try:
     from fuse import FUSE, FuseOSError, Operations, c_stat, ENOENT, LoggingMixIn
     has_fuse = True
-except ImportError as import_error:
+except ImportError as import_error:  # :pragma-nocover
     err_str = str(import_error)
     stderr.write("{1} - {0} requires fusepy\n".format(__name__, err_str))
     has_fuse = False
