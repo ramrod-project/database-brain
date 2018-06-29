@@ -4,20 +4,28 @@ functions related to moving binary objects in/out of Brain.Files
 
 from .. import r
 from ..queries.decorators import wrap_connection, wrap_rethink_errors
+from ..queries.decorators import wrap_connection_reconnect_test
 from ..checks import verify
 from ..brain_pb2 import Binary
 from ..queries import RBF
-from .decorators import wrap_name_to_id, PRIMARY_FIELD
+from .decorators import wrap_name_to_id, wrap_guess_content_type
+from .decorators import wrap_content_as_binary_if_needed
+from .decorators import PRIMARY_FIELD
 
 BINARY = r.binary
 
 
 @wrap_rethink_errors
 @wrap_name_to_id
+@wrap_guess_content_type
+@wrap_content_as_binary_if_needed
+@wrap_connection_reconnect_test
 @wrap_connection
 def put(obj_dict, conn=None, **kwargs):
     """
-
+    This function might thorw an error like:
+        Query size (290114573) greater than maximum (134217727)
+    caller may need to manually split files at this time
     :param obj_dict: <dict> matching brain_pb2.Binary object
     :param conn:
     :param kwargs:

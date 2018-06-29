@@ -18,7 +18,8 @@ setup(
         'rethinkdb',
         "protobuf",
         "dict-to-protobuf",
-        "decorator"
+        "decorator",
+        "python-magic"
     ],
     classifiers=[
                        'License :: OSI Approved :: MIT License',
