@@ -1,5 +1,12 @@
 """
 requires fuse
+
+this file is covered by test_binary_filesystem.py
+but
+it is spawned as a background thread,
+so codeclimate doens't see the coverage
+
+set it to nocover
 """
 
 from sys import stderr
@@ -35,8 +42,9 @@ READ_ONLY = False
 MAX_CACHE_TIME = 600
 OBJ_PERMISSION = 0o755
 
-class NoStat(c_stat):
-    def __init__(self):
+
+class NoStat(c_stat):  # pragma: no cover
+    def __init__(self):  # pragma: no cover
         self.staged = False
         self.st_mode = 0
         self.st_ino = 0
@@ -49,7 +57,7 @@ class NoStat(c_stat):
         self.st_mtime = 0
         self.st_ctime = 0
 
-    def as_dict(self):
+    def as_dict(self):  # pragma: no cover
         return dict((key, getattr(self, key)) for key in ('st_atime',
                                                           'st_ctime',
                                                           'st_mtime',
@@ -73,20 +81,20 @@ class BrainStore(LoggingMixIn, Operations):
         self.attr = defaultdict(dict)
         self.attr_lock = Lock()
 
-    def read(self, path, size, offset, fh):
+    def read(self, path, size, offset, fh):  # pragma: no cover
         # print("read {}".format(path))
         return self.cache[path][offset:offset+size]
 
-    def readdir(self, path, fh):
+    def readdir(self, path, fh):  # pragma: no cover
         # print("readdir {}".format(path))
         return GET_DIR + list_dir() if ALLOW_LIST_DIR else []
 
-    def _getattr_root(self, base):
+    def _getattr_root(self, base):  # pragma: no cover
         base.st_mode = int(stat.S_IFDIR | OBJ_PERMISSION)
         base.st_nlink = 2
         return base
 
-    def _getattr_pull_file_to_cache(self, base, path):
+    def _getattr_pull_file_to_cache(self, base, path):  # pragma: no cover
         filename = path.strip("/")
         brain_data = get(filename) or {}
         if not brain_data and not READ_ONLY:
@@ -99,7 +107,7 @@ class BrainStore(LoggingMixIn, Operations):
         self.attr[path] = {"ts": time(), "base": base, "staged": None}
         return base
 
-    def _getattr_file(self, base, path):
+    def _getattr_file(self, base, path):  # pragma: no cover
         now_time = time()
         if now_time - self.attr[path].get("ts", 0) > MAX_CACHE_TIME:
             base = self._getattr_pull_file_to_cache(base, path)
@@ -107,7 +115,7 @@ class BrainStore(LoggingMixIn, Operations):
             base = self.attr[path]['base']
         return base
 
-    def getattr(self, path, fh=None):
+    def getattr(self, path, fh=None):  # pragma: no cover
         # print("attr {}".format(path))
         base = NoStat()
         if path == "/":
@@ -117,7 +125,7 @@ class BrainStore(LoggingMixIn, Operations):
                 base = self._getattr_file(base, path)
         return base.as_dict()
 
-    def create(self, path, mode):
+    def create(self, path, mode):  # pragma: no cover
         """
         This is currently a read-only filessytem.
         GetAttr will return a stat for everything
@@ -135,7 +143,7 @@ class BrainStore(LoggingMixIn, Operations):
             self.attr[path] = {"ts": now_time, "base": base, "staged": BytesIO()}
         return mode
 
-    def write(self, path, data, offset, fh):
+    def write(self, path, data, offset, fh):  # pragma: no cover
         """
         This is a readonly filesystem right now
         """
@@ -148,7 +156,7 @@ class BrainStore(LoggingMixIn, Operations):
                 staged.write(data)
         return len(data)
 
-    def unlink(self, path):
+    def unlink(self, path):  # pragma: no cover
         # print("unlink {}".format(path))
         with self.attr_lock:
             if path in self.attr:
@@ -157,7 +165,7 @@ class BrainStore(LoggingMixIn, Operations):
                 if ALLOW_REMOVE:
                     delete(path.strip("/"))
 
-    def _release_upload_to_brain(self, path):
+    def _release_upload_to_brain(self, path):  # pragma: no cover
         base = self.attr[path]['base']
         filename = path.strip("/")
         staged = self.attr[path]["staged"]
@@ -170,14 +178,14 @@ class BrainStore(LoggingMixIn, Operations):
                 stderr.write("{}\n".format(ValErr))
             del self.attr[path]
 
-    def release(self, path, fh):
+    def release(self, path, fh):  # pragma: no cover
         # print("release {}".format(path))
         with self.attr_lock:
             self._release_upload_to_brain(path)
         self._cleanup()
         return 0
 
-    def _cleanup(self):
+    def _cleanup(self):  # pragma: no cover
         """
         cleans up data that's been in the cache for a while
 
@@ -195,7 +203,7 @@ class BrainStore(LoggingMixIn, Operations):
                 del self.cache[path]
 
 
-def start_filesystem(mountpoint):
+def start_filesystem(mountpoint):  # pragma: no cover
     """
     prgramatically mount this filesystem to some mount point
     :param mountpoint:
