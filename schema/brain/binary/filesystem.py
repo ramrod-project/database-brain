@@ -86,19 +86,23 @@ class BrainStore(LoggingMixIn, Operations):
         base.st_nlink = 2
         return base
 
-    def _getattr_file(self, base, path):
+    def _getattr_pull_file_to_cache(self, base, path):
         filename = path.strip("/")
+        brain_data = get(filename) or {}
+        if not brain_data and not READ_ONLY:
+            raise FuseOSError(ENOENT)
+        buf = brain_data.get(CONTENT_FIELD, b"")
+        base.st_mode = stat.S_IFREG | OBJ_PERMISSION
+        base.st_nlink = 1
+        base.st_size = len(buf)
+        self.cache[path] = buf
+        self.attr[path] = {"ts": time(), "base": base, "staged": None}
+        return base
+
+    def _getattr_file(self, base, path):
         now_time = time()
         if now_time - self.attr[path].get("ts", 0) > MAX_CACHE_TIME:
-            brain_data = get(filename) or {}
-            if not brain_data and not READ_ONLY:
-                raise FuseOSError(ENOENT)
-            buf = brain_data.get(CONTENT_FIELD, b"")
-            base.st_mode = stat.S_IFREG | OBJ_PERMISSION
-            base.st_nlink = 1
-            base.st_size = len(buf)
-            self.cache[path] = buf
-            self.attr[path] = {"ts": now_time, "base": base, "staged": None}
+            base = self._getattr_pull_file_to_cache(base, path)
         else:
             base = self.attr[path]['base']
         return base
