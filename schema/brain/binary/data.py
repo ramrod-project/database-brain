@@ -10,7 +10,7 @@ from ..brain_pb2 import Binary
 from ..queries import RBF
 from .decorators import wrap_name_to_id, wrap_guess_content_type
 from .decorators import wrap_content_as_binary_if_needed
-from .decorators import PRIMARY_FIELD
+from .decorators import PRIMARY_FIELD, CONTENT_FIELD
 
 BINARY = r.binary
 
@@ -35,6 +35,19 @@ def put(obj_dict, conn=None, **kwargs):
         verify(obj_dict, Binary())
     inserted = RBF.insert(obj_dict).run(conn)
     return inserted
+
+
+def put_buffer(filename, content, conn=None):
+    """
+    helper function for put
+    :param filename: <str>
+    :param content: <bytes>
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <dict>
+    """
+    obj_dict = {PRIMARY_FIELD: filename,
+                CONTENT_FIELD: content}
+    return put(obj_dict, conn=conn)
 
 
 @wrap_rethink_errors
