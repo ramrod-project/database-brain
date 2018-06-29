@@ -117,7 +117,7 @@ class BrainStore(LoggingMixIn, Operations):
         with self.attr_lock:
             base = NoStat()
             base.staged = True
-            base.st_mode = stat.S_IFREG | 0o755
+            base.st_mode = stat.S_IFREG | OBJ_PERMISSION
             base.st_nlink = 1
             base.st_size = -1
             self.attr[path] = {"ts": now_time, "base": base, "staged": BytesIO()}
@@ -137,7 +137,7 @@ class BrainStore(LoggingMixIn, Operations):
         return len(data)
 
     def unlink(self, path):
-        print("unlink {}".format(path))
+        # print("unlink {}".format(path))
         with self.attr_lock:
             if path in self.attr:
                 del self.cache[path]
@@ -181,7 +181,12 @@ class BrainStore(LoggingMixIn, Operations):
 
 
 def start_filesystem(mountpoint):
+    """
+    prgramatically mount this filesystem to some mount point
+    :param mountpoint:
+    :return:
+    """
     if has_fuse:
-        FUSE(BrainStore(), mountpoint,  foreground=True)
+        FUSE(BrainStore(), mountpoint, foreground=True)
     else:
         raise ImportError(err_str)
