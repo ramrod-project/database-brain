@@ -19,17 +19,17 @@ from io import BytesIO
 noop = lambda *args, **kwargs: None  # :pragma-nocover #PEP-559
 
 
-try:
-    from fuse import FUSE, FuseOSError, Operations, c_stat, ENOENT, LoggingMixIn
-    has_fuse = True
+try:  # :pragma-nocover
+    from fuse import FUSE, FuseOSError, Operations, c_stat, ENOENT, LoggingMixIn  # :pragma-nocover
+    has_fuse = True  # :pragma-nocover
 except ImportError as import_error:  # :pragma-nocover
-    err_str = str(import_error)
-    stderr.write("{1} - {0} requires fusepy\n".format(__name__, err_str))
-    has_fuse = False
-    FUSE = noop
-    FuseOSError = None
-    Operations = object
-    c_stat = object
+    err_str = str(import_error)  # :pragma-nocover
+    stderr.write("{1} - {0} requires fusepy\n".format(__name__, err_str))  # :pragma-nocover
+    has_fuse = False  # :pragma-nocover
+    FUSE = noop  # :pragma-nocover
+    FuseOSError = None  # :pragma-nocover
+    Operations = object  # :pragma-nocover
+    c_stat = object  # :pragma-nocover
 
 from .data import get, put, list_dir, delete
 from .decorators import CONTENT_FIELD
