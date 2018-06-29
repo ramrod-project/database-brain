@@ -157,20 +157,23 @@ class BrainStore(LoggingMixIn, Operations):
                 if ALLOW_REMOVE:
                     delete(path.strip("/"))
 
+    def _release_upload_to_brain(self, path):
+        base = self.attr[path]['base']
+        filename = path.strip("/")
+        staged = self.attr[path]["staged"]
+        if base.staged and base.st_size > 0 and not staged.closed:
+            io_val = staged.getvalue()
+            staged.close()
+            try:
+                put({"id": filename, "Name": filename, "Content": io_val})
+            except ValueError as ValErr:
+                stderr.write("{}\n".format(ValErr))
+            del self.attr[path]
+
     def release(self, path, fh):
         # print("release {}".format(path))
         with self.attr_lock:
-            base = self.attr[path]['base']
-            filename = path.strip("/")
-            staged = self.attr[path]["staged"]
-            if base.staged and base.st_size > 0 and not staged.closed:
-                io_val = staged.getvalue()
-                staged.close()
-                try:
-                    put({"id": filename, "Name": filename, "Content": io_val})
-                except ValueError as ValErr:
-                    stderr.write("{}\n".format(ValErr))
-                del self.attr[path]
+            self._release_upload_to_brain(path)
         self._cleanup()
         return 0
 
