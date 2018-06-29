@@ -81,28 +81,36 @@ class BrainStore(LoggingMixIn, Operations):
         # print("readdir {}".format(path))
         return GET_DIR + list_dir() if ALLOW_LIST_DIR else []
 
+    def _getattr_root(self, base):
+        base.st_mode = int(stat.S_IFDIR | OBJ_PERMISSION)
+        base.st_nlink = 2
+        return base
+
+    def _getattr_file(self, base, path):
+        filename = path.strip("/")
+        now_time = time()
+        if now_time - self.attr[path].get("ts", 0) > MAX_CACHE_TIME:
+            brain_data = get(filename) or {}
+            if not brain_data and not READ_ONLY:
+                raise FuseOSError(ENOENT)
+            buf = brain_data.get(CONTENT_FIELD, b"")
+            base.st_mode = stat.S_IFREG | OBJ_PERMISSION
+            base.st_nlink = 1
+            base.st_size = len(buf)
+            self.cache[path] = buf
+            self.attr[path] = {"ts": now_time, "base": base, "staged": None}
+        else:
+            base = self.attr[path]['base']
+        return base
+
     def getattr(self, path, fh=None):
         # print("attr {}".format(path))
         base = NoStat()
         if path == "/":
-            base.st_mode = int(stat.S_IFDIR | OBJ_PERMISSION)
-            base.st_nlink = 2
+            base = self._getattr_root(base)
         else:
             with self.attr_lock:
-                filename = path.strip("/")
-                now_time = time()
-                if now_time - self.attr[path].get("ts", 0) > MAX_CACHE_TIME:
-                    brain_data = get(filename) or {}
-                    if not brain_data and not READ_ONLY:
-                        raise FuseOSError(ENOENT)
-                    buf = brain_data.get(CONTENT_FIELD, b"")
-                    base.st_mode = stat.S_IFREG | OBJ_PERMISSION
-                    base.st_nlink = 1
-                    base.st_size = len(buf)
-                    self.cache[path] = buf
-                    self.attr[path] = {"ts": now_time, "base": base, "staged": None}
-                else:
-                    base = self.attr[path]['base']
+                base = self._getattr_file(base, path)
         return base.as_dict()
 
     def create(self, path, mode):

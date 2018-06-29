@@ -22,7 +22,7 @@ branches:
 
 # command to install dependencies
 install:
-  - apt-get install fuse
+  - sudo apt-get install fuse
   - pip install -r requirements.txt
   - pip install pytest-cov fusepy
   - if [ "$TRAVIS_BRANCH" != "master"  ];
