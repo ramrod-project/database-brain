@@ -40,6 +40,22 @@ TEST_JOB = {
     "JobCommand": TEST_CAPABILITY[0]
 }
 
+TEST_PLUGIN_DATA = {
+    "Name": "Harness",
+    "State": "Available",
+    "DesiredState": "",
+    "Interface": "",
+    "ExternalPorts": ["5000"],
+    "InternalPorts": ["5000"]
+}
+
+TEST_PORT_DATA = {
+    "InterfaceName": "",
+    "Address": "",
+    "TCPPorts": ["5000"],
+    "UDPPorts": []
+}
+
 @fixture(scope='module')
 def rethink():
     sleep(3) #prior test docker needs to shut down
@@ -215,3 +231,50 @@ def test_destroy_plugin(rethink):
     assert TEST_TARGET['PluginName'] in list(queries.RPX.table_list().run(connect()))
     assert queries.destroy_plugin(TEST_TARGET['PluginName'])
     assert TEST_TARGET['PluginName'] not in list(queries.RPX.table_list().run(connect()))
+
+def test_create_plugin_controller(rethink):
+    res = queries.create_plugin_controller(TEST_PLUGIN_DATA)
+    print(res)
+    assert isinstance(res, dict)
+    assert isinstance(res['generated_keys'], list)
+    assert len(res['generated_keys']) == 1
+
+def test_get_plugin_by_name_controller(rethink):
+    g = queries.get_plugin_by_name_controller(TEST_PLUGIN_DATA["Name"])
+    assert isinstance(g, GeneratorType)
+    plugin = g.__next__()
+    print(plugin)
+    assert len(plugin) == 1
+    del plugin["id"]
+    assert plugin == TEST_PLUGIN_DATA
+
+def test_create_port_controller(rethink):
+    res = queries.create_plugin_controller(TEST_PORT_DATA)
+    print(res)
+    assert isinstance(res, dict)
+    assert isinstance(res['generated_keys'], list)
+    assert len(res['generated_keys']) == 1
+
+def test_get_ports_by_ip_controller(rethink):
+    g = queries.get_plugin_by_name_controller(TEST_PORT_DATA["Address"])
+    assert isinstance(g, GeneratorType)
+    port_entry = g.__next__()
+    print(port_entry)
+    assert len(port_entry) == 1
+    del port_entry["id"]
+    assert port_entry == TEST_PORT_DATA
+
+def test_check_port_conflict(rethink):
+    res = queries.create_plugin_controller(TEST_PORT_DATA)
+    print(res)
+    assert isinstance(res, dict)
+    assert res["errors"] == 1
+
+def test_update_plugin_controller(rethink):
+    new_plugin_data = TEST_PLUGIN_DATA
+    new_plugin_data["State"] = "Restarting"
+    new_plugin_data["DesiredState"] = "Restart"
+    res = queries.update_plugin_controller(new_plugin_data)
+    print(res)
+    assert isinstance(res, dict)
+    assert len(res['updated']) == 1

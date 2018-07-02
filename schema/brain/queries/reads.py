@@ -7,7 +7,7 @@ from ..connection import rethinkdb as r
 from .decorators import wrap_connection
 from .decorators import wrap_rethink_generator_errors
 from .decorators import wrap_rethink_errors
-from . import RPX, RBT, RBJ, RBO
+from . import RPX, RBT, RBJ, RBO, RPC, RPP
 
 
 @wrap_rethink_generator_errors
@@ -160,7 +160,7 @@ def get_plugin_by_name_controller(plugin_name,
     result = RPC.filter({
         "Name": plugin_name
     }).run(conn)
-    return result.next()
+    return result
 
 
 @wrap_rethink_errors

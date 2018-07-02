@@ -21,8 +21,8 @@ def _check_port_conflict(port_data,
                 "first_error": "TCP Port conflict(s): \
                 {} in use on {}"
                 .format((
-                    interface["Address"],
-                    common
+                    common_tcp,
+                    interface["Address"]
                 ))
             }
         common_udp = list(set(port_data["UDPPorts"]) &
@@ -33,8 +33,8 @@ def _check_port_conflict(port_data,
                 "first_error": "UDP Port conflict(s): \
                 {} in use on {}"
                 .format((
-                    interface["Address"],
-                    common
+                    common_udp,
+                    interface["Address"]
                 ))
             }
     return None
@@ -166,7 +166,7 @@ def create_plugin_controller(plugin_data,
                                       Plugin()):
         raise ValueError("Invalid Plugin entry")
     current = get_plugin_by_name_controller(
-        "Name": plugin_data["Name"],
+        plugin_data["Name"],
         conn
     )
     if len(current) > 0:
@@ -241,7 +241,7 @@ def update_plugin_controller(plugin_data,
                                       Plugin()):
         raise ValueError("Invalid Plugin entry")
     current = get_plugin_by_name_controller(
-        "Name": plugin_data["Name"],
+        plugin_data["Name"],
         conn
     )
     if not current[-1]:
@@ -249,6 +249,5 @@ def update_plugin_controller(plugin_data,
             "errors": 1,
             "first_error": "Cannot update non-existent plugin!"
         }
-    success = RPC.update(plugin_data,
-                         ).run(conn)
+    success = RPC.update(plugin_data).run(conn)
     return success
