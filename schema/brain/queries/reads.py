@@ -145,3 +145,41 @@ def get_next_job(plugin_name,
         if verify_job and not verify(job, Job()):
             continue #to the next job... warn?
         yield job
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get_plugin_by_name_controller(plugin_name,
+                                  conn=None):
+    """
+
+    :param plugin_name: <str> name of plugin
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <list> rethinkdb cursor
+    """
+    result = RPC.filter({
+        "Name": plugin_name
+    }).run(conn)
+    return result.next()
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get_ports_by_ip_controller(ip_address,
+                    conn=None):
+    """
+
+    :param interface_name: <str> name of interface
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <list> rethinkdb cursor
+    """
+    if ip_address == "":
+        result = RPP.filter({
+            "Address": ip_address
+        }).run(conn)
+    else:
+        result = RPP.filter(
+            (r.row["Address"] == ip_address) |
+            (r.row["Address"] == "")
+        ).run(conn)
+    return result

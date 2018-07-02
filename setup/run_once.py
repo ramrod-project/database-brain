@@ -39,6 +39,9 @@ def controller_plugins_create():
 def controller_ports_create():
 	return r.db("Controller").table_create("Ports").run()
 
+def brainfilescreate():
+	return r.db("Brain").table_create("Files").run()
+
 def printdb():
 	print(r.db_list().run())
 
@@ -54,6 +57,7 @@ if __name__ == "__main__":	# pragma: no cover
 	auditcreate()
 	auditjobcreate()
 	audittargetcreate()
+	brainfilescreate()
 	printdb()
 	controller_plugins_create()
 	controller_ports_create()
