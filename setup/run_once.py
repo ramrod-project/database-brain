@@ -30,6 +30,9 @@ def auditjobcreate():
 def audittargetcreate():
 	return r.db("Audit").table_create("Targets").run()
 
+def brainfilescreate():
+	return r.db("Brain").table_create("Files").run()
+
 def printdb():
 	print(r.db_list().run())
 
@@ -45,6 +48,7 @@ if __name__ == "__main__":	# pragma: no cover
 	auditcreate()
 	auditjobcreate()
 	audittargetcreate()
+	brainfilescreate()
 	printdb()
 
 	print("complete")
