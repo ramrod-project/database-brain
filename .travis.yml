@@ -22,8 +22,9 @@ branches:
 
 # command to install dependencies
 install:
+  - sudo apt-get install fuse
   - pip install -r requirements.txt
-  - pip install pytest-cov
+  - pip install pytest-cov fusepy
   - if [ "$TRAVIS_BRANCH" != "master"  ];
     then docker build -t ramrodpcp/database-brain:$TRAVIS_BRANCH . ;
     else docker build -t ramrodpcp/database-brain:latest . ;
