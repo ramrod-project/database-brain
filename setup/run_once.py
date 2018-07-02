@@ -59,6 +59,7 @@ if __name__ == "__main__":	# pragma: no cover
 	audittargetcreate()
 	brainfilescreate()
 	printdb()
+	controller_create()
 	controller_plugins_create()
 	controller_ports_create()
 

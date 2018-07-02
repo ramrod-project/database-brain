@@ -20,10 +20,10 @@ def _check_port_conflict(port_data,
                 "errors": 1,
                 "first_error": "TCP Port conflict(s): \
                 {} in use on {}"
-                .format((
+                .format(
                     common_tcp,
                     interface["Address"]
-                ))
+                )
             }
         common_udp = list(set(port_data["UDPPorts"]) &
                       set(interface["UDPPorts"]))
@@ -32,10 +32,10 @@ def _check_port_conflict(port_data,
                 "errors": 1,
                 "first_error": "UDP Port conflict(s): \
                 {} in use on {}"
-                .format((
+                .format(
                     common_udp,
                     interface["Address"]
-                ))
+                )
             }
     return None
 
@@ -169,7 +169,8 @@ def create_plugin_controller(plugin_data,
         plugin_data["Name"],
         conn
     )
-    if len(current) > 0:
+    try:
+        current.next()
         return {
             "errors": 1,
             "first_error": "".join([
@@ -178,6 +179,8 @@ def create_plugin_controller(plugin_data,
                 " exists!"
             ])
         }
+    except r.ReqlCursorEmpty:
+        pass
     success = RPC.insert(plugin_data,
                          conflict="update"
                          ).run(conn)
@@ -237,17 +240,20 @@ def update_plugin_controller(plugin_data,
     :return: <dict> rethinkdb update response value
     """
     assert isinstance(plugin_data, dict)
-    if verify_commands and not verify({"Plugin": plugin_data},
+    if verify_plugin and not verify({"Plugin": plugin_data},
                                       Plugin()):
         raise ValueError("Invalid Plugin entry")
     current = get_plugin_by_name_controller(
         plugin_data["Name"],
         conn
     )
-    if not current[-1]:
+    update_id = None
+    try:
+        update_id = current.next()["id"]
+    except r.ReqlCursorEmpty:
         return {
             "errors": 1,
             "first_error": "Cannot update non-existent plugin!"
         }
-    success = RPC.update(plugin_data).run(conn)
+    success = RPC.get(update_id).update(plugin_data).run(conn)
     return success
