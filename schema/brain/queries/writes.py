@@ -209,7 +209,7 @@ def create_port_controller(port_data,
     for interface in existing:
         if interface["Address"] == port_data["Address"]:
             interface_existing = interface
-    if not interface_selected:
+    if not interface_existing:
         success = RPP.insert(
             port_data,
             conflict="update"
@@ -220,7 +220,7 @@ def create_port_controller(port_data,
         success = RPP.get(interface_existing["id"]).update({
             "TCPPorts": interface_existing["TCPPorts"],
             "UDPPorts": interface_existing["UDPPorts"]
-        })
+        }).run(conn)
     return success
 
 

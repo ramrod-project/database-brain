@@ -87,8 +87,8 @@ message Plugin {
     required string State = 3 [default = Available];
     required string DesiredState = 4;
     required string Interface = 5;
-    required string ExternalPort = 6;
-    required string InternalPort = 7;
+    repeated string ExternalPorts = 6;
+    repeated string InternalPorts = 7;
 }
 
 message Port {
