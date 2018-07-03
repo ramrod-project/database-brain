@@ -247,7 +247,7 @@ def update_plugin_controller(plugin_data,
         raise ValueError("Invalid Plugin entry")
     current = get_plugin_by_name_controller(
         plugin_data["Name"],
-        conn
+        conn=conn
     )
     update_id = None
     try:
