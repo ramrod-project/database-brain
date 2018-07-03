@@ -130,6 +130,26 @@ def plugin_exists(plugin_name, conn=None):
 
 @wrap_rethink_generator_errors
 @wrap_connection
+def get_jobs(plugin_name,
+             verify_job=False, conn=None):
+    """
+    :param plugin_name: <str>
+    :param verify_job: <bool>
+    :param conn: <connection> or <NoneType>
+    :return: <generator> yields <dict>
+    """
+    job_cur = RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
+                         (r.row["Status"] == "Ready")) \
+        .order_by('StartTime')\
+        .run(conn)
+    for job in job_cur:
+        if verify_job and not verify(job, Job()):
+            continue #to the next job... warn?
+        yield job
+
+
+@wrap_rethink_errors
+@wrap_connection
 def get_next_job(plugin_name,
                  verify_job=False, conn=None):
     """
@@ -137,14 +157,19 @@ def get_next_job(plugin_name,
     :param plugin_name: <str>
     :param verify_job: <bool>
     :param conn: <connection> or <NoneType>
-    :return: <generator> yields <dict>
+    :return: <dict> or <NoneType>
     """
-    job_cur = RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
-                         (r.row["Status"] == "Ready")).run(conn)
+    job_cur = RBJ\
+        .filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
+                (r.row["Status"] == "Ready"))\
+        .order_by('StartTime')\
+        .limit(1)\
+        .run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
-            continue #to the next job... warn?
-        yield job
+            continue
+        return job
+    return None
 
 
 @wrap_rethink_errors
