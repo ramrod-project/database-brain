@@ -162,8 +162,7 @@ def create_plugin_controller(plugin_data,
     :return: <dict> rethinkdb insert response value
     """
     assert isinstance(plugin_data, dict)
-    if verify_commands and not verify({"Plugin": plugin_data},
-                                      Plugin()):
+    if verify_commands and not verify(plugin_data, Plugin()):
         raise ValueError("Invalid Plugin entry")
     current = get_plugin_by_name_controller(
         plugin_data["Name"],
@@ -200,8 +199,7 @@ def create_port_controller(port_data,
     :return: <dict> rethinkdb insert response value
     """
     assert isinstance(port_data, dict)
-    if verify_port and not verify({"Port": port_data},
-                                      Port()):
+    if verify_port and not verify(port_data, Port()):
         raise ValueError("Invalid Port entry")
     existing = list(get_ports_by_ip_controller(
         port_data["Address"],
@@ -242,8 +240,7 @@ def update_plugin_controller(plugin_data,
     :return: <dict> rethinkdb update response value
     """
     assert isinstance(plugin_data, dict)
-    if verify_plugin and not verify({"Plugin": plugin_data},
-                                      Plugin()):
+    if verify_plugin and not verify(plugin_data, Plugin()):
         raise ValueError("Invalid Plugin entry")
     current = get_plugin_by_name_controller(
         plugin_data["Name"],
