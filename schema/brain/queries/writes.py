@@ -207,12 +207,10 @@ def create_port_controller(port_data,
     conflicts = _check_port_conflict(port_data, existing)
     if conflicts:
         return conflicts
-    print(existing)
     interface_existing = None
     for interface in existing:
         if interface["Address"] == port_data["Address"]:
             interface_existing = interface
-    print("existing interface: ", interface_existing)
     if not interface_existing:
         success = RPP.insert(
             port_data,
