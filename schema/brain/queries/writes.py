@@ -167,7 +167,7 @@ def create_plugin_controller(plugin_data,
         raise ValueError("Invalid Plugin entry")
     current = get_plugin_by_name_controller(
         plugin_data["Name"],
-        conn
+        conn=conn
     )
     try:
         current.next()
@@ -205,7 +205,7 @@ def create_port_controller(port_data,
         raise ValueError("Invalid Port entry")
     existing = list(get_ports_by_ip_controller(
         port_data["Address"],
-        conn
+        conn=conn
     ))
     conflicts = _check_port_conflict(port_data, existing)
     if conflicts:
