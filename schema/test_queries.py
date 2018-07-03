@@ -57,10 +57,17 @@ TEST_PLUGIN_DATA = {
 }
 
 TEST_PORT_DATA = {
-    "InterfaceName": "",
-    "Address": "",
+    "InterfaceName": "eth0",
+    "Address": "192.168.1.1",
     "TCPPorts": ["5000"],
     "UDPPorts": []
+}
+
+TEST_PORT_DATA2 = {
+    "InterfaceName": "eth0",
+    "Address": "192.168.1.1",
+    "TCPPorts": ["6000", "7000"],
+    "UDPPorts": ["8000"]
 }
 
 @fixture(scope='module')
@@ -264,6 +271,12 @@ def test_get_ports_by_ip_controller(rethink):
     port_entry = c.next()
     del port_entry["id"]
     assert port_entry == TEST_PORT_DATA
+
+def test_create_update_port_controller(rethink):
+    res = queries.create_port_controller(TEST_PORT_DATA2)
+    print(res)
+    assert isinstance(res, dict)
+    assert res['replaced'] == 1
 
 def test_check_port_conflict(rethink):
     res = queries.create_port_controller(TEST_PORT_DATA)
