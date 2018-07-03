@@ -203,7 +203,10 @@ def create_port_controller(port_data,
     if verify_port and not verify({"Port": port_data},
                                       Port()):
         raise ValueError("Invalid Port entry")
-    existing = list(get_ports_by_ip_controller(port_data["Address"]))
+    existing = list(get_ports_by_ip_controller(
+        port_data["Address"],
+        conn
+    ))
     conflicts = _check_port_conflict(port_data, existing)
     if conflicts:
         return conflicts
