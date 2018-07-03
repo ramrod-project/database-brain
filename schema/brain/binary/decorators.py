@@ -64,18 +64,18 @@ def wrap_content_as_binary_if_needed(func_, *args, **kwargs):
     return func_(*args, **kwargs)
 
 
-class MockMagic(object):
+class MockMagic(object):  # pragma: no cover
     DEFAULT_MAGIC = "data"
 
-    class MagicException(Exception):
+    class MagicException(Exception):  # pragma: no cover
         pass
 
     @staticmethod
-    def from_buffer(content=None):
+    def from_buffer(content=None):  # pragma: no cover
         return MockMagic.DEFAULT_MAGIC
 
 
 try:
     import magic
-except ImportError:
+except ImportError:  # pragma: no cover
     magic = MockMagic
