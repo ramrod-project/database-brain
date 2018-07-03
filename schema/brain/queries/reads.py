@@ -10,6 +10,11 @@ from .decorators import wrap_rethink_errors
 from . import RPX, RBT, RBJ, RBO, RPC, RPP
 
 
+def _jobs_cursor(plugin_name):
+    return RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
+                      (r.row["Status"] == "Ready")).order_by('StartTime')
+
+
 @wrap_rethink_generator_errors
 @wrap_connection
 def get_targets(conn=None):
@@ -138,10 +143,7 @@ def get_jobs(plugin_name,
     :param conn: <connection> or <NoneType>
     :return: <generator> yields <dict>
     """
-    job_cur = RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
-                         (r.row["Status"] == "Ready")) \
-        .order_by('StartTime')\
-        .run(conn)
+    job_cur = _jobs_cursor(plugin_name).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
             continue #to the next job... warn?
@@ -159,12 +161,7 @@ def get_next_job(plugin_name,
     :param conn: <connection> or <NoneType>
     :return: <dict> or <NoneType>
     """
-    job_cur = RBJ\
-        .filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
-                (r.row["Status"] == "Ready"))\
-        .order_by('StartTime')\
-        .limit(1)\
-        .run(conn)
+    job_cur = _jobs_cursor(plugin_name).limit(1).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
             continue
@@ -191,7 +188,7 @@ def get_plugin_by_name_controller(plugin_name,
 @wrap_rethink_errors
 @wrap_connection
 def get_ports_by_ip_controller(ip_address,
-                    conn=None):
+                               conn=None):
     """
 
     :param interface_name: <str> name of interface
