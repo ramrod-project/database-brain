@@ -36,8 +36,38 @@ TEST_CAPABILITY = [
 TEST_JOB = {
     "JobTarget": TEST_TARGET,
     "Status": "Ready",
+    "StartTime": 7,
+    "JobCommand": TEST_CAPABILITY[0]
+}
+
+TEST_JOB_EARLY = {
+    "JobTarget": TEST_TARGET,
+    "Status": "Ready",
     "StartTime": 0,
     "JobCommand": TEST_CAPABILITY[0]
+}
+
+TEST_PLUGIN_DATA = {
+    "Name": "Harness",
+    "State": "Available",
+    "DesiredState": "",
+    "Interface": "",
+    "ExternalPorts": ["5000"],
+    "InternalPorts": ["5000"]
+}
+
+TEST_PORT_DATA = {
+    "InterfaceName": "eth0",
+    "Address": "192.168.1.1",
+    "TCPPorts": ["5000"],
+    "UDPPorts": []
+}
+
+TEST_PORT_DATA2 = {
+    "InterfaceName": "eth0",
+    "Address": "192.168.1.1",
+    "TCPPorts": ["6000", "7000"],
+    "UDPPorts": ["8000"]
 }
 
 @fixture(scope='module')
@@ -157,7 +187,7 @@ def test_get_capability(rethink):
     assert res["CommandName"] == TEST_CAPABILITY[0]['CommandName']
 
 def test_no_jobs(rethink):
-    g = queries.get_next_job(TEST_TARGET['PluginName'])
+    g = queries.get_jobs(TEST_TARGET['PluginName'])
     assert isinstance(g, GeneratorType)
     with raises(StopIteration):
         g.__next__()
@@ -169,7 +199,7 @@ def test_new_job(rethink):
     assert len(res['generated_keys']) == 1
 
 def test_found_job(rethink):
-    g = queries.get_next_job(TEST_TARGET['PluginName'])
+    g = queries.get_jobs(TEST_TARGET['PluginName'])
     assert isinstance(g, GeneratorType)
     job = g.__next__()
     del (job['id'])
@@ -178,13 +208,13 @@ def test_found_job(rethink):
         g.__next__()
 
 def test_no_job_for_invalid(rethink):
-    g = queries.get_next_job("INVALIDPLUGIN")
+    g = queries.get_jobs("INVALIDPLUGIN")
     assert isinstance(g, GeneratorType)
     with raises(StopIteration):
         g.__next__()
 
 def test_make_output(rethink):
-    g = queries.get_next_job(TEST_TARGET['PluginName'])
+    g = queries.get_jobs(TEST_TARGET['PluginName'])
     assert isinstance(g, GeneratorType)
     job = g.__next__()
     queries.RBO.insert({"OutputJob":job,
@@ -193,7 +223,7 @@ def test_make_output(rethink):
         g.__next__()
 
 def test_set_job_done(rethink):
-    g = queries.get_next_job(TEST_TARGET['PluginName'])
+    g = queries.get_jobs(TEST_TARGET['PluginName'])
     assert isinstance(g, GeneratorType)
     job = g.__next__()
     queries.RBJ.get(job['id']).update({"Status": "Done"}).run(connect())
@@ -215,3 +245,83 @@ def test_destroy_plugin(rethink):
     assert TEST_TARGET['PluginName'] in list(queries.RPX.table_list().run(connect()))
     assert queries.destroy_plugin(TEST_TARGET['PluginName'])
     assert TEST_TARGET['PluginName'] not in list(queries.RPX.table_list().run(connect()))
+
+def test_create_plugin_controller(rethink):
+    res = queries.create_plugin_controller(TEST_PLUGIN_DATA)
+    assert isinstance(res, dict)
+    assert isinstance(res['generated_keys'], list)
+    assert len(res['generated_keys']) == 1
+
+def test_get_plugin_by_name_controller(rethink):
+    c = queries.get_plugin_by_name_controller(TEST_PLUGIN_DATA["Name"])
+    assert isinstance(c, r.net.DefaultCursor)
+    plugin = c.next()
+    del plugin["id"]
+    assert plugin == TEST_PLUGIN_DATA
+
+def test_create_port_controller(rethink):
+    res = queries.create_port_controller(TEST_PORT_DATA)
+    assert isinstance(res, dict)
+    assert isinstance(res['generated_keys'], list)
+    assert len(res['generated_keys']) == 1
+
+def test_get_ports_by_ip_controller(rethink):
+    c = queries.get_ports_by_ip_controller(TEST_PORT_DATA["Address"])
+    assert isinstance(c, r.net.DefaultCursor)
+    port_entry = c.next()
+    del port_entry["id"]
+    assert port_entry == TEST_PORT_DATA
+
+def test_create_update_port_controller(rethink):
+    res = queries.create_port_controller(TEST_PORT_DATA2)
+    print(res)
+    assert isinstance(res, dict)
+    assert res['replaced'] == 1
+
+def test_check_port_conflict(rethink):
+    res = queries.create_port_controller(TEST_PORT_DATA)
+    assert isinstance(res, dict)
+    assert res["errors"] == 1
+
+def test_update_plugin_controller(rethink):
+    new_plugin_data = TEST_PLUGIN_DATA
+    new_plugin_data["State"] = "Restarting"
+    new_plugin_data["DesiredState"] = "Restart"
+    res = queries.update_plugin_controller(new_plugin_data)
+    assert isinstance(res, dict)
+    assert res["replaced"] == 1
+
+def test_get_next_one_job(rethink):
+    res = queries.insert_jobs([TEST_JOB])
+    assert isinstance(res, dict)
+    res = queries.get_next_job(TEST_TARGET['PluginName'])
+    assert isinstance(res, dict)
+    assert res['StartTime'] == TEST_JOB['StartTime']
+
+def test_insert_early_job(rethink):
+    res = queries.insert_jobs([TEST_JOB_EARLY])
+    assert isinstance(res, dict)
+    res = queries.get_next_job(TEST_TARGET['PluginName'])
+    assert isinstance(res, dict)
+    assert res['StartTime'] == TEST_JOB_EARLY['StartTime']
+
+def test_confirm_yields_correct_order(rethink):
+    res = queries.get_jobs(TEST_TARGET['PluginName'])
+    res1 = next(res)
+    assert res1['StartTime'] == TEST_JOB_EARLY['StartTime'] #inserted 2nd with earlier start time
+    res2 = next(res)
+    assert res2['StartTime'] == TEST_JOB['StartTime']
+    with raises(StopIteration):
+        next(res)
+
+
+def test_get_next_one_job_none_available(rethink):
+    res = queries.get_next_job("INVALIDPLUGIN")
+    assert not res
+
+def test_next_job_already_status_done(rethink):
+    g = queries.get_jobs(TEST_TARGET['PluginName'])
+    for job in g:
+        queries.RBJ.get(job['id']).update({"Status": "Done"}).run(connect())
+    res = queries.get_next_job(TEST_TARGET['PluginName'])
+    assert not res

@@ -63,6 +63,15 @@ message Audit {
         OutputAudit Output = 4;
     }
 }
+
+message Binary {
+    optional string id = 1;
+    required string Name = 2;
+    required float Timestamp = 3;
+    required string ContentType = 4;
+    required bytes Content = 5;
+}
+
 message Targets {
     repeated Target Targets =1;
 }
@@ -73,4 +82,20 @@ message Commands {
     repeated Command Commands = 1;
 }
 
+message Plugin {
+    optional string id = 1;
+    required string Name = 2;
+    required string State = 3 [default = "Available"];
+    required string DesiredState = 4;
+    required string Interface = 5;
+    repeated string ExternalPorts = 6;
+    repeated string InternalPorts = 7;
+}
 
+message Port {
+    optional string id = 1;
+    required string InterfaceName = 2 [default = "All"];
+    required string Address = 3;
+    repeated string TCPPorts = 4;
+    repeated string UDPPorts = 5;
+}
