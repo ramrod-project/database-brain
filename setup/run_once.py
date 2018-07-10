@@ -40,7 +40,7 @@ def controller_ports_create():
 	return r.db("Controller").table_create("Ports").run()
 
 def brainfilescreate():
-	return r.db("Brain").table_create("Files").run()
+	return r.db("Brain").table_create("Files",primary_key="Name").run()
 
 def printdb():
 	print(r.db_list().run())

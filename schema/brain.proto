@@ -65,7 +65,6 @@ message Audit {
 }
 
 message Binary {
-    optional string id = 1;
     required string Name = 2;
     required float Timestamp = 3;
     required string ContentType = 4;
