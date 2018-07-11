@@ -268,7 +268,7 @@ def test_write_output(rethink):
     assert output == content
 
 def test_verify_output_content(rethink):
-    sleep(2)
+    sleep(5)
     job = queries.RBJ.run(connect()).next()
     o = queries.get_output_content(job['id'])
     assert "[truncated]" in o
@@ -343,7 +343,7 @@ def test_confirm_yields_correct_order(rethink):
     res = queries.get_jobs(TEST_TARGET['PluginName'])
     res1 = next(res)
     assert res1['StartTime'] == TEST_JOB_EARLY['StartTime'] #inserted 2nd with earlier start time
-    sleep(2)
+    sleep(5)
     res2 = next(res)
     assert res2['StartTime'] == TEST_JOB['StartTime']
     with raises(StopIteration):
