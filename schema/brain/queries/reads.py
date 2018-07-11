@@ -79,8 +79,8 @@ def get_plugin_command(plugin_name, command_name, conn=None):
 @wrap_rethink_errors
 @wrap_connection
 def get_job_status(job_id, conn=None):
-    job = RBJ.get(job_id).run(conn)
-    return job["Status"]
+    status = RBJ.get(job_id).pluck("Status").run(conn)
+    return status
 
 @wrap_rethink_errors
 @wrap_connection

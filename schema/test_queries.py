@@ -94,6 +94,8 @@ def rethink():
             break
 
 def is_the_same_job_as(id_job, ref_job):
+    if len(ref_job) == 0:
+        return False
     same = True
     for entry in ref_job:
         if entry not in id_job:
