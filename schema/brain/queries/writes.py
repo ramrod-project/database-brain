@@ -7,7 +7,7 @@ from ..connection import rethinkdb as r
 from .decorators import wrap_connection
 from .decorators import wrap_rethink_errors
 from . import RPX, RBT, RBJ, RPC, RPP, RBO
-from .. import jobs
+from brain.jobs import verify_state
 from .reads import plugin_exists, get_plugin_by_name_controller, get_ports_by_ip_controller, get_job_by_id
 
 
@@ -104,7 +104,7 @@ def update_job_status(job_id, status, conn=None):
 
     :return: <bool> whether job was updated successfully
     """
-    if jobs.verify_state(status):
+    if verify_state(status):
         raise ValueError("Invalid status")
     RBJ.get(job_id).update({
                 "Status": status
