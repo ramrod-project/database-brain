@@ -93,6 +93,14 @@ def rethink():
             container.stop()
             break
 
+def is_the_same_job_as(id_job, ref_job):
+    same = True
+    for entry in ref_job:
+        if entry not in id_job:
+            same = False
+            break
+    return same
+
 def test_get_targets_empty_noconn(rethink):
     g = queries.get_targets()
     assert isinstance(g, GeneratorType)
@@ -180,7 +188,7 @@ def test_get_capability(rethink):
     assert len(cmds) == 1
     assert cmds[0]["CommandName"] == TEST_CAPABILITY[0]['CommandName']
 
-def test_get_capability(rethink):
+def test_get_capability_2(rethink):
     res = queries.get_plugin_command(TEST_TARGET['PluginName'],
                                      TEST_CAPABILITY[0]['CommandName'])
     assert isinstance(res, dict)
@@ -233,6 +241,31 @@ def test_set_job_done(rethink):
 
 def test_is_job_done_bad_id(rethink):
     assert not queries.is_job_done("notarealid")
+
+def test_get_job_by_id(rethink):
+    response = queries.insert_jobs([TEST_JOB])
+    job_id = response["generated_keys"][0]
+    job = queries.get_job_by_id(job_id, connect())
+    assert is_the_same_job_as(job, TEST_JOB)
+
+def test_get_job_status(rethink):
+    response = queries.insert_jobs([TEST_JOB])
+    job_id = response["generated_keys"][0]
+    assert queries.get_job_status(job_id, connect()) == "Ready"
+
+def test_update_job_status(rethink):
+    response = queries.insert_jobs([TEST_JOB])
+    job_id = response["generated_keys"][0]
+    queries.update_job_status(job_id, "Done", connect())
+    assert queries.is_job_done(job_id, connect())
+
+def test_write_output(rethink):
+    response = queries.insert_jobs([TEST_JOB])
+    job_id = response["generated_keys"][0]
+    content = "Test Output"
+    queries.write_output(job_id, content, connect())
+    output = queries.get_output_content(job_id, conn=connect())
+    assert output == content
 
 def test_verify_output_content(rethink):
     job = queries.RBJ.run(connect()).next()
