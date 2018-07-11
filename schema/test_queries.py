@@ -242,33 +242,7 @@ def test_set_job_done(rethink):
 def test_is_job_done_bad_id(rethink):
     assert not queries.is_job_done("notarealid")
 
-def test_get_job_by_id(rethink):
-    response = queries.insert_jobs([TEST_JOB])
-    job_id = response["generated_keys"][0]
-    job = queries.get_job_by_id(job_id, connect())
-    assert is_the_same_job_as(job, TEST_JOB)
-
-def test_get_job_status(rethink):
-    response = queries.insert_jobs([TEST_JOB])
-    job_id = response["generated_keys"][0]
-    assert queries.get_job_status(job_id, connect()) == "Ready"
-
-def test_update_job_status(rethink):
-    response = queries.insert_jobs([TEST_JOB])
-    job_id = response["generated_keys"][0]
-    queries.update_job_status(job_id, "Done", connect())
-    assert queries.is_job_done(job_id, connect())
-
-def test_write_output(rethink):
-    response = queries.insert_jobs([TEST_JOB])
-    job_id = response["generated_keys"][0]
-    content = "Test Output"
-    queries.write_output(job_id, content, connect())
-    output = queries.get_output_content(job_id, conn=connect())
-    assert output == content
-
 def test_verify_output_content(rethink):
-    sleep(5)
     job = queries.RBJ.run(connect()).next()
     o = queries.get_output_content(job['id'])
     assert "[truncated]" in o
@@ -343,7 +317,6 @@ def test_confirm_yields_correct_order(rethink):
     res = queries.get_jobs(TEST_TARGET['PluginName'])
     res1 = next(res)
     assert res1['StartTime'] == TEST_JOB_EARLY['StartTime'] #inserted 2nd with earlier start time
-    sleep(5)
     res2 = next(res)
     assert res2['StartTime'] == TEST_JOB['StartTime']
     with raises(StopIteration):
@@ -360,3 +333,29 @@ def test_next_job_already_status_done(rethink):
         queries.RBJ.get(job['id']).update({"Status": "Done"}).run(connect())
     res = queries.get_next_job(TEST_TARGET['PluginName'])
     assert not res
+
+
+def test_get_job_by_id(rethink):
+    response = queries.insert_jobs([TEST_JOB])
+    job_id = response["generated_keys"][0]
+    job = queries.get_job_by_id(job_id, connect())
+    assert is_the_same_job_as(job, TEST_JOB)
+
+def test_get_job_status(rethink):
+    response = queries.insert_jobs([TEST_JOB])
+    job_id = response["generated_keys"][0]
+    assert queries.get_job_status(job_id, connect()) == "Ready"
+
+def test_update_job_status(rethink):
+    response = queries.insert_jobs([TEST_JOB])
+    job_id = response["generated_keys"][0]
+    queries.update_job_status(job_id, "Done", connect())
+    assert queries.is_job_done(job_id, connect())
+
+def test_write_output(rethink):
+    response = queries.insert_jobs([TEST_JOB])
+    job_id = response["generated_keys"][0]
+    content = "Test Output"
+    queries.write_output(job_id, content, connect())
+    output = queries.get_output_content(job_id, conn=connect())
+    assert output == content
