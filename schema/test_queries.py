@@ -367,6 +367,6 @@ def test_get_next_job_by_location(rethink):
     new_target["Location"] = "1.2.3.4"
     client_job = TEST_JOB
     client_job["Target"] = new_target
-    response = queries.insert_jobs([client_job])
-    assert queries.get_next_job_by_target("TestPlugin", {"Location": "bad location"}, conn=connect()) == None
-    assert queries.get_next_job_by_target("TestPlugin", new_target["Location", conn=connect()])
+    queries.insert_jobs([client_job])
+    assert queries.get_next_job_by_location("TestPlugin", {"Location": "bad location"}, conn=connect()) == None
+    assert queries.get_next_job_by_location("TestPlugin", new_target["Location"], conn=connect())
