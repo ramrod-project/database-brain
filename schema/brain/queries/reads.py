@@ -174,6 +174,17 @@ def get_next_job(plugin_name,
         return job
     return None
 
+@wrap_rethink_errors
+@wrap_connection
+def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
+    job_cur = RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
+            (r.row["Status"] == "Ready") &
+            (["Target"]["Location"] == loc)).order_by('StartTime').limit(1).run(conn)
+    for job in job_cur:
+        if verify_job and not verify(job, Job()):
+            continue
+        return job
+    return None
 
 @wrap_rethink_errors
 @wrap_connection

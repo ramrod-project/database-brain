@@ -361,3 +361,12 @@ def test_write_output(rethink):
     queries.write_output(job_id, content, connect())
     output = queries.get_output_content(job_id, conn=connect())
     assert output == content
+
+def test_get_next_job_by_location(rethink):
+    new_target = TEST_TARGET
+    new_target["Location"] = "1.2.3.4"
+    client_job = TEST_JOB
+    client_job["Target"] = new_target
+    response = queries.insert_jobs([client_job])
+    assert queries.get_next_job_by_target("TestPlugin", {"Location": "bad location"}, conn=connect()) == None
+    assert queries.get_next_job_by_target("TestPlugin", new_target["Location", conn=connect()])
