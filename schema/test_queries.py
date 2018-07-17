@@ -369,4 +369,5 @@ def test_get_next_job_by_location(rethink):
     client_job["Target"] = new_target
     queries.insert_jobs([client_job])
     assert queries.get_next_job_by_location("TestPlugin", {"Location": "bad location"}, conn=connect()) == None
-    assert queries.get_next_job_by_location("TestPlugin", new_target["Location"], conn=connect())
+    result_job = queries.get_next_job_by_location("TestPlugin", new_target["Location"], conn=connect())
+    assert is_the_same_job_as(result_job, client_job)
