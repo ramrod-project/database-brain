@@ -19,7 +19,7 @@ def outputscreate():
 	return r.db("Brain").table_create("Outputs").run()
 
 def jobcreate():
-	return r.db("Brain").table_create("Jobs").run()
+	r.db("Brain").table_create("Jobs").run()
 	r.db("Brain").table("Jobs").index_create("Status").run()
 	r.db("Brain").table("Jobs").index_wait("Status").run()
 
