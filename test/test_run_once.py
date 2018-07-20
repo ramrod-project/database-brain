@@ -58,7 +58,7 @@ def test_jobcreate(something):
 	run_once.jobcreate()
 	T.sleep(0.5)
 	assert "Jobs" in r.db("Brain").table_list().run()
-	assert "Status" in r.db("Brain").table("Jobs").index_list().run()
+	assert "Status" in r.db("Brain").index_list().run()
 
 def test_inserttarget(something):
 	key = r.db("Brain").table("Targets").insert({"Plugin_Name": "Dummy", "Location": "1.1.1.1", "Port": "12345"}).run()["generated_keys"][0]
