@@ -10,10 +10,22 @@ from .decorators import wrap_rethink_errors
 from . import RPX, RBT, RBJ, RBO, RPC, RPP
 
 
-def _jobs_cursor(plugin_name):
-    return RBJ.get_all("Ready", index="Status").filter(
-        r.row["JobTarget"]["PluginName"] == plugin_name
-    ).order_by('StartTime')
+def _jobs_cursor(plugin_name, location=None, port=None):
+    if location == None:
+        return RBJ.get_all("Ready", index="Status").filter(
+            r.row["JobTarget"]["PluginName"] == plugin_name
+        ).order_by('StartTime')
+    elif port == None:
+        RBJ.get_all("Ready", index="Status").filter(
+            (r.row["JobTarget"]["PluginName"] == plugin_name) &
+            (r.row["JobTarget"]["Location"] == location)
+        ).order_by('StartTime')
+    else:
+        RBJ.get_all("Ready", index="Status").filter(
+            (r.row["JobTarget"]["PluginName"] == plugin_name)&
+            (r.row["JobTarget"]["Location"] == location)
+            (r.row["JobTarget"]["Port"] == port)
+        ).order_by('StartTime')
 
 
 @wrap_rethink_generator_errors
@@ -94,8 +106,8 @@ def is_job_done(job_id, conn=None):
     :return: <dict> if job is done <false> if
     """
     result = False
-    for item in RBJ.filter({'id': job_id,
-                            'Status': "Done"}).run(conn):
+    for item in RBJ.get_all("Done", index="Status").filter(
+        {'id': job_id}).run(conn):
         result = item
     return result
 
@@ -159,7 +171,7 @@ def get_jobs(plugin_name,
 
 @wrap_rethink_errors
 @wrap_connection
-def get_next_job(plugin_name,
+def get_next_job(plugin_name, location=None, port=None,
                  verify_job=False, conn=None):
     """
 
@@ -168,7 +180,7 @@ def get_next_job(plugin_name,
     :param conn: <connection> or <NoneType>
     :return: <dict> or <NoneType>
     """
-    job_cur = _jobs_cursor(plugin_name).limit(1).run(conn)
+    job_cur = _jobs_cursor(plugin_name, location, port).limit(1).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
             continue
@@ -178,28 +190,12 @@ def get_next_job(plugin_name,
 @wrap_rethink_errors
 @wrap_connection
 def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
-    job_cur = RBJ.get_all("Ready", index="Status").filter(
-                (r.row["JobTarget"]["PluginName"] == plugin_name) &
-                (r.row["JobTarget"]["Location"] == loc)
-            ).order_by('StartTime').limit(1).run(conn)
-    for job in job_cur:
-        if verify_job and not verify(job, Job()):
-            continue
-        return job
-    return None
+    return get_next_job(plugin_name, loc, verify_job=verify_job,conn=conn)
 
 @wrap_rethink_errors
 @wrap_connection
 def get_next_job_by_port(plugin_name, port, verify_job=False, conn=None):
-    job_cur = RBJ.get_all("Ready", index="Status").filter(
-                (r.row["JobTarget"]["PluginName"] == plugin_name)
-                (r.row["JobTarget"]["Port"] == port)
-            ).order_by('StartTime').limit(1).run(conn)
-    for job in job_cur:
-        if verify_job and not verify(job, Job()):
-            continue
-        return job
-    return None
+    return get_next_job(plugin_name, None, port, verify_job, conn)
 
 @wrap_rethink_errors
 @wrap_connection
