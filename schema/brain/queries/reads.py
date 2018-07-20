@@ -10,7 +10,14 @@ from .decorators import wrap_rethink_errors
 from . import RPX, RBT, RBJ, RBO, RPC, RPP
 
 
-def _jobs_cursor(plugin_name):
+def jobs_cursor(plugin_name):
+    """
+    generates a reql cursor for plugin_name
+    with status ready
+    and prepares to sort by StartTime
+    :param plugin_name:
+    :return:
+    """
     return RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
                       (r.row["Status"] == "Ready")).order_by('StartTime')
 
@@ -79,8 +86,15 @@ def get_plugin_command(plugin_name, command_name, conn=None):
 @wrap_rethink_errors
 @wrap_connection
 def get_job_status(job_id, conn=None):
+    """
+
+    :param job_id: <str>
+    :param conn: <RethinkDefaultConnection>
+    :return:
+    """
     job = RBJ.get(job_id).pluck("Status").run(conn)
     return job["Status"]
+
 
 @wrap_rethink_errors
 @wrap_connection
@@ -149,7 +163,7 @@ def get_jobs(plugin_name,
     :param conn: <connection> or <NoneType>
     :return: <generator> yields <dict>
     """
-    job_cur = _jobs_cursor(plugin_name).run(conn)
+    job_cur = jobs_cursor(plugin_name).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
             continue #to the next job... warn?
@@ -167,7 +181,30 @@ def get_next_job(plugin_name,
     :param conn: <connection> or <NoneType>
     :return: <dict> or <NoneType>
     """
-    job_cur = _jobs_cursor(plugin_name).limit(1).run(conn)
+    job_cur = jobs_cursor(plugin_name).limit(1).run(conn)
+    for job in job_cur:
+        if verify_job and not verify(job, Job()):
+            continue
+        return job
+    return None
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
+    """
+
+    :param plugin_name:
+    :param loc:
+    :param verify_job:
+    :param conn:
+    :return:
+    """
+    job_cur = RBJ.filter(
+                (r.row["JobTarget"]["PluginName"] == plugin_name) &
+                (r.row["Status"] == "Ready") &
+                (r.row["JobTarget"]["Location"] == loc)
+            ).order_by('StartTime').limit(1).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
             continue
@@ -176,11 +213,11 @@ def get_next_job(plugin_name,
 
 @wrap_rethink_errors
 @wrap_connection
-def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
+def get_next_job_by_port(plugin_name, port, verify_job=False, conn=None):
     job_cur = RBJ.filter(
                 (r.row["JobTarget"]["PluginName"] == plugin_name) &
                 (r.row["Status"] == "Ready") &
-                (r.row["Target"]["Location"] == loc)
+                (r.row["JobTarget"]["Port"] == port)
             ).order_by('StartTime').limit(1).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
