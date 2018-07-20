@@ -95,7 +95,12 @@ def test_write_log_file():
 	run_audit.write_log_file("Brain.Jobs", sample_job)
 	with open("{}{}.{}.log".format(run_audit.LOG_DIR, "Brain.Targets", run_audit.DAY_STRING), "r") as f:
 		for line in f:
-			assert line.replace("\n", "") == "[THU JAN  1 00:00:15 1970] - (Brain.Targets) ---- Location: 192.168.1.3 -- Optional: [init: ] -- PluginName: Harness -- Port: 9800"
+			assert "[THU JAN  1 00:00:15 1970]" in line
+			assert "(Brain.Targets)" in line
+			assert "Location: 192.168.1.3" in line
+			assert "Optional: [init: ]" in line
+			assert "PluginName: Harness" in line
+			assert "Port: 9800" in line
 	remove("{}{}.{}.log".format(run_audit.LOG_DIR, "Brain.Targets", run_audit.DAY_STRING))
 	with open("{}{}.{}.log".format(run_audit.LOG_DIR, "Brain.Jobs", run_audit.DAY_STRING), "r") as f:
 		for line in f:
