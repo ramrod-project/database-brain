@@ -11,9 +11,8 @@ from . import RPX, RBT, RBJ, RBO, RPC, RPP
 
 
 def _jobs_cursor(plugin_name):
-    return RBJ.get_all("Ready", index="Status").filter(
-        r.row["JobTarget"]["PluginName"] == plugin_name
-    ).order_by('StartTime')
+    RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
+                      (r.row["Status"] == "Ready")).order_by('StartTime')
 
 
 @wrap_rethink_generator_errors
@@ -178,8 +177,9 @@ def get_next_job(plugin_name,
 @wrap_rethink_errors
 @wrap_connection
 def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
-    job_cur = RBJ.get_all("Ready", index="Status").filter(
+    job_cur = RBJ.filter(
                 (r.row["JobTarget"]["PluginName"] == plugin_name) &
+                (r.row["Status"] == "Ready") &
                 (r.row["JobTarget"]["Location"] == loc)
             ).order_by('StartTime').limit(1).run(conn)
     for job in job_cur:
@@ -191,8 +191,9 @@ def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
 @wrap_rethink_errors
 @wrap_connection
 def get_next_job_by_port(plugin_name, port, verify_job=False, conn=None):
-    job_cur = RBJ.get_all("Ready", index="Status").filter(
-                (r.row["JobTarget"]["PluginName"] == plugin_name)
+    job_cur = RBJ.filter(
+                (r.row["JobTarget"]["PluginName"] == plugin_name) &
+                (r.row["Status"] == "Ready") &
                 (r.row["JobTarget"]["Port"] == port)
             ).order_by('StartTime').limit(1).run(conn)
     for job in job_cur:
