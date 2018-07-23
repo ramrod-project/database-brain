@@ -381,3 +381,10 @@ def test_get_next_job_by_location(rethink):
         queries.get_next_job("TestPlugin", None, new_target["Port"], conn=connect())
     result_job = queries.get_next_job("TestPlugin", new_target["Location"], new_target["Port"], conn=connect())
     assert is_the_same_job_as(result_job, client_job)
+
+def test_plugin_list(rethink):
+    queries.create_plugin("ExtraPlugin", connect())
+    queries.create_plugin("BonusPlugin", connect())
+    plugins = queries.plugin_list(connect())
+    assert "ExtraPlugin" in plugins
+    assert "BonusPlugin" in plugins

@@ -163,6 +163,17 @@ def plugin_exists(plugin_name, conn=None):
     return plugin_name in RPX.table_list().run(conn)
 
 
+@wrap_rethink_errors
+@wrap_connection
+def plugin_list(conn=None):
+    """
+
+    :param conn:
+    :return: <list> list of all plugins
+    """
+    return RPX.table_list().run(conn)
+
+
 @wrap_rethink_generator_errors
 @wrap_connection
 def get_jobs(plugin_name,
