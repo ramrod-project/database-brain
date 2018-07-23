@@ -9,23 +9,35 @@ from .decorators import wrap_rethink_generator_errors
 from .decorators import wrap_rethink_errors
 from . import RPX, RBT, RBJ, RBO, RPC, RPP
 
-
-def _jobs_cursor(plugin_name, location=None, port=None):
-    if location == None:
-        return RBJ.get_all("Ready", index="Status").filter(
+def _jobs_cursor_name(plugin_name):
+    return RBJ.get_all("Ready", index="Status").filter(
             r.row["JobTarget"]["PluginName"] == plugin_name
         ).order_by('StartTime')
-    elif port == None:
-        return RBJ.get_all("Ready", index="Status").filter(
+
+def _jobs_cursor_name_loc(plugin_name, location):
+    return RBJ.get_all("Ready", index="Status").filter(
             (r.row["JobTarget"]["PluginName"] == plugin_name) &
             (r.row["JobTarget"]["Location"] == location)
         ).order_by('StartTime')
-    else:
-        return RBJ.get_all("Ready", index="Status").filter(
+
+def _jobs_cursor_name_loc_port(plugin_name, location, port):
+    return RBJ.get_all("Ready", index="Status").filter(
             (r.row["JobTarget"]["PluginName"] == plugin_name)&
             (r.row["JobTarget"]["Location"] == location) &
             (r.row["JobTarget"]["Port"] == port)
         ).order_by('StartTime')
+
+def _jobs_cursor(plugin_name, location=None, port=None):
+    assert isinstance(plugin_name, str)
+    assert isinstance(location, (str, type(None)))
+    assert isinstance(port, (str, type(None)))
+    if plugin_name and not location and not port:
+        return _jobs_cursor_name(plugin_name)
+    elif plugin_name and location and not port:
+        return _jobs_cursor_name_loc(plugin_name, location)
+    elif plugin_name and location and port:
+        return _jobs_cursor_name_loc_port(plugin_name, location, port)
+    return RBJ.get("invalid job")
 
 
 @wrap_rethink_generator_errors
