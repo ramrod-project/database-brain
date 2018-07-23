@@ -185,4 +185,3 @@ def verify_jobs(jobs):
     :return: <bool>
     """
     return verify(jobs, Jobs())
-
