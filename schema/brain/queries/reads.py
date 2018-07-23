@@ -16,14 +16,14 @@ def _jobs_cursor(plugin_name, location=None, port=None):
             r.row["JobTarget"]["PluginName"] == plugin_name
         ).order_by('StartTime')
     elif port == None:
-        RBJ.get_all("Ready", index="Status").filter(
+        return RBJ.get_all("Ready", index="Status").filter(
             (r.row["JobTarget"]["PluginName"] == plugin_name) &
             (r.row["JobTarget"]["Location"] == location)
         ).order_by('StartTime')
     else:
-        RBJ.get_all("Ready", index="Status").filter(
+        return RBJ.get_all("Ready", index="Status").filter(
             (r.row["JobTarget"]["PluginName"] == plugin_name)&
-            (r.row["JobTarget"]["Location"] == location)
+            (r.row["JobTarget"]["Location"] == location) &
             (r.row["JobTarget"]["Port"] == port)
         ).order_by('StartTime')
 
