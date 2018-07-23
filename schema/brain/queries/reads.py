@@ -22,7 +22,6 @@ def _jobs_cursor(plugin_name, location=None, port=None):
     :param port:
     :return:
     """
-    
     cur = RBJ.get_all("Ready", index="Status")
     cur_filter = (r.row["JobTarget"]["PluginName"] == plugin_name)
     if plugin_name and location and not port:
@@ -88,6 +87,7 @@ def get_plugin_command(plugin_name, command_name, conn=None):
     """
     commands = RPX.table(plugin_name).filter(
         {"CommandName": command_name}).run(conn)
+    command = None
     for command in commands:
         continue  # exhausting the cursor
     return command
@@ -117,8 +117,8 @@ def is_job_done(job_id, conn=None):
     :return: <dict> if job is done <false> if
     """
     result = False
-    for item in RBJ.get_all("Done", index="Status").filter(
-        {'id': job_id}).run(conn):
+    get_done = RBJ.get_all("Done", index="Status")
+    for item in get_done.filter({'id': job_id}).run(conn):
         result = item
     return result
 
@@ -202,12 +202,20 @@ def get_next_job(plugin_name, location=None, port=None,
 @wrap_rethink_errors
 @wrap_connection
 def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
-    return get_next_job(plugin_name, loc, verify_job=verify_job,conn=conn)
+    """
+    Deprecated - Use get_next_job
+    """
+    return get_next_job(plugin_name, loc, verify_job=verify_job, conn=conn)
+
 
 @wrap_rethink_errors
 @wrap_connection
 def get_next_job_by_port(plugin_name, port, verify_job=False, conn=None):
+    """
+    Deprecated - Use get_next_job
+    """
     return get_next_job(plugin_name, None, port, verify_job, conn)
+
 
 @wrap_rethink_errors
 @wrap_connection

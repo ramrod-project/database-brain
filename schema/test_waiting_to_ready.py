@@ -17,7 +17,7 @@ from .brain.queries import RBJ
 
 CLIENT = docker.from_env()
 
-TEST_TIMER_OFFSET = 120 # so the automation doesn't move it before the test
+TEST_TIMER_OFFSET = 1200  # so the automation doesn't move it before the test
 TEST_TIMER_BIG_OFFSET = 6000  # so nothing move it.
 TEST_BASIC_JOB = {STATUS_FIELD: WAITING, START_FIELD: time()+TEST_TIMER_OFFSET}
 TEST_FUTURE_JOB = {STATUS_FIELD: WAITING, START_FIELD: time()+TEST_TIMER_BIG_OFFSET}
