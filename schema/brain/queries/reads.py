@@ -180,7 +180,7 @@ def get_next_job(plugin_name, location=None, port=None,
     :param conn: <connection> or <NoneType>
     :return: <dict> or <NoneType>
     """
-    job_cur = _jobs_cursor(plugin_name, location, port).limit(1).run(conn)
+    job_cur = _jobs_cursor(plugin_name, location, port).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
             continue
