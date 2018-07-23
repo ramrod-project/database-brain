@@ -7,26 +7,11 @@ from ..connection import rethinkdb as r
 from .decorators import wrap_connection
 from .decorators import wrap_rethink_generator_errors
 from .decorators import wrap_rethink_errors
+from .decorators import wrap_job_cursor
 from . import RPX, RBT, RBJ, RBO, RPC, RPP
 
-def _jobs_cursor_name(plugin_name):
-    return RBJ.get_all("Ready", index="Status").filter(
-            r.row["JobTarget"]["PluginName"] == plugin_name
-        ).order_by('StartTime')
 
-def _jobs_cursor_name_loc(plugin_name, location):
-    return RBJ.get_all("Ready", index="Status").filter(
-            (r.row["JobTarget"]["PluginName"] == plugin_name) &
-            (r.row["JobTarget"]["Location"] == location)
-        ).order_by('StartTime')
-
-def _jobs_cursor_name_loc_port(plugin_name, location, port):
-    return RBJ.get_all("Ready", index="Status").filter(
-            (r.row["JobTarget"]["PluginName"] == plugin_name)&
-            (r.row["JobTarget"]["Location"] == location) &
-            (r.row["JobTarget"]["Port"] == port)
-        ).order_by('StartTime')
-
+@wrap_job_cursor
 def _jobs_cursor(plugin_name, location=None, port=None):
     """
     generates a reql cursor for plugin_name
@@ -37,16 +22,14 @@ def _jobs_cursor(plugin_name, location=None, port=None):
     :param port:
     :return:
     """
-    assert isinstance(plugin_name, str)
-    assert isinstance(location, (str, type(None)))
-    assert isinstance(port, (str, type(None)))
-    if plugin_name and not location and not port:
-        return _jobs_cursor_name(plugin_name)
-    elif plugin_name and location and not port:
-        return _jobs_cursor_name_loc(plugin_name, location)
-    elif plugin_name and location and port:
-        return _jobs_cursor_name_loc_port(plugin_name, location, port)
-    raise ValueError("Invalid arguments. port must have a location.")
+    
+    cur = RBJ.get_all("Ready", index="Status")
+    cur_filter = (r.row["JobTarget"]["PluginName"] == plugin_name)
+    if plugin_name and location and not port:
+        cur_filter = cur_filter & (r.row["JobTarget"]["Location"] == location)
+    if plugin_name and location and port:
+        cur_filter = cur_filter & (r.row["JobTarget"]["Port"] == port)
+    return cur.filter(cur_filter).order_by('StartTime')
 
 
 @wrap_rethink_generator_errors

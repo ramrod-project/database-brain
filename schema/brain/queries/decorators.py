@@ -14,6 +14,16 @@ START_FIELD = "StartTime"
 
 
 @decorator
+def wrap_job_cursor(func_, *args, **kwargs):
+    assert isinstance(args[0], str)
+    assert isinstance(args[1], (str, type(None)))
+    assert isinstance(args[2], (str, type(None)))
+    if args[2] and not args[1]:
+        raise ValueError("Must specify location if using port.")
+    return func_(*args, **kwargs)
+
+
+@decorator
 def wrap_rethink_errors(func_, *args, **kwargs):
     """
     Wraps rethinkdb specific errors as builtin/Brain errors
