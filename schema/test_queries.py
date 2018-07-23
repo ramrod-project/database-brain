@@ -371,10 +371,10 @@ def test_get_next_job_by_location(rethink):
     client_job["JobTarget"] = new_target
     response =  queries.insert_jobs([client_job])
     assert response["inserted"] == 1
-    assert queries.get_next_job("TestPlugin", "bad location", conn=connect()) == None
-    assert queries.get_next_job("TestPlugin", None, conn=connect()) == None
     result_job = queries.get_next_job("TestPlugin", new_target["Location"], conn=connect())
     assert is_the_same_job_as(result_job, client_job)
+    assert queries.get_next_job("TestPlugin", "bad location", conn=connect()) == None
+    assert queries.get_next_job("TestPlugin", None, conn=connect()) == None
 
     assert queries.get_next_job("TestPlugin", new_target["Location"], "bad port", conn=connect()) == None
     assert queries.get_next_job("TestPlugin", None, new_target["Port"], conn=connect()) == None
