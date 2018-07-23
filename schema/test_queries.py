@@ -377,6 +377,7 @@ def test_get_next_job_by_location(rethink):
     assert is_the_same_job_as(queries.get_next_job("TestPlugin", None, conn=connect()), client_job)
 
     assert queries.get_next_job("TestPlugin", new_target["Location"], "bad port", conn=connect()) == None
-    assert queries.get_next_job("TestPlugin", None, new_target["Port"], conn=connect()) == None
+    with raises(ValueError):
+        queries.get_next_job("TestPlugin", None, new_target["Port"], conn=connect())
     result_job = queries.get_next_job("TestPlugin", new_target["Location"], new_target["Port"], conn=connect())
     assert is_the_same_job_as(result_job, client_job)
