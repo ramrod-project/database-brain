@@ -190,7 +190,7 @@ def get_jobs(plugin_name,
     :param conn: <connection> or <NoneType>
     :return: <generator> yields <dict>
     """
-    job_cur = jobs_cursor(plugin_name).run(conn)
+    job_cur = _jobs_cursor(plugin_name).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
             continue #to the next job... warn?
