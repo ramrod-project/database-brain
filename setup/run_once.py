@@ -19,7 +19,9 @@ def outputscreate():
 	return r.db("Brain").table_create("Outputs").run()
 
 def jobcreate():
-	return r.db("Brain").table_create("Jobs").run()
+	r.db("Brain").table_create("Jobs").run()
+	r.db("Brain").table("Jobs").index_create("Status").run()
+	r.db("Brain").table("Jobs").index_wait("Status").run()
 
 def auditcreate():
 	return r.db_create("Audit").run()
@@ -29,6 +31,19 @@ def auditjobcreate():
 
 def audittargetcreate():
 	return r.db("Audit").table_create("Targets").run()
+
+def controller_create():
+	return r.db_create("Controller").run()
+
+def controller_plugins_create():
+	return r.db("Controller").table_create("Plugins").run()
+
+def controller_ports_create():
+	return r.db("Controller").table_create("Ports").run()
+
+def brainfilescreate():
+	return r.db("Brain").table_create("Files",
+									  primary_key="Name").run()
 
 def printdb():
 	print(r.db_list().run())
@@ -45,6 +60,10 @@ if __name__ == "__main__":	# pragma: no cover
 	auditcreate()
 	auditjobcreate()
 	audittargetcreate()
+	brainfilescreate()
 	printdb()
+	controller_create()
+	controller_plugins_create()
+	controller_ports_create()
 
 	print("complete")

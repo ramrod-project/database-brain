@@ -51,3 +51,6 @@ def test_audit(rethink):
 
 def test_audit_jobs(rethink):    
     r.db("Audit").table("Jobs").run(rethink)
+
+def test_brain_files(rethink):
+    r.db("Brain").table("Files").run(rethink)

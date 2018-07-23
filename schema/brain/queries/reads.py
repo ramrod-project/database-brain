@@ -7,7 +7,19 @@ from ..connection import rethinkdb as r
 from .decorators import wrap_connection
 from .decorators import wrap_rethink_generator_errors
 from .decorators import wrap_rethink_errors
-from . import RPX, RBT, RBJ, RBO
+from . import RPX, RBT, RBJ, RBO, RPC, RPP
+
+
+def jobs_cursor(plugin_name):
+    """
+    generates a reql cursor for plugin_name
+    with status ready
+    and prepares to sort by StartTime
+    :param plugin_name:
+    :return:
+    """
+    return RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
+                      (r.row["Status"] == "Ready")).order_by('StartTime')
 
 
 @wrap_rethink_generator_errors
@@ -73,6 +85,19 @@ def get_plugin_command(plugin_name, command_name, conn=None):
 
 @wrap_rethink_errors
 @wrap_connection
+def get_job_status(job_id, conn=None):
+    """
+
+    :param job_id: <str>
+    :param conn: <RethinkDefaultConnection>
+    :return:
+    """
+    job = RBJ.get(job_id).pluck("Status").run(conn)
+    return job["Status"]
+
+
+@wrap_rethink_errors
+@wrap_connection
 def is_job_done(job_id, conn=None):
     """
     is_job_done function checks to if Brain.Jobs Status is 'Done'
@@ -130,6 +155,23 @@ def plugin_exists(plugin_name, conn=None):
 
 @wrap_rethink_generator_errors
 @wrap_connection
+def get_jobs(plugin_name,
+             verify_job=False, conn=None):
+    """
+    :param plugin_name: <str>
+    :param verify_job: <bool>
+    :param conn: <connection> or <NoneType>
+    :return: <generator> yields <dict>
+    """
+    job_cur = jobs_cursor(plugin_name).run(conn)
+    for job in job_cur:
+        if verify_job and not verify(job, Job()):
+            continue #to the next job... warn?
+        yield job
+
+
+@wrap_rethink_errors
+@wrap_connection
 def get_next_job(plugin_name,
                  verify_job=False, conn=None):
     """
@@ -137,11 +179,98 @@ def get_next_job(plugin_name,
     :param plugin_name: <str>
     :param verify_job: <bool>
     :param conn: <connection> or <NoneType>
-    :return: <generator> yields <dict>
+    :return: <dict> or <NoneType>
     """
-    job_cur = RBJ.filter((r.row["JobTarget"]["PluginName"] == plugin_name) &
-                         (r.row["Status"] == "Ready")).run(conn)
+    job_cur = jobs_cursor(plugin_name).limit(1).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
-            continue #to the next job... warn?
-        yield job
+            continue
+        return job
+    return None
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
+    """
+
+    :param plugin_name:
+    :param loc:
+    :param verify_job:
+    :param conn:
+    :return:
+    """
+    job_cur = RBJ.filter(
+                (r.row["JobTarget"]["PluginName"] == plugin_name) &
+                (r.row["Status"] == "Ready") &
+                (r.row["JobTarget"]["Location"] == loc)
+            ).order_by('StartTime').limit(1).run(conn)
+    for job in job_cur:
+        if verify_job and not verify(job, Job()):
+            continue
+        return job
+    return None
+
+@wrap_rethink_errors
+@wrap_connection
+def get_next_job_by_port(plugin_name, port, verify_job=False, conn=None):
+    job_cur = RBJ.filter(
+                (r.row["JobTarget"]["PluginName"] == plugin_name) &
+                (r.row["Status"] == "Ready") &
+                (r.row["JobTarget"]["Port"] == port)
+            ).order_by('StartTime').limit(1).run(conn)
+    for job in job_cur:
+        if verify_job and not verify(job, Job()):
+            continue
+        return job
+    return None
+
+@wrap_rethink_errors
+@wrap_connection
+def get_job_by_id(job_id, conn=None):
+    """returns the job with the given id
+
+    :param job_id: <str> id of the job
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <dict> job with the given id
+    """
+    job = RBJ.get(job_id).run(conn)
+    return job
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get_plugin_by_name_controller(plugin_name,
+                                  conn=None):
+    """
+
+    :param plugin_name: <str> name of plugin
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <list> rethinkdb cursor
+    """
+    result = RPC.filter({
+        "Name": plugin_name
+    }).run(conn)
+    return result
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get_ports_by_ip_controller(ip_address,
+                               conn=None):
+    """
+
+    :param interface_name: <str> name of interface
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <list> rethinkdb cursor
+    """
+    if ip_address == "":
+        result = RPP.filter({
+            "Address": ip_address
+        }).run(conn)
+    else:
+        result = RPP.filter(
+            (r.row["Address"] == ip_address) |
+            (r.row["Address"] == "")
+        ).run(conn)
+    return result
