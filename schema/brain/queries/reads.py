@@ -37,7 +37,7 @@ def _jobs_cursor(plugin_name, location=None, port=None):
         return _jobs_cursor_name_loc(plugin_name, location)
     elif plugin_name and location and port:
         return _jobs_cursor_name_loc_port(plugin_name, location, port)
-    raise ValueError
+    raise ValueError("Invalid arguments. port must have a location.")
 
 
 @wrap_rethink_generator_errors
