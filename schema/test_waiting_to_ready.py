@@ -17,9 +17,10 @@ from .brain.queries import RBJ
 
 CLIENT = docker.from_env()
 
-
-TEST_BASIC_JOB = {STATUS_FIELD: WAITING, START_FIELD:time()}
-TEST_FUTURE_JOB = {STATUS_FIELD: WAITING, START_FIELD:time()+6000}
+TEST_TIMER_OFFSET = 1200  # so the automation doesn't move it before the test
+TEST_TIMER_BIG_OFFSET = 6000  # so nothing move it.
+TEST_BASIC_JOB = {STATUS_FIELD: WAITING, START_FIELD: time()+TEST_TIMER_OFFSET}
+TEST_FUTURE_JOB = {STATUS_FIELD: WAITING, START_FIELD: time()+TEST_TIMER_BIG_OFFSET}
 
 
 @fixture(scope='module')
@@ -45,7 +46,7 @@ def test_confirm_job_inserted(rethink):
 
 
 def test_move_basic_to_ready(rethink):
-    success = transition_waiting(time())
+    success = transition_waiting(time() + TEST_TIMER_OFFSET)
     assert success["errors"] == 0
     assert success['replaced'] == 1
 
@@ -56,13 +57,13 @@ def test_insert_basic_again(rethink):
 
 
 def test_third_job_to_ready(rethink):
-    success = transition_waiting(time())
+    success = transition_waiting(time() + TEST_TIMER_OFFSET)
     assert success["errors"] == 0
     assert success['replaced'] == 1
 
 
 def test_transition_with_none_ready(rethink):
-    success = transition_waiting(time())
+    success = transition_waiting(time() + TEST_TIMER_OFFSET)
     assert success["errors"] == 0
     assert success['replaced'] == 0
 
@@ -70,7 +71,7 @@ def test_transition_with_none_ready(rethink):
 def test_verify_statuses_are_ready(rethink):
     ready_count = 0
     waiting_count = 0
-    now_time = time()
+    now_time = time() + TEST_TIMER_OFFSET
     cur = RBJ.run(connect())
     for doc in cur:
         if doc[STATUS_FIELD] == WAITING:
