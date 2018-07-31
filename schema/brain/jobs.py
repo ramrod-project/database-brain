@@ -187,20 +187,26 @@ def verify_jobs(jobs):
     return verify(jobs, Jobs())
 
 
+def apply_args_loop(job, args, key):
+    for i in range(len(args)):
+        job['JobCommand'][key][i]['Value'] = args[i]
+
+
+def get_args_loop(job, key):
+    args_tuple = list()
+    for job_args in job['JobCommand'][key]:
+        args_tuple.append(job_args['Value'])
+    return args_tuple
+
+
 def get_args(job):
     """
     This function gets the arguments from a job
     :param job: job dictionary
     :return: input tuple, optional tuple
     """
-    input_tuple = list()
-    opt_input_tuple = list()
-
-    for job_input in job['JobCommand']['Inputs']:
-        input_tuple.append(job_input['Value'])
-    for job_input in job['JobCommand']['OptionalInputs']:
-        opt_input_tuple.append(job_input['Value'])
-    return tuple(input_tuple), tuple(opt_input_tuple)
+    return tuple(get_args_loop(job, 'Inputs')), \
+        tuple(get_args_loop(job, 'OptionalInputs'))
 
 
 def apply_args(job, inputs, optional_inputs=None):
@@ -212,13 +218,10 @@ def apply_args(job, inputs, optional_inputs=None):
     :param optional_inputs: optional for OptionalInputs
     :return: job
     """
-    def _for_loop_func(job, args, key):
-        for i in range(len(args)):
-            job['JobCommand'][key][i]['Value'] = args[i]
     _apply_args_verify(job, inputs, optional_inputs)
     _apply_args_verify_two_point_oh(inputs, optional_inputs)
-    _for_loop_func(job, inputs, 'Inputs')
-    _for_loop_func(job, optional_inputs, 'OptionalInputs')
+    apply_args_loop(job, inputs, 'Inputs')
+    apply_args_loop(job, optional_inputs, 'OptionalInputs')
     return job
 
 
