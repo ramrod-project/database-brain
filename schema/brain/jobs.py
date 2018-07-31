@@ -185,3 +185,41 @@ def verify_jobs(jobs):
     :return: <bool>
     """
     return verify(jobs, Jobs())
+
+
+def get_args(job):
+    """
+    This function gets the arguments from a job
+    :param job: job dictionary
+    :return: input tuple, optional tuple
+    """
+    input_tuple = list()
+    opt_input_tuple = list()
+
+    for job_input in job['JobCommand']['Inputs']:
+        input_tuple.append(job_input['Value'])
+    for job_input in job['JobCommand']['OptionalInputs']:
+        opt_input_tuple.append(job_input['Value'])
+    return tuple(input_tuple), tuple(opt_input_tuple)
+
+
+def apply_args(job, inputs: tuple, optional_inputs=None):
+    """
+    This function is error checking before the job gets
+    updated.
+    :param job: Must be a valid job
+    :param inputs: Must be a tuple type
+    :param optional_inputs: optional for OptionalInputs
+    :return: job
+    """
+    assert len(job['JobCommand']['Inputs']) == len(inputs)
+    if not optional_inputs:
+        optional_inputs = tuple()
+    assert len(job['JobCommand']['OptionalInputs']) == len(optional_inputs)
+    for i in range(len(inputs)):
+        assert len(job['JobCommand']['Inputs'][i]['Value']) == len(inputs[i])
+        job['JobCommand']['Inputs'][i]['Value'] = inputs[i]
+    for i in range(len(optional_inputs)):
+        assert len(job['JobCommand']['OptionalInputs'][i]['Value']) == len(optional_inputs[i])
+        job['JobCommand']['OptionalInputs'][i]['Value'] = optional_inputs[i]
+    return job

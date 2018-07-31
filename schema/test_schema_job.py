@@ -1,8 +1,8 @@
 from .brain.checks import verify, strip
 from .brain import brain_pb2 as b
-from .brain.jobs import verify_job, verify_jobs
+from .brain.jobs import verify_job, verify_jobs, get_args, apply_args
 from .test_schema_target import Good_TARGET
-from .test_schema_command import GoodCommand
+from .test_schema_command import GoodCommand, BadCommand8
 
 Goodjob = {"id": "string",
            "JobTarget": Good_TARGET,
@@ -57,6 +57,13 @@ Badjob7 = {"id": "string",
            "Status": "string",
            "StartTime": 0,
            "JobCommand": GoodCommand,
+           "testcase": True}
+
+Badjob8 = {"id": "string",
+           "JobTarget": None,
+           "Status": "string",
+           "StartTime": 0,
+           "JobCommand": BadCommand8,
            "testcase": True}
 
 
@@ -118,3 +125,25 @@ def test_list_good_jobs():
 
 def test_list_some_good_jobs():
     assert not verify_jobs([Goodjob, Goodjob, Badjob6])
+
+
+def test_get_good_job():
+    assert get_args(Goodjob)
+
+
+def test_get_bad_args():
+    assert get_args(Badjob8)
+
+
+def test_apply_good_args():
+    tuple1 = tuple()
+    tuple2 = tuple()
+    tuple1, tuple2 = get_args(Goodjob)
+    assert apply_args(Goodjob, tuple1, optional_inputs=tuple2)
+
+
+def test_apply_bad_args():
+    tuple1 = tuple()
+    tuple2 = tuple()
+    tuple1, tuple2 = get_args(Badjob8)
+    assert apply_args(Badjob8, tuple1, optional_inputs=tuple2)
