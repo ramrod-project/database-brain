@@ -185,3 +185,60 @@ def verify_jobs(jobs):
     :return: <bool>
     """
     return verify(jobs, Jobs())
+
+
+def apply_args_loop(job, args, key):
+    for i in range(len(args)):
+        job['JobCommand'][key][i]['Value'] = args[i]
+
+
+def get_args_loop(job, key):
+    args_tuple = list()
+    for job_args in job['JobCommand'][key]:
+        args_tuple.append(job_args['Value'])
+    return args_tuple
+
+
+def get_args(job):
+    """
+    This function gets the arguments from a job
+    :param job: job dictionary
+    :return: input tuple, optional tuple
+    """
+    return tuple(get_args_loop(job, 'Inputs')), \
+        tuple(get_args_loop(job, 'OptionalInputs'))
+
+
+def apply_args(job, inputs, optional_inputs=None):
+    """
+    This function is error checking before the job gets
+    updated.
+    :param job: Must be a valid job
+    :param inputs: Must be a tuple type
+    :param optional_inputs: optional for OptionalInputs
+    :return: job
+    """
+    _apply_args_verify(job, inputs, optional_inputs)
+    _apply_args_verify_two_point_oh(inputs, optional_inputs)
+    apply_args_loop(job, inputs, 'Inputs')
+    apply_args_loop(job, optional_inputs, 'OptionalInputs')
+    return job
+
+
+def _apply_args_verify(job, inputs, optional_inputs):
+    """
+
+    :param job:
+    :param inputs:
+    :param optional_inputs:
+    :return:
+    """
+    assert len(job['JobCommand']['Inputs']) == len(inputs)
+    if not optional_inputs:
+        optional_inputs = tuple()
+    assert len(job['JobCommand']['OptionalInputs']) == len(optional_inputs)
+
+
+def _apply_args_verify_two_point_oh(inputs, optional_inputs):
+    if not isinstance(inputs, tuple) or not isinstance(optional_inputs, tuple):
+        raise ValueError('Input must be a nice little tuple')
