@@ -218,8 +218,10 @@ def apply_args(job, inputs: tuple, optional_inputs=None):
     assert len(job['JobCommand']['OptionalInputs']) == len(optional_inputs)
     for i in range(len(inputs)):
         assert len(job['JobCommand']['Inputs'][i]['Value']) == len(inputs[i])
+        assert job['JobCommand']['Inputs'][i]['Value'] == inputs[i]
         job['JobCommand']['Inputs'][i]['Value'] = inputs[i]
     for i in range(len(optional_inputs)):
         assert len(job['JobCommand']['OptionalInputs'][i]['Value']) == len(optional_inputs[i])
+        assert job['JobCommand']['OptionalInputs'][i]['Value'] == optional_inputs[i]
         job['JobCommand']['OptionalInputs'][i]['Value'] = optional_inputs[i]
     return job
