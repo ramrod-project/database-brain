@@ -212,16 +212,23 @@ def apply_args(job, inputs: tuple, optional_inputs=None):
     :param optional_inputs: optional for OptionalInputs
     :return: job
     """
+    _apply_args_verify(job, inputs, optional_inputs)
+    for i in range(len(inputs)):
+        job['JobCommand']['Inputs'][i]['Value'] = inputs[i]
+    for i in range(len(optional_inputs)):
+        job['JobCommand']['OptionalInputs'][i]['Value'] = optional_inputs[i]
+    return job
+
+
+def _apply_args_verify(job, inputs, optional_inputs):
+    """
+
+    :param job:
+    :param inputs:
+    :param optional_inputs:
+    :return:
+    """
     assert len(job['JobCommand']['Inputs']) == len(inputs)
     if not optional_inputs:
         optional_inputs = tuple()
     assert len(job['JobCommand']['OptionalInputs']) == len(optional_inputs)
-    for i in range(len(inputs)):
-        assert len(job['JobCommand']['Inputs'][i]['Value']) == len(inputs[i])
-        assert job['JobCommand']['Inputs'][i]['Value'] == inputs[i]
-        job['JobCommand']['Inputs'][i]['Value'] = inputs[i]
-    for i in range(len(optional_inputs)):
-        assert len(job['JobCommand']['OptionalInputs'][i]['Value']) == len(optional_inputs[i])
-        assert job['JobCommand']['OptionalInputs'][i]['Value'] == optional_inputs[i]
-        job['JobCommand']['OptionalInputs'][i]['Value'] = optional_inputs[i]
-    return job
