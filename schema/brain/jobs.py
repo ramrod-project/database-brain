@@ -212,12 +212,13 @@ def apply_args(job, inputs, optional_inputs=None):
     :param optional_inputs: optional for OptionalInputs
     :return: job
     """
+    def _for_loop_func(job, args, key):
+        for i in range(len(args)):
+            job['JobCommand'][key][i]['Value'] = args[i]
     _apply_args_verify(job, inputs, optional_inputs)
     _apply_args_verify_two_point_oh(inputs, optional_inputs)
-    for i in range(len(inputs)):
-        job['JobCommand']['Inputs'][i]['Value'] = inputs[i]
-    for i in range(len(optional_inputs)):
-        job['JobCommand']['OptionalInputs'][i]['Value'] = optional_inputs[i]
+    _for_loop_func(job, inputs, 'Inputs')
+    _for_loop_func(job, optional_inputs, 'OptionalInputs')
     return job
 
 
