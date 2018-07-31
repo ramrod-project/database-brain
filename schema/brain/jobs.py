@@ -203,7 +203,7 @@ def get_args(job):
     return tuple(input_tuple), tuple(opt_input_tuple)
 
 
-def apply_args(job, inputs: tuple, optional_inputs=None):
+def apply_args(job, inputs, optional_inputs=None):
     """
     This function is error checking before the job gets
     updated.
@@ -213,6 +213,7 @@ def apply_args(job, inputs: tuple, optional_inputs=None):
     :return: job
     """
     _apply_args_verify(job, inputs, optional_inputs)
+    _apply_args_verify_two_point_oh(inputs, optional_inputs)
     for i in range(len(inputs)):
         job['JobCommand']['Inputs'][i]['Value'] = inputs[i]
     for i in range(len(optional_inputs)):
@@ -232,3 +233,8 @@ def _apply_args_verify(job, inputs, optional_inputs):
     if not optional_inputs:
         optional_inputs = tuple()
     assert len(job['JobCommand']['OptionalInputs']) == len(optional_inputs)
+
+
+def _apply_args_verify_two_point_oh(inputs, optional_inputs):
+    if not isinstance(inputs, tuple) or not isinstance(optional_inputs, tuple):
+        raise ValueError('Input must be a nice little tuple')
