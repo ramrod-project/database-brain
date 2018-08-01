@@ -2,6 +2,9 @@
 controls Job related changes
 """
 from decorator import decorator
+from .decorators import verify_jobs_args_is_tuple, verify_jobs_args_length
+from .decorators import COMMAND_FIELD, INPUT_FIELD, OPTIONAL_FIELD
+from .decorators import VALUE_FIELD
 from .brain_pb2 import Job, Jobs
 from .checks import verify
 
@@ -187,15 +190,10 @@ def verify_jobs(jobs):
     return verify(jobs, Jobs())
 
 
-def apply_args_loop(job, args, key):
-    for i in range(len(args)):
-        job['JobCommand'][key][i]['Value'] = args[i]
-
-
-def get_args_loop(job, key):
+def _get_args_loop(job, key):
     args_tuple = list()
-    for job_args in job['JobCommand'][key]:
-        args_tuple.append(job_args['Value'])
+    for job_args in job[COMMAND_FIELD][key]:
+        args_tuple.append(job_args[VALUE_FIELD])
     return args_tuple
 
 
@@ -205,10 +203,17 @@ def get_args(job):
     :param job: job dictionary
     :return: input tuple, optional tuple
     """
-    return tuple(get_args_loop(job, 'Inputs')), \
-        tuple(get_args_loop(job, 'OptionalInputs'))
+    return tuple(_get_args_loop(job, INPUT_FIELD)), \
+        tuple(_get_args_loop(job, OPTIONAL_FIELD))
 
 
+def _apply_args_loop(job, args, key):
+    for i in range(len(args)):
+        job[COMMAND_FIELD][key][i][VALUE_FIELD] = args[i]
+
+
+@verify_jobs_args_length
+@verify_jobs_args_is_tuple
 def apply_args(job, inputs, optional_inputs=None):
     """
     This function is error checking before the job gets
@@ -218,27 +223,6 @@ def apply_args(job, inputs, optional_inputs=None):
     :param optional_inputs: optional for OptionalInputs
     :return: job
     """
-    _apply_args_verify(job, inputs, optional_inputs)
-    _apply_args_verify_two_point_oh(inputs, optional_inputs)
-    apply_args_loop(job, inputs, 'Inputs')
-    apply_args_loop(job, optional_inputs, 'OptionalInputs')
+    _apply_args_loop(job, inputs, INPUT_FIELD)
+    _apply_args_loop(job, optional_inputs, OPTIONAL_FIELD)
     return job
-
-
-def _apply_args_verify(job, inputs, optional_inputs):
-    """
-
-    :param job:
-    :param inputs:
-    :param optional_inputs:
-    :return:
-    """
-    assert len(job['JobCommand']['Inputs']) == len(inputs)
-    if not optional_inputs:
-        optional_inputs = tuple()
-    assert len(job['JobCommand']['OptionalInputs']) == len(optional_inputs)
-
-
-def _apply_args_verify_two_point_oh(inputs, optional_inputs):
-    if not isinstance(inputs, tuple) or not isinstance(optional_inputs, tuple):
-        raise ValueError('Input must be a nice little tuple')
