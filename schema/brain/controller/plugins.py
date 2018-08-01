@@ -97,11 +97,7 @@ def create_plugin(plugin_data,
         current.next()
         return {
             "errors": 1,
-            "first_error": "".join([
-                "Plugin ",
-                plugin_data["Name"],
-                " exists!"
-            ])
+            "first_error": "Plugin {} exists!".format(plugin_data['Name'])
         }
     except r.ReqlCursorEmpty:
         pass
