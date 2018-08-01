@@ -32,8 +32,15 @@ def verify_jobs_args_length(func_, *args, **kwargs):
 
 @decorator
 def verify_jobs_args_is_tuple(func_, *args, **kwargs):
-    inputs = args[0]
-    optional_inputs = args[1]
+    """
+
+    :param func_:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    inputs = args[1]
+    optional_inputs = args[2]
     if not isinstance(inputs, tuple) or not isinstance(optional_inputs, tuple):
         raise ValueError('Input must be a tuple')
     return func_(*args, **kwargs)
