@@ -36,7 +36,8 @@ def controller_create():
 	return r.db_create("Controller").run()
 
 def controller_plugins_create():
-	return r.db("Controller").table_create("Plugins").run()
+	return r.db("Controller").table_create("Plugins",
+										   primary_key="Name").run()
 
 def controller_ports_create():
 	return r.db("Controller").table_create("Ports").run()
