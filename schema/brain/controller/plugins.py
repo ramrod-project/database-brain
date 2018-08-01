@@ -58,9 +58,9 @@ def get_plugin_by_name(plugin_name,
     :param conn: <rethinkdb.DefaultConnection>
     :return: <list> rethinkdb cursor
     """
-    result = list(RPC.filter({
+    result = RPC.filter({
         "Name": plugin_name
-    }).run(conn))
+    }).run(conn)
     return result
 
 
