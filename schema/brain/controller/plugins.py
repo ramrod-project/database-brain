@@ -7,6 +7,26 @@ from ..queries import RPC, RPP
 from .. import r
 from ..checks import verify
 from ..brain_pb2 import Plugin, Port
+from .decorators import expect_arg_type
+
+def _check_common(field, interface, port_data):
+    """
+
+    :param field:
+    :param interface:
+    :param port_data:
+    :return:
+    """
+    response = {}
+    common = list(set(port_data[field]) &
+                  set(interface[field]))
+    if common:
+        msg = "{} conflicts(s): {} in use on {}".format(field,
+                                                        common,
+                                                        interface['Address'])
+        response = {"errors": 1,
+                    "first_error": msg}
+    return response
 
 
 def has_port_conflict(port_data,
@@ -18,22 +38,12 @@ def has_port_conflict(port_data,
     :return:
     """
     for interface in existing:
-        common_tcp = list(set(port_data["TCPPorts"]) &
-                          set(interface["TCPPorts"]))
+        common_tcp = _check_common("TCPPorts", interface, port_data)
+        common_udp = _check_common("UDPPorts", interface, port_data)
         if common_tcp:
-            return {
-                "errors": 1,
-                "first_error": "TCP Port conflict(s): \
-                {} in use on {}".format(common_tcp, interface["Address"])
-            }
-        common_udp = list(set(port_data["UDPPorts"]) &
-                          set(interface["UDPPorts"]))
-        if common_udp:
-            return {
-                "errors": 1,
-                "first_error": "UDP Port conflict(s): \
-                {} in use on {}".format(common_udp, interface["Address"])
-            }
+            return common_tcp
+        elif common_udp:
+            return common_udp
     return None
 
 
@@ -106,6 +116,21 @@ def create_plugin(plugin_data,
     return success
 
 
+def _get_existing_interface(existing, port_data):
+    """
+
+    :param existing: <list>
+    :param port_data:  <dict>
+    :return: interface or None
+    """
+    interface_existing = None
+    for interface in existing:
+        if interface["Address"] == port_data["Address"]:
+            interface_existing = interface
+    return interface_existing
+
+
+@expect_arg_type(expected=(dict, ))
 @wrap_rethink_errors
 @wrap_connection
 def create_port(port_data,
@@ -118,20 +143,13 @@ def create_port(port_data,
     :param conn: <rethinkdb.DefaultConnection>
     :return: <dict> rethinkdb insert response value
     """
-    assert isinstance(port_data, dict)
     if verify_port and not verify(port_data, Port()):
         raise ValueError("Invalid Port entry")
-    existing = list(get_ports_by_ip(
-        port_data["Address"],
-        conn=conn
-    ))
+    existing = list(get_ports_by_ip(port_data["Address"], conn=conn))
     conflicts = has_port_conflict(port_data, existing)
     if conflicts:
         return conflicts
-    interface_existing = None
-    for interface in existing:
-        if interface["Address"] == port_data["Address"]:
-            interface_existing = interface
+    interface_existing = _get_existing_interface(existing, port_data)
     if not interface_existing:
         success = RPP.insert(
             port_data,
@@ -149,6 +167,7 @@ def create_port(port_data,
     return success
 
 
+@expect_arg_type(expected=(dict, ))
 @wrap_rethink_errors
 @wrap_connection
 def update_plugin(plugin_data,
@@ -161,7 +180,6 @@ def update_plugin(plugin_data,
     :param conn: <rethinkdb.DefaultConnection>
     :return: <dict> rethinkdb update response value
     """
-    assert isinstance(plugin_data, dict)
     if verify_plugin and not verify(plugin_data, Plugin()):
         raise ValueError("Invalid Plugin entry")
     current = get_plugin_by_name(plugin_data["Name"], conn=conn)
