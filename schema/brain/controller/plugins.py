@@ -9,6 +9,7 @@ from ..checks import verify
 from ..brain_pb2 import Plugin, Port
 from .decorators import expect_arg_type
 
+
 def _check_common(field, interface, port_data):
     """
 
@@ -57,10 +58,20 @@ def get_plugin_by_name(plugin_name,
     :param conn: <rethinkdb.DefaultConnection>
     :return: <list> rethinkdb cursor
     """
-    result = RPC.filter({
+    result = list(RPC.filter({
         "Name": plugin_name
-    }).run(conn)
+    }).run(conn))
     return result
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get_plugins(conn=None):
+    """
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <list>
+    """
+    return list(RPC.run(conn))
 
 
 @wrap_rethink_errors
