@@ -9,8 +9,14 @@ from ..checks import verify
 from ..brain_pb2 import Plugin, Port
 
 
-def _check_port_conflict(port_data,
-                         existing):
+def has_port_conflict(port_data,
+                      existing):
+    """
+
+    :param port_data:
+    :param existing:
+    :return:
+    """
     for interface in existing:
         common_tcp = list(set(port_data["TCPPorts"]) &
                           set(interface["TCPPorts"]))
@@ -123,7 +129,7 @@ def create_port(port_data,
         port_data["Address"],
         conn=conn
     ))
-    conflicts = _check_port_conflict(port_data, existing)
+    conflicts = has_port_conflict(port_data, existing)
     if conflicts:
         return conflicts
     interface_existing = None

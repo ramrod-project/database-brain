@@ -26,6 +26,13 @@ def waiting_filter(lte_time):
             (r.row[START_FIELD] <= lte_time))
 
 
+@deprecated_function(replacement="brain.controller.plugins.has_port_conflict")
+def _check_port_conflict(port_data,
+                         existing):
+    from ..controller.plugins import has_port_conflict
+    return has_port_conflict(port_data, existing)
+
+
 @wrap_rethink_errors
 @wrap_connection
 def insert_new_target(plugin_name, location_num,
