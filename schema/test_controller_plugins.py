@@ -7,14 +7,29 @@ from .brain.controller import plugins
 CLIENT = docker.from_env()
 
 
+HARNESS_ID = "111-AAA"
+HARNESS_NAME = "Harness"
+
 TEST_PLUGIN_DATA = {
-    "Name": "Harness",
+    "id": HARNESS_ID,  # prod systems should allow auto-generated IDs
+    "Name": HARNESS_NAME,
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
     "ExternalPorts": ["5000"],
     "InternalPorts": ["5000"]
 }
+
+
+TEST_PROD_PLUGIN_DATA = {
+    "Name": "AnotherThing",
+    "State": "Available",
+    "DesiredState": "",
+    "Interface": "",
+    "ExternalPorts": ["5600"],
+    "InternalPorts": ["5600"]
+}
+
 
 TEST_PORT_DATA = {
     "InterfaceName": "eth0",
@@ -47,25 +62,39 @@ def rethink():
     container.stop()
 
 
+def test_create_harness_plugin_controller(rethink):
+    res = plugins.create_plugin(TEST_PLUGIN_DATA)
+    assert isinstance(res, dict)
+    assert res['inserted'] == 1
+
+
+def test_get_harness_plugin_controller(rethink):
+    res = plugins.get(HARNESS_ID)
+    assert isinstance(res, dict)
+    assert res['id'] == HARNESS_ID
+    assert res == TEST_PLUGIN_DATA
+
 
 def test_create_plugin_controller(rethink):
-    res = plugins.create_plugin(TEST_PLUGIN_DATA)
+    res = plugins.create_plugin(TEST_PROD_PLUGIN_DATA)
     assert isinstance(res, dict)
     assert isinstance(res['generated_keys'], list)
     assert len(res['generated_keys']) == 1
+
 
 def test_get_plugin_by_name_controller(rethink):
     c = plugins.get_plugin_by_name(TEST_PLUGIN_DATA["Name"])
     assert isinstance(c, r.net.DefaultCursor)
     plugin = c.next()
-    del plugin["id"]
     assert plugin == TEST_PLUGIN_DATA
+
 
 def test_create_port_controller(rethink):
     res = plugins.create_port(TEST_PORT_DATA)
     assert isinstance(res, dict)
     assert isinstance(res['generated_keys'], list)
     assert len(res['generated_keys']) == 1
+
 
 def test_get_ports_by_ip_controller(rethink):
     c = plugins.get_ports_by_ip(TEST_PORT_DATA["Address"])
@@ -74,16 +103,19 @@ def test_get_ports_by_ip_controller(rethink):
     del port_entry["id"]
     assert port_entry == TEST_PORT_DATA
 
+
 def test_create_update_port_controller(rethink):
     res = plugins.create_port(TEST_PORT_DATA2)
     print(res)
     assert isinstance(res, dict)
     assert res['replaced'] == 1
 
+
 def test_check_port_conflict(rethink):
     res = plugins.create_port(TEST_PORT_DATA)
     assert isinstance(res, dict)
     assert res["errors"] == 1
+
 
 def test_update_plugin_controller(rethink):
     new_plugin_data = TEST_PLUGIN_DATA
@@ -92,3 +124,24 @@ def test_update_plugin_controller(rethink):
     res = plugins.update_plugin(new_plugin_data)
     assert isinstance(res, dict)
     assert res["replaced"] == 1
+
+
+def test_update_plugin_active(rethink):
+    plugins.activate(HARNESS_ID)
+    cur = [x for x in plugins.get_plugin_by_name(HARNESS_NAME)]
+    assert len(cur) == 1
+    assert cur[0]["DesiredState"] == "Activate"
+
+
+def test_update_plugin_restart(rethink):
+    plugins.restart(HARNESS_ID)
+    cur = [x for x in plugins.get_plugin_by_name(HARNESS_NAME)]
+    assert len(cur) == 1
+    assert cur[0]["DesiredState"] == "Restart"
+
+
+def test_update_plugin_stop(rethink):
+    plugins.stop(HARNESS_ID)
+    cur = [x for x in plugins.get_plugin_by_name(HARNESS_NAME)]
+    assert len(cur) == 1
+    assert cur[0]["DesiredState"] == "Stop"
