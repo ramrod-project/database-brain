@@ -83,7 +83,7 @@ def get_names(conn=None):
     :param conn:
     :return: <list> of <str>
     """
-    return [x[NAME_KEY] for x in get_plugins(conn=conn)]
+    return list(set([x[NAME_KEY] for x in get_plugins(conn=conn)]))
 
 
 @wrap_rethink_errors
