@@ -145,3 +145,10 @@ def test_update_plugin_stop(rethink):
     cur = [x for x in plugins.get_plugin_by_name(HARNESS_NAME)]
     assert len(cur) == 1
     assert cur[0]["DesiredState"] == "Stop"
+
+
+def test_get_interfaces(rethink):
+    res = plugins.get_interfaces()
+    assert len(res) == 1
+    assert TEST_PORT_DATA['Address'] in res
+    assert TEST_PORT_DATA2['Address'] in res
