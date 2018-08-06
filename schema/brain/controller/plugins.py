@@ -8,6 +8,8 @@ from .. import r
 from ..checks import verify
 from ..brain_pb2 import Plugin, Port
 from .decorators import expect_arg_type
+from . import DESIRE_ACTIVE, DESIRE_STOP, DESIRE_RESTART
+from . import DESIRED_STATE_KEY, ALLOWED_DESIRED_STATES
 
 
 def _check_common(field, interface, port_data):
@@ -204,3 +206,66 @@ def update_plugin(plugin_data,
         }
     success = RPC.get(update_id).update(plugin_data).run(conn)
     return success
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get(plugin_id, conn=None):
+    """
+
+    :param plugin_id:
+    :param conn:
+    :return:
+    """
+    return RPC.get(plugin_id).run(conn)
+
+
+@wrap_rethink_errors
+@wrap_connection
+def quick_change_desired_state(plugin_id, desired_state, conn=None):
+    """
+
+    :param plugin_id:
+    :param desired_state:
+    :param conn:
+    :return:
+    """
+    assert desired_state in ALLOWED_DESIRED_STATES
+    desired = {DESIRED_STATE_KEY: desired_state}
+    return RPC.get(plugin_id).update(desired).run(conn)
+
+
+def activate(plugin_id, conn=None):
+    """
+
+    :param plugin_id:
+    :param conn:
+    :return:
+    """
+    return quick_change_desired_state(plugin_id,
+                                      DESIRE_ACTIVE,
+                                      conn=conn)
+
+
+def restart(plugin_id, conn=None):
+    """
+
+    :param plugin_id:
+    :param conn:
+    :return:
+    """
+    return quick_change_desired_state(plugin_id,
+                                      DESIRE_RESTART,
+                                      conn=conn)
+
+
+def stop(plugin_id, conn=None):
+    """
+
+    :param plugin_id:
+    :param conn:
+    :return:
+    """
+    return quick_change_desired_state(plugin_id,
+                                      DESIRE_STOP,
+                                      conn=conn)
