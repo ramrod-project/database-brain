@@ -235,7 +235,6 @@ def quick_change_desired_state(plugin_id, desired_state, conn=None):
     return RPC.get(plugin_id).update(desired).run(conn)
 
 
-@expect_arg_type(expected=(str, ))
 def activate(plugin_id, conn=None):
     """
 
@@ -248,7 +247,6 @@ def activate(plugin_id, conn=None):
                                       conn=conn)
 
 
-@expect_arg_type(expected=(str,))
 def restart(plugin_id, conn=None):
     """
 
@@ -261,7 +259,6 @@ def restart(plugin_id, conn=None):
                                       conn=conn)
 
 
-@expect_arg_type(expected=(str,))
 def stop(plugin_id, conn=None):
     """
 
