@@ -5,4 +5,8 @@ import rethinkdb
 from .connection import connect
 from .environment import check_log_env, check_prod_env, check_dev_env, log_env_gte, check_stage_env
 
+from . import binary
+from . import controller
+from . import queries
+
 r = rethinkdb #rethinkdb passthrough
