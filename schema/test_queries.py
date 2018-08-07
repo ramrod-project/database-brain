@@ -117,35 +117,6 @@ def test_get_targets_empty_with_conn(rethink):
     with raises(StopIteration):
         g.__next__()
 
-def test_add_target(rethink):
-    inserted = queries.insert_new_target(TEST_TARGET['PluginName'],
-                                         TEST_TARGET['Location'],
-                                         TEST_TARGET['Port'],
-                                         TEST_TARGET['Optional'],
-                                         verify_target=False
-                                         )
-    assert isinstance(inserted, dict)
-    assert isinstance(inserted['generated_keys'], list)
-    assert len( inserted['generated_keys'] ) == 1
-
-def test_get_targets_one(rethink):
-    g = queries.get_targets()
-    assert isinstance(g, GeneratorType)
-    target = g.__next__()
-    assert isinstance(target, dict)
-    with raises(StopIteration):
-        g.__next__()
-
-def test_get_targets_one_by_plugin(rethink):
-    g = queries.get_targets_by_plugin(TEST_TARGET['PluginName'])
-    assert isinstance(g, GeneratorType)
-    target = g.__next__()
-    assert isinstance(target, dict)
-    assert TEST_TARGET["Location"] == target['Location']
-    assert "id" in target
-    with raises(StopIteration):
-        g.__next__()
-
 def test_plugin_does_not_exist(rethink):
     g = queries.get_plugin_commands(TEST_TARGET['PluginName'])
     assert isinstance(g, GeneratorType)
