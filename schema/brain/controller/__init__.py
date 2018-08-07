@@ -2,6 +2,8 @@
 manipulate the controller database
 """
 
+NAME_KEY = "Name"
+
 
 AVAILABLE = "Available"
 ACTIVE = "Active"
@@ -14,6 +16,7 @@ DESIRE_RESTART = "Restart"
 DESIRE_STOP = "Stop"
 DESIRE_NONE = ""
 
+ADDRESS_KEY = "Address"
 DESIRED_STATE_KEY = "DesiredState"
 
 ALLOWED_DESIRED_STATES = frozenset((DESIRE_ACTIVE,

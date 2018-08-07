@@ -10,6 +10,7 @@ from ..brain_pb2 import Plugin, Port
 from .decorators import expect_arg_type
 from . import DESIRE_ACTIVE, DESIRE_STOP, DESIRE_RESTART
 from . import DESIRED_STATE_KEY, ALLOWED_DESIRED_STATES
+from . import ADDRESS_KEY, NAME_KEY
 
 
 def _check_common(field, interface, port_data):
@@ -74,6 +75,15 @@ def get_plugins(conn=None):
     :return: <list>
     """
     return list(RPC.run(conn))
+
+
+def get_names(conn=None):
+    """
+
+    :param conn:
+    :return: <list> of <str>
+    """
+    return list(set([x[NAME_KEY] for x in get_plugins(conn=conn)]))
 
 
 @wrap_rethink_errors
@@ -178,6 +188,18 @@ def create_port(port_data,
             "UDPPorts": interface_existing["UDPPorts"]
         }).run(conn)
     return success
+
+
+@wrap_rethink_errors
+@wrap_connection
+def get_interfaces(conn=None):
+    """
+
+    :param conn:
+    :return:
+    """
+    res = RPP.pluck([ADDRESS_KEY]).run(conn)
+    return list(set([x[ADDRESS_KEY] for x in res]))  # unique list
 
 
 @expect_arg_type(expected=(dict, ))

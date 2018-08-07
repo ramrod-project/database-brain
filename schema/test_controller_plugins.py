@@ -82,6 +82,13 @@ def test_create_plugin_controller(rethink):
     assert len(res['generated_keys']) == 1
 
 
+def test_get_names(rethink):
+    res = plugins.get_names()
+    assert len(res) == 2
+    assert TEST_PLUGIN_DATA['Name'] in res
+    assert TEST_PROD_PLUGIN_DATA['Name'] in res
+
+
 def test_get_plugin_by_name_controller(rethink):
     c = plugins.get_plugin_by_name(TEST_PLUGIN_DATA["Name"])
     assert isinstance(c, r.net.DefaultCursor)
@@ -145,3 +152,10 @@ def test_update_plugin_stop(rethink):
     cur = [x for x in plugins.get_plugin_by_name(HARNESS_NAME)]
     assert len(cur) == 1
     assert cur[0]["DesiredState"] == "Stop"
+
+
+def test_get_interfaces(rethink):
+    res = plugins.get_interfaces()
+    assert len(res) == 1
+    assert TEST_PORT_DATA['Address'] in res
+    assert TEST_PORT_DATA2['Address'] in res
