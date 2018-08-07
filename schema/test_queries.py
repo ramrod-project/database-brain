@@ -118,12 +118,7 @@ def test_get_targets_empty_with_conn(rethink):
         g.__next__()
 
 def test_add_target(rethink):
-    inserted = queries.insert_new_target(TEST_TARGET['PluginName'],
-                                         TEST_TARGET['Location'],
-                                         TEST_TARGET['Port'],
-                                         TEST_TARGET['Optional'],
-                                         verify_target=False
-                                         )
+    inserted = queries.insert_target(TEST_TARGET, False, connect())
     assert isinstance(inserted, dict)
     assert isinstance(inserted['generated_keys'], list)
     assert len( inserted['generated_keys'] ) == 1
