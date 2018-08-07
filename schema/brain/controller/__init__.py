@@ -2,6 +2,8 @@
 manipulate the controller database
 """
 
+NAME_KEY = "Name"
+
 
 AVAILABLE = "Available"
 ACTIVE = "Active"
