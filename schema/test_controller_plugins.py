@@ -82,6 +82,13 @@ def test_create_plugin_controller(rethink):
     assert len(res['generated_keys']) == 1
 
 
+def test_get_names(rethink):
+    res = plugins.get_names()
+    assert len(res) == 2
+    assert TEST_PLUGIN_DATA['Name'] in res
+    assert TEST_PROD_PLUGIN_DATA['Name'] in res
+
+
 def test_get_plugin_by_name_controller(rethink):
     c = plugins.get_plugin_by_name(TEST_PLUGIN_DATA["Name"])
     assert isinstance(c, r.net.DefaultCursor)
