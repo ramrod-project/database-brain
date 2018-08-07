@@ -99,6 +99,8 @@ def update_job_status(job_id, status, conn=None):
     if status not in VALID_STATES:
         raise ValueError("Invalid status")
     job_update = RBJ.get(job_id).update({"Status": status}).run(conn)
+    if job_update["replaced"] == 0 and job_update["unchanged"] == 0:
+        raise ValueError("".join(["Unknown Job", job_id]))
     id_filter = (r.row["OutputJob"]["id"] == job_id)
     output_job_status = {"OutputJob": {"Status": status}}
     output_update = RBO.filter(id_filter).update(output_job_status).run(conn)
