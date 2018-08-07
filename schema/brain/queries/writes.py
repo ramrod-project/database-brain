@@ -94,7 +94,7 @@ def update_job_status(job_id, status, conn=None):
     :param status: <str> new status
     :param conn: <connection> a database connection (default: {None})
 
-    :return: <bool> whether job was updated successfully
+    :return: <dict> the update dicts for the job and the output
     """
     if status not in VALID_STATES:
         raise ValueError("Invalid status")
