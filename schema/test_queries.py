@@ -328,8 +328,12 @@ def test_update_job_status(rethink):
     # test if updating with the same status does not raise exception
     queries.update_job_status(job_id, "Done", connect())
     assert queries.is_job_done(job_id, connect())
+
+
+def test_update_job_status_invalid_id(rethink):
     with raises(ValueError):
         queries.update_job_status("sdffajnadfkjlnaldfkabdfha", "Done", connect())
+
 
 def test_write_output(rethink):
     response = queries.insert_jobs([TEST_JOB])
