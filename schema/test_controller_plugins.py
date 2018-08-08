@@ -1,4 +1,5 @@
 from os import environ
+from copy import deepcopy
 from pytest import fixture
 from time import sleep
 import docker
@@ -13,6 +14,7 @@ HARNESS_NAME = "Harness"
 TEST_PLUGIN_DATA = {
     "id": HARNESS_ID,  # prod systems should allow auto-generated IDs
     "Name": HARNESS_NAME,
+    "ServiceName": "{}-5000".format(HARNESS_NAME),
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
@@ -23,6 +25,7 @@ TEST_PLUGIN_DATA = {
 
 TEST_PROD_PLUGIN_DATA = {
     "Name": "AnotherThing",
+    "ServiceName": "AnotherThing-5600",
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
@@ -82,6 +85,15 @@ def test_create_plugin_controller(rethink):
     assert len(res['generated_keys']) == 1
 
 
+def test_create_plugin_controller(rethink):
+    test_copy = deepcopy(TEST_PROD_PLUGIN_DATA)
+    test_copy["ServiceName"] = "Any_Uniqie_SN"
+    res = plugins.create_plugin(test_copy)
+    assert isinstance(res, dict)
+    assert isinstance(res['generated_keys'], list)
+    assert len(res['generated_keys']) == 1
+
+
 def test_get_names(rethink):
     res = plugins.get_names()
     assert len(res) == 2
@@ -124,10 +136,21 @@ def test_check_port_conflict(rethink):
     assert res["errors"] == 1
 
 
-def test_update_plugin_controller(rethink):
+def test_update_plugin_controller_with_id(rethink):
     new_plugin_data = TEST_PLUGIN_DATA
     new_plugin_data["State"] = "Restarting"
     new_plugin_data["DesiredState"] = "Restart"
+    res = plugins.update_plugin(new_plugin_data)
+    assert isinstance(res, dict)
+    assert res["replaced"] == 1
+
+
+def test_update_plugin_controller_with_ServiceName(rethink):
+    from copy import deepcopy
+    new_plugin_data = deepcopy(TEST_PLUGIN_DATA)
+    del new_plugin_data['id']
+    new_plugin_data["State"] = "Stop"
+    new_plugin_data["DesiredState"] = "Activate"
     res = plugins.update_plugin(new_plugin_data)
     assert isinstance(res, dict)
     assert res["replaced"] == 1

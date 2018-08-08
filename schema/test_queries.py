@@ -50,6 +50,7 @@ TEST_JOB_EARLY = {
 
 TEST_PLUGIN_DATA = {
     "Name": "Harness",
+    "ServiceName": "Harness-5000",
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
