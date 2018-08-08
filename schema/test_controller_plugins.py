@@ -1,4 +1,5 @@
 from os import environ
+from copy import deepcopy
 from pytest import fixture
 from time import sleep
 import docker
@@ -79,6 +80,15 @@ def test_get_harness_plugin_controller(rethink):
 
 def test_create_plugin_controller(rethink):
     res = plugins.create_plugin(TEST_PROD_PLUGIN_DATA)
+    assert isinstance(res, dict)
+    assert isinstance(res['generated_keys'], list)
+    assert len(res['generated_keys']) == 1
+
+
+def test_create_plugin_controller(rethink):
+    test_copy = deepcopy(TEST_PROD_PLUGIN_DATA)
+    test_copy["ServiceName"] = "Any_Uniqie_SN"
+    res = plugins.create_plugin(test_copy)
     assert isinstance(res, dict)
     assert isinstance(res['generated_keys'], list)
     assert len(res['generated_keys']) == 1

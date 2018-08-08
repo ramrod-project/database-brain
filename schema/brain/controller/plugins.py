@@ -150,20 +150,15 @@ def create_plugin(plugin_data,
     assert isinstance(plugin_data, dict)
     if verify_commands and not verify(plugin_data, Plugin()):
         raise ValueError("Invalid Plugin entry")
-    current = get_plugin_by_name(
-        plugin_data["Name"],
-        conn=conn
-    )
-    try:
-        current.next()
-        return {
+    current = find_plugin(plugin_data[SERVICE_KEY], SERVICE_KEY, conn)
+    if not current:
+        success = RPC.insert(plugin_data,
+                             conflict="update").run(conn)
+    else:
+        success = {
             "errors": 1,
-            "first_error": "Plugin {} exists!".format(plugin_data['Name'])
-        }
-    except r.ReqlCursorEmpty:
-        pass
-    success = RPC.insert(plugin_data,
-                         conflict="update").run(conn)
+            "first_error": "Duplicate service name exists {}".format(
+                plugin_data[SERVICE_KEY])}
     return success
 
 
