@@ -5,12 +5,16 @@ functions specific to the controller
 from ..queries.decorators import wrap_rethink_errors, wrap_connection
 from ..queries import RPC, RPP
 from .. import r
+from ..decorators import deprecated_function
 from ..checks import verify
 from ..brain_pb2 import Plugin, Port
-from .decorators import expect_arg_type
+from .decorators import expect_arg_type, set_plugin_id
 from . import DESIRE_ACTIVE, DESIRE_STOP, DESIRE_RESTART
 from . import DESIRED_STATE_KEY, ALLOWED_DESIRED_STATES
-from . import ADDRESS_KEY, NAME_KEY
+from . import ADDRESS_KEY, NAME_KEY, SERVICE_KEY, ID_KEY
+
+
+DEFAULT_LOOKUP_KEY = "Name"
 
 
 def _check_common(field, interface, port_data):
@@ -51,6 +55,7 @@ def has_port_conflict(port_data,
     return None
 
 
+@deprecated_function(replacement="brain.controller.plugins.find_plugin")
 @wrap_rethink_errors
 @wrap_connection
 def get_plugin_by_name(plugin_name,
@@ -64,6 +69,29 @@ def get_plugin_by_name(plugin_name,
     result = RPC.filter({
         "Name": plugin_name
     }).run(conn)
+    return result
+
+
+@wrap_rethink_errors
+@wrap_connection
+def find_plugin(value,
+                key=DEFAULT_LOOKUP_KEY,
+                conn=None):
+    """
+    get's the plugin matching the key and value
+
+    example: find_plugin("plugin1", "ServiceName") => list of 0 or 1 item
+    example: find_plugin("plugin1", "Name") => list of 0-to-many items
+
+    :param value:
+    :param key: <str> (default "Name")
+    :param conn:
+    :return:
+    """
+    # cast to list to hide rethink internals from caller
+    result = list(RPC.filter({
+        key: value
+    }).run(conn))
     return result
 
 
@@ -205,6 +233,7 @@ def get_interfaces(conn=None):
 @expect_arg_type(expected=(dict, ))
 @wrap_rethink_errors
 @wrap_connection
+@set_plugin_id
 def update_plugin(plugin_data,
                   verify_plugin=False,
                   conn=None):
@@ -217,15 +246,7 @@ def update_plugin(plugin_data,
     """
     if verify_plugin and not verify(plugin_data, Plugin()):
         raise ValueError("Invalid Plugin entry")
-    current = get_plugin_by_name(plugin_data["Name"], conn=conn)
-    update_id = None
-    try:
-        update_id = current.next()["id"]
-    except r.ReqlCursorEmpty:
-        return {
-            "errors": 1,
-            "first_error": "Cannot update non-existent plugin!"
-        }
+    update_id = plugin_data[ID_KEY]
     success = RPC.get(update_id).update(plugin_data).run(conn)
     return success
 

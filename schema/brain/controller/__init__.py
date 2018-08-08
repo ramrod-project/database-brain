@@ -3,7 +3,8 @@ manipulate the controller database
 """
 
 NAME_KEY = "Name"
-
+ID_KEY = "id"
+SERVICE_KEY = "ServiceName"
 
 AVAILABLE = "Available"
 ACTIVE = "Active"
