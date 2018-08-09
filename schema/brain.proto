@@ -94,6 +94,7 @@ message Plugin {
     required string Interface = 8;
     repeated string ExternalPorts = 9;
     repeated string InternalPorts = 10;
+    repeated string Environment = 11;
 }
 
 message Port {

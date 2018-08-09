@@ -14,9 +14,21 @@ from .interfaces import get_ports_by_ip
 from . import DESIRE_ACTIVE, DESIRE_STOP, DESIRE_RESTART
 from . import DESIRED_STATE_KEY, ALLOWED_DESIRED_STATES
 from . import ADDRESS_KEY, NAME_KEY, SERVICE_KEY, ID_KEY
+from .verification import verify_port_map
 
 
 DEFAULT_LOOKUP_KEY = "Name"
+
+def verify_plugin(plugin):
+    """
+    extra validation /
+    PB2 sees empty lists the same as non-existant lists
+    :param plugin:
+    :return:
+    """
+    result = True
+    result &= verify_port_map(plugin)
+    return result
 
 
 @deprecated_function(replacement="brain.controller.plugins.find_plugin")
