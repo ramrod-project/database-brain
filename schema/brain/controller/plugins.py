@@ -19,7 +19,8 @@ from .verification import verify_port_map
 
 DEFAULT_LOOKUP_KEY = "Name"
 
-def verify_plugin(plugin):
+
+def verify_plugin_contents(plugin):
     """
     extra validation /
     PB2 sees empty lists the same as non-existant lists
@@ -93,16 +94,16 @@ def get_names(conn=None):
 @wrap_rethink_errors
 @wrap_connection
 def create_plugin(plugin_data,
-                  verify_commands=False,
+                  verify_plugin=False,
                   conn=None):
     """
     :param plugin_data: <dict> dict matching Plugin()
-    :param verify_commands: <bool>
+    :param verify_plugin: <bool>
     :param conn: <rethinkdb.DefaultConnection>
     :return: <dict> rethinkdb insert response value
     """
     assert isinstance(plugin_data, dict)
-    if verify_commands and not verify(plugin_data, Plugin()):
+    if verify_plugin and not verify(plugin_data, Plugin()):
         raise ValueError("Invalid Plugin entry")
     current = find_plugin(plugin_data[SERVICE_KEY], SERVICE_KEY, conn)
     if not current:

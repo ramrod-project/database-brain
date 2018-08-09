@@ -48,7 +48,7 @@ def special_plugin_checking(value):
     :param value:
     :return:
     """
-    return verify_plugin(value)
+    return verify_plugin_contents(value)
 
 
 def special_target_typecheck(value):
@@ -119,4 +119,4 @@ def strip(value, msg):
     output = dict_to_protobuf.protobuf_to_dict(msg)
     return output
 
-from .controller.plugins import verify_plugin
+from .controller.plugins import verify_plugin_contents
