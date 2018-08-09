@@ -18,6 +18,7 @@ TEST_PLUGIN_DATA = {
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
+    "Environment": ["STAGE=DEV", "NORMAL=1"],
     "ExternalPorts": ["5000"],
     "InternalPorts": ["5000"]
 }
@@ -29,6 +30,7 @@ TEST_PROD_PLUGIN_DATA = {
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
+    "Environment": ["STAGE=DEV", "NORMAL=1"],
     "ExternalPorts": ["5600"],
     "InternalPorts": ["5600"]
 }
