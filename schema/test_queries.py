@@ -54,6 +54,7 @@ TEST_PLUGIN_DATA = {
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
+    "Environment": ["STAGE=DEV", "NORMAL=1"],
     "ExternalPorts": ["5000"],
     "InternalPorts": ["5000"]
 }
