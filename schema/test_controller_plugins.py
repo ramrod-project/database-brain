@@ -1,6 +1,6 @@
 from os import environ
 from copy import deepcopy
-from pytest import fixture
+from pytest import fixture, raises
 from time import sleep
 import docker
 from .brain import r
@@ -156,6 +156,33 @@ def test_update_plugin_controller_with_ServiceName(rethink):
     res = plugins.update_plugin(new_plugin_data)
     assert isinstance(res, dict)
     assert res["replaced"] == 1
+
+def test_update_plugin_controller_fail_DS(rethink):
+    from copy import deepcopy
+    new_plugin_data = deepcopy(TEST_PLUGIN_DATA)
+    del new_plugin_data['id']
+    new_plugin_data["DesiredState"] = False
+    with raises(ValueError):
+        res = plugins.update_plugin(new_plugin_data, verify_plugin=True)
+    assert plugins.get(TEST_PLUGIN_DATA["id"])["DesiredState"] is not False
+
+def test_update_plugin_controller_fail_EP(rethink):
+    from copy import deepcopy
+    new_plugin_data = deepcopy(TEST_PLUGIN_DATA)
+    del new_plugin_data['id']
+    new_plugin_data["ExternalPorts"].append("3000/tcp")
+    with raises(ValueError):
+        res = plugins.update_plugin(new_plugin_data, verify_plugin=True)
+    assert len(plugins.get(TEST_PLUGIN_DATA["id"])["ExternalPorts"] ) == 1
+
+def test_update_plugin_controller_fail_ENV(rethink):
+    from copy import deepcopy
+    new_plugin_data = deepcopy(TEST_PLUGIN_DATA)
+    del new_plugin_data['id']
+    new_plugin_data["Environment"].append("NoValue=")
+    with raises(ValueError):
+        res = plugins.update_plugin(new_plugin_data, verify_plugin=True)
+    assert len(plugins.get(TEST_PLUGIN_DATA["id"])["Environment"]) == 2
 
 
 def test_update_plugin_active(rethink):
