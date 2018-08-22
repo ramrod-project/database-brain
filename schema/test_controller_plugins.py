@@ -38,14 +38,14 @@ TEST_PROD_PLUGIN_DATA = {
 
 TEST_PORT_DATA = {
     "InterfaceName": "eth0",
-    "Address": "192.168.1.1",
+    "Interface": "192.168.1.1",
     "TCPPorts": ["5000"],
     "UDPPorts": []
 }
 
 TEST_PORT_DATA2 = {
     "InterfaceName": "eth0",
-    "Address": "192.168.1.1",
+    "Interface": "192.168.1.1",
     "TCPPorts": ["6000", "7000"],
     "UDPPorts": ["8000"]
 }
@@ -118,7 +118,7 @@ def test_create_port_controller(rethink):
 
 
 def test_get_ports_by_ip_controller(rethink):
-    c = plugins.get_ports_by_ip(TEST_PORT_DATA["Address"])
+    c = plugins.get_ports_by_ip(TEST_PORT_DATA["Interface"])
     assert isinstance(c, r.net.DefaultCursor)
     port_entry = c.next()
     del port_entry["id"]
@@ -209,5 +209,5 @@ def test_update_plugin_stop(rethink):
 def test_get_interfaces(rethink):
     res = plugins.get_interfaces()
     assert len(res) == 1
-    assert TEST_PORT_DATA['Address'] in res
-    assert TEST_PORT_DATA2['Address'] in res
+    assert TEST_PORT_DATA['Interface'] in res
+    assert TEST_PORT_DATA2['Interface'] in res
