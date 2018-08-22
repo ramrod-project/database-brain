@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-RUN apk add --update bash rethinkdb py-pip python3 && rm -rf /var/cache/apk/*
+RUN apk add --update bash supervisor rethinkdb py-pip python3 && rm -rf /var/cache/apk/*
 
 RUN pip install --upgrade virtualenv==15.1.0
 
@@ -13,6 +13,8 @@ COPY ./prep.sh .
 
 RUN ./prep.sh
 
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 COPY . .
 
 RUN ./setup.sh
@@ -21,5 +23,4 @@ WORKDIR /data
 
 EXPOSE 28015
 
-ENTRYPOINT [ "/scripts/initialize.sh" ]
-CMD ["rethinkdb", "--bind", "all"]
+ENTRYPOINT [ "/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

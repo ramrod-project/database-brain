@@ -50,9 +50,11 @@ TEST_JOB_EARLY = {
 
 TEST_PLUGIN_DATA = {
     "Name": "Harness",
+    "ServiceName": "Harness-5000",
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
+    "Environment": ["STAGE=DEV", "NORMAL=1"],
     "ExternalPorts": ["5000"],
     "InternalPorts": ["5000"]
 }
@@ -118,12 +120,7 @@ def test_get_targets_empty_with_conn(rethink):
         g.__next__()
 
 def test_add_target(rethink):
-    inserted = queries.insert_new_target(TEST_TARGET['PluginName'],
-                                         TEST_TARGET['Location'],
-                                         TEST_TARGET['Port'],
-                                         TEST_TARGET['Optional'],
-                                         verify_target=False
-                                         )
+    inserted = queries.insert_target(TEST_TARGET, False, connect())
     assert isinstance(inserted, dict)
     assert isinstance(inserted['generated_keys'], list)
     assert len( inserted['generated_keys'] ) == 1
@@ -354,6 +351,15 @@ def test_update_job_status(rethink):
     job_id = response["generated_keys"][0]
     queries.update_job_status(job_id, "Done", connect())
     assert queries.is_job_done(job_id, connect())
+    # test if updating with the same status does not raise exception
+    queries.update_job_status(job_id, "Done", connect())
+    assert queries.is_job_done(job_id, connect())
+
+
+def test_update_job_status_invalid_id(rethink):
+    with raises(ValueError):
+        queries.update_job_status("sdffajnadfkjlnaldfkabdfha", "Done", connect())
+
 
 def test_write_output(rethink):
     response = queries.insert_jobs([TEST_JOB])

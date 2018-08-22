@@ -33,22 +33,6 @@ def _check_port_conflict(port_data,
     return has_port_conflict(port_data, existing)
 
 
-@deprecated_function(replacement="brain.queries.writes.insert_target")
-@wrap_rethink_errors
-@wrap_connection
-def insert_new_target(plugin_name, location_num,
-                      port_num=0, optional="",
-                      verify_target=False, conn=None):
-    """
-    Deprecated - use insert_target
-    """
-    target = {"PluginName": str(plugin_name),
-              "Location": str(location_num),
-              "Port": str(port_num),
-              "Optional": {"init": str(optional)}}
-    return insert_target(target, verify_target, conn)
-
-
 @wrap_rethink_errors
 @wrap_connection
 def insert_target(target, verify_target=False,
@@ -94,11 +78,13 @@ def update_job_status(job_id, status, conn=None):
     :param status: <str> new status
     :param conn: <connection> a database connection (default: {None})
 
-    :return: <bool> whether job was updated successfully
+    :return: <dict> the update dicts for the job and the output
     """
     if status not in VALID_STATES:
         raise ValueError("Invalid status")
-    job_update = RBJ.get(job_id).update({"Status": status}).run(conn)
+    job_update = RBJ.get(job_id).update({STATUS_FIELD: status}).run(conn)
+    if job_update["replaced"] == 0 and job_update["unchanged"] == 0:
+        raise ValueError("Unknown job_id: {}".format(job_id))
     id_filter = (r.row["OutputJob"]["id"] == job_id)
     output_job_status = {"OutputJob": {"Status": status}}
     output_update = RBO.filter(id_filter).update(output_job_status).run(conn)
@@ -187,7 +173,7 @@ def create_plugin_controller(plugin_data,
                              conn=None):
     from ..controller.plugins import create_plugin
     return create_plugin(plugin_data,
-                         verify_commands=verify_commands,
+                         verify_plugin=verify_commands,
                          conn=conn)
 
 
