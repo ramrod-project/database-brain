@@ -61,14 +61,14 @@ TEST_PLUGIN_DATA = {
 
 TEST_PORT_DATA = {
     "InterfaceName": "eth0",
-    "Address": "192.168.1.1",
+    "Interface": "192.168.1.1",
     "TCPPorts": ["5000"],
     "UDPPorts": []
 }
 
 TEST_PORT_DATA2 = {
     "InterfaceName": "eth0",
-    "Address": "192.168.1.1",
+    "Interface": "192.168.1.1",
     "TCPPorts": ["6000", "7000"],
     "UDPPorts": ["8000"]
 }
@@ -274,7 +274,7 @@ def test_create_port_controller(rethink):
     assert len(res['generated_keys']) == 1
 
 def test_get_ports_by_ip_controller(rethink):
-    c = queries.get_ports_by_ip_controller(TEST_PORT_DATA["Address"])
+    c = queries.get_ports_by_ip_controller(TEST_PORT_DATA["Interface"])
     assert isinstance(c, r.net.DefaultCursor)
     port_entry = c.next()
     del port_entry["id"]
