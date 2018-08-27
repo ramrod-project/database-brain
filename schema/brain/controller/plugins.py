@@ -206,7 +206,7 @@ def quick_change_desired_state(plugin_id, desired_state, conn=None):
     :return:
     """
     assert desired_state in ALLOWED_DESIRED_STATES
-    new_kv = "r{}=restart".format(int(time()))
+    new_kv = "{}=restart".format(int(time()))
     return RPC.get(plugin_id)\
         .update(
             {DESIRED_STATE_KEY: desired_state,

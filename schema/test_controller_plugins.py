@@ -200,8 +200,8 @@ def test_update_plugin_restart(rethink):
     assert cur[0]["DesiredState"] == "Restart"
     assert isinstance(cur[0]["Environment"], list)
     _k0, _v0 = cur[0]["Environment"][0].split("=")
-    assert _v0 == "1"
-    assert _k0 < str(time())
+    assert _v0 == "restart"
+    assert int(_k0) < int(time())
 
 
 def test_update_plugin_stop(rethink):
