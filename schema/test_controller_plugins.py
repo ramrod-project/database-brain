@@ -2,6 +2,7 @@ from os import environ
 from copy import deepcopy
 from pytest import fixture, raises
 from time import sleep
+from time import time
 import docker
 from .brain import r
 from .brain.controller import plugins
@@ -197,6 +198,10 @@ def test_update_plugin_restart(rethink):
     cur = [x for x in plugins.get_plugin_by_name(HARNESS_NAME)]
     assert len(cur) == 1
     assert cur[0]["DesiredState"] == "Restart"
+    assert isinstance(cur[0]["Environment"], list)
+    _k0, _v0 = cur[0]["Environment"][0].split("=")
+    assert _v0 == "restart"
+    assert int(_k0) <= int(time())
 
 
 def test_update_plugin_stop(rethink):
