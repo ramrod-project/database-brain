@@ -21,15 +21,15 @@ branches:
   - qa
 
 # command to install dependencies
+before_install:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; 
+    then export TAG=latest;
+    else export TAG=$TRAVIS_BRANCH; fi
+
 install:
   - sudo apt-get install fuse
   - pip install -r requirements.txt
   - pip install pytest-cov fusepy
-  - if [ "$TRAVIS_BRANCH" != "master"  ];
-    then docker build -t ramrodpcp/database-brain:$TRAVIS_BRANCH . ;
-    else docker build -t ramrodpcp/database-brain:latest . ;
-    fi
-  - docker pull rethinkdb
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
@@ -39,22 +39,21 @@ before_script:
   - ./cc-test-reporter after-build -t coverage.py --exit-code 0
 
 script:
-  - if [ "$TRAVIS_BRANCH" != "master"  ];
-    then docker run -d --rm --name Brain -e "STAGE=DEV" -e "LOGLEVEL=DEBUG" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/database-brain:$TRAVIS_BRANCH ;
-    else docker run -d --rm --name Brain -e "STAGE=PROD" -e "LOGLEVEL=CRITICAL" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/database-brain:latest ;
-    fi
+  - docker build -t ramrodpcp/database-brain:test .
+  - docker run -d --rm --name Brain -e "STAGE=PROD" -e "LOGLEVEL=CRITICAL" -v /var/run/docker.sock:/var/run/docker.sock ramrodpcp/database-brain:test ;
   - sleep 30
   - docker ps
   - docker logs Brain
   - docker stop Brain
+  # e2e tests
+  - bash <(curl -s https://raw.githubusercontent.com/ramrod-project/integration-stack/$TRAVIS_BRANCH/scripts/e2e.sh)
 
 after_success:
+  - docker tag ramrodpcp/database-brain:test ramrodpcp/database-brain:$TAG
   - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; 
     then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
-  - if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; 
-    then docker push ramrodpcp/database-brain:latest;
-    elif [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; 
-    then docker push ramrodpcp/database-brain:$TRAVIS_BRANCH; fi
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false"  ]]; 
+    then docker push ramrodpcp/database-brain:$TAG; fi
 
 
 slack: ramrod-project:GDF82rRYDg3KSekrT3GA24qO
