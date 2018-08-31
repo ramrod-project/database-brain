@@ -50,23 +50,25 @@ TEST_JOB_EARLY = {
 
 TEST_PLUGIN_DATA = {
     "Name": "Harness",
+    "ServiceName": "Harness-5000",
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
+    "Environment": ["STAGE=DEV", "NORMAL=1"],
     "ExternalPorts": ["5000"],
     "InternalPorts": ["5000"]
 }
 
 TEST_PORT_DATA = {
     "InterfaceName": "eth0",
-    "Address": "192.168.1.1",
+    "Interface": "192.168.1.1",
     "TCPPorts": ["5000"],
     "UDPPorts": []
 }
 
 TEST_PORT_DATA2 = {
     "InterfaceName": "eth0",
-    "Address": "192.168.1.1",
+    "Interface": "192.168.1.1",
     "TCPPorts": ["6000", "7000"],
     "UDPPorts": ["8000"]
 }
@@ -118,12 +120,7 @@ def test_get_targets_empty_with_conn(rethink):
         g.__next__()
 
 def test_add_target(rethink):
-    inserted = queries.insert_new_target(TEST_TARGET['PluginName'],
-                                         TEST_TARGET['Location'],
-                                         TEST_TARGET['Port'],
-                                         TEST_TARGET['Optional'],
-                                         verify_target=False
-                                         )
+    inserted = queries.insert_target(TEST_TARGET, False, connect())
     assert isinstance(inserted, dict)
     assert isinstance(inserted['generated_keys'], list)
     assert len( inserted['generated_keys'] ) == 1
@@ -277,7 +274,7 @@ def test_create_port_controller(rethink):
     assert len(res['generated_keys']) == 1
 
 def test_get_ports_by_ip_controller(rethink):
-    c = queries.get_ports_by_ip_controller(TEST_PORT_DATA["Address"])
+    c = queries.get_ports_by_ip_controller(TEST_PORT_DATA["Interface"])
     assert isinstance(c, r.net.DefaultCursor)
     port_entry = c.next()
     del port_entry["id"]
@@ -354,6 +351,15 @@ def test_update_job_status(rethink):
     job_id = response["generated_keys"][0]
     queries.update_job_status(job_id, "Done", connect())
     assert queries.is_job_done(job_id, connect())
+    # test if updating with the same status does not raise exception
+    queries.update_job_status(job_id, "Done", connect())
+    assert queries.is_job_done(job_id, connect())
+
+
+def test_update_job_status_invalid_id(rethink):
+    with raises(ValueError):
+        queries.update_job_status("sdffajnadfkjlnaldfkabdfha", "Done", connect())
+
 
 def test_write_output(rethink):
     response = queries.insert_jobs([TEST_JOB])
@@ -371,10 +377,20 @@ def test_get_next_job_by_location(rethink):
     client_job["JobTarget"] = new_target
     response =  queries.insert_jobs([client_job])
     assert response["inserted"] == 1
-    assert queries.get_next_job_by_location("TestPlugin", "bad location", conn=connect()) == None
-    result_job = queries.get_next_job_by_location("TestPlugin", new_target["Location"], conn=connect())
+    result_job = queries.get_next_job("TestPlugin", new_target["Location"], conn=connect())
+    assert is_the_same_job_as(result_job, client_job)
+    assert queries.get_next_job("TestPlugin", "bad location", conn=connect()) == None
+    assert is_the_same_job_as(queries.get_next_job("TestPlugin", None, conn=connect()), client_job)
+
+    assert queries.get_next_job("TestPlugin", new_target["Location"], "bad port", conn=connect()) == None
+    with raises(ValueError):
+        queries.get_next_job("TestPlugin", None, new_target["Port"], conn=connect())
+    result_job = queries.get_next_job("TestPlugin", new_target["Location"], new_target["Port"], conn=connect())
     assert is_the_same_job_as(result_job, client_job)
 
-    assert queries.get_next_job_by_port("TestPlugin", "bad port", conn=connect()) == None
-    result_job = queries.get_next_job_by_port("TestPlugin", new_target["Port"], conn=connect())
-    assert is_the_same_job_as(result_job, client_job)
+def test_plugin_list(rethink):
+    queries.create_plugin("ExtraPlugin", connect())
+    queries.create_plugin("BonusPlugin", connect())
+    plugins = queries.plugin_list(connect())
+    assert "ExtraPlugin" in plugins
+    assert "BonusPlugin" in plugins

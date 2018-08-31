@@ -19,7 +19,8 @@ def rethink():
         ports={"28015/tcp":28015},
         remove=True
     )
-    sleep(3)
+    sleep(5)
+    # avoid ReqlOpFailedError: Cannot perform read: primary replica
     yield r.connect("127.0.0.1", 28015)
     try:
         environ["LOGLEVEL"]=""
