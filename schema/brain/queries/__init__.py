@@ -14,6 +14,8 @@ RPX = r.db("Plugins")
 RPC = r.db("Controller").table("Plugins")
 RPP = r.db("Controller").table("Ports")
 
+COMMAND_NAME_KEY = "CommandName"
+
 # backward compatible api
 from .reads import *
 from .writes import *
