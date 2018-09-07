@@ -6,8 +6,8 @@ from ..checks import verify
 from ..jobs import WAITING, STATES, transition_success
 from ..connection import rethinkdb as r
 from ..decorators import deprecated_function
+from ..static import START_FIELD, STATUS_FIELD
 from .decorators import wrap_connection, wrap_rethink_errors
-from .decorators import START_FIELD, STATUS_FIELD
 from . import RPX, RBT, RBJ, RPC, RPP, RBO
 from .reads import plugin_exists, get_job_by_id
 

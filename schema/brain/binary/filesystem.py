@@ -32,7 +32,7 @@ except ImportError as import_error:  # :pragma-nocover
     c_stat = object  # :pragma-nocover
 
 from .data import get, put, list_dir, delete
-from .decorators import CONTENT_FIELD
+from . import CONTENT_FIELD
 
 VERBOSE = False
 GET_DIR = [".", ".."]

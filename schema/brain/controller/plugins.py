@@ -18,7 +18,7 @@ from . import ADDRESS_KEY, NAME_KEY, SERVICE_KEY, ID_KEY, ENV_KEY
 from .verification import verify_port_map
 
 
-DEFAULT_LOOKUP_KEY = "Name"
+DEFAULT_LOOKUP_KEY = NAME_KEY
 
 
 def verify_plugin_contents(plugin):
@@ -45,7 +45,7 @@ def get_plugin_by_name(plugin_name,
     :return: <list> rethinkdb cursor
     """
     result = RPC.filter({
-        "Name": plugin_name
+        NAME_KEY: plugin_name
     }).run(conn)
     return result
 
