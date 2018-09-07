@@ -9,7 +9,7 @@ from .decorators import wrap_connection
 from .decorators import wrap_rethink_generator_errors
 from .decorators import wrap_rethink_errors
 from .decorators import wrap_job_cursor
-from . import RPX, RBT, RBJ, RBO
+from . import RPX, RBT, RBJ, RBO, COMMAND_NAME_KEY
 
 
 @wrap_job_cursor
@@ -71,7 +71,7 @@ def get_plugin_commands(plugin_name, conn=None):
     :param plugin_name: <str> user's plugin selection
     :return: <generator> yields dictionaries
     """
-    results = RPX.table(plugin_name).run(conn)
+    results = RPX.table(plugin_name).order_by(COMMAND_NAME_KEY).run(conn)
     for item in results:
         yield item
 
@@ -87,7 +87,7 @@ def get_plugin_command(plugin_name, command_name, conn=None):
     :return: <dict>
     """
     commands = RPX.table(plugin_name).filter(
-        {"CommandName": command_name}).run(conn)
+        {COMMAND_NAME_KEY: command_name}).run(conn)
     command = None
     for command in commands:
         continue  # exhausting the cursor

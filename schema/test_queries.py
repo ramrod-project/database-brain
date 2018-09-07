@@ -32,6 +32,20 @@ TEST_CAPABILITY = [
                 ],
         "OptionalInputs": []
     },
+    {
+        "CommandName": "aardvark",
+        "Tooltip": "should be first!",
+        "Output": False,
+        "Inputs": [],
+        "OptionalInputs": []
+    },
+    {
+        "CommandName": "zoom",
+        "Tooltip": "should be last!",
+        "Output": False,
+        "Inputs": [],
+        "OptionalInputs": []
+    },
 ]
 
 TEST_JOB = {
@@ -185,8 +199,17 @@ def test_get_capability(rethink):
     g = queries.get_plugin_commands(TEST_TARGET['PluginName'])
     assert isinstance(g, GeneratorType)
     cmds = [x for x in g]
-    assert len(cmds) == 1
-    assert cmds[0]["CommandName"] == TEST_CAPABILITY[0]['CommandName']
+    assert len(cmds) == len(TEST_CAPABILITY)
+
+
+def test_get_capability_sorted(rethink):
+    g = queries.get_plugin_commands(TEST_TARGET['PluginName'])
+    assert isinstance(g, GeneratorType)
+    prior_x = ""
+    for x in g:
+        assert x['CommandName'] > prior_x
+        prior_x = x['CommandName']
+    assert x != prior_x
 
 def test_get_capability_2(rethink):
     res = queries.get_plugin_command(TEST_TARGET['PluginName'],
