@@ -5,11 +5,11 @@ from ..brain_pb2 import Job
 from ..checks import verify
 from ..connection import rethinkdb as r
 from ..decorators import deprecated_function
+from ..static import RPX, RBT, RBJ, RBO, COMMAND_NAME_KEY
 from .decorators import wrap_connection
 from .decorators import wrap_rethink_generator_errors
 from .decorators import wrap_rethink_errors
 from .decorators import wrap_job_cursor
-from . import RPX, RBT, RBJ, RBO, COMMAND_NAME_KEY
 
 
 @wrap_job_cursor

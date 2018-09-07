@@ -41,7 +41,7 @@ PLUGIN = "Plugin"
 PLUGINS_TABLE = "Plugins"
 PORTS_TABLE = "Ports"
 
-
+COMMAND_NAME_KEY = "CommandName"
 LOGLEVEL_KEY = "LOGLEVEL"
 STAGE_KEY = "STAGE"
 
