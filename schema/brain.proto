@@ -30,8 +30,9 @@ message Job {
     optional string id = 1;
     required Target JobTarget = 2;
     required string Status = 3;
-    required float StartTime = 4;
-    required Command JobCommand = 5;
+    required float StartTime = 4 [default = 0.0];
+    optional float CompletedTime = 5;
+    required Command JobCommand = 6;
 }
 message Output {
     optional string id = 1;
