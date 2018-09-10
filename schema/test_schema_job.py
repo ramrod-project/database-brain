@@ -93,14 +93,14 @@ Badjob10 = {"id": "string",
             "JobTarget": Good_TARGET,
             "Status": "string",
             "StartTime": 0.0,
-            "CompletedTime": 0.1,
+            "CompletedTime": None,  # should be float
             "JobCommand": GoodCommand,}
 
 Badjob11 = {"id": "string",
             "JobTarget": Good_TARGET,
             "Status": "string",
             "StartTime": 0.0,
-            "ExpireTime": None,
+            "ExpireTime": None,  # should be float
             "JobCommand": GoodCommand,}
 
 def test_good_job():
