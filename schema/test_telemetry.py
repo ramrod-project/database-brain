@@ -32,8 +32,6 @@ def rethink():
     container.stop()
 
 
-
-
 def test_initial_target(rethink):
     insert_target(TARGET, verify_target=True)
 
@@ -42,6 +40,29 @@ def test_update_common(rethink):
     x = TARGET
     tid = get_target_id(x['PluginName'], x["Port"], x['Location'])
     common = {"User": "hello there"}
-    update_common(tid, common, True)
+    assert update_common(tid, common, True).get("replaced") == 1
+    tgt = get_target(x['PluginName'], x["Port"], x['Location'])
+    assert tgt['Optional']["Common"] == common
 
+
+def test_update_specific(rethink):
+    x = TARGET
+    tid = get_target_id(x['PluginName'], x["Port"], x['Location'])
+    specific = {"Size": "2 Gallon"}
+    assert update_specific(tid, specific).get("replaced") == 1
+    tgt = get_target(x['PluginName'], x["Port"], x['Location'])
+    assert tgt['Optional']["Specific"] == specific
+
+
+def test_update_both(rethink):
+    x = TARGET
+    tid = get_target_id(x['PluginName'], x["Port"], x['Location'])
+    common = {"User": "Grandma"}
+    specific = {"Size": "Hose"}
+    s_o, c_o = update_telemetry(tid, specific, common, verify_telemetry=False)
+    assert s_o.get("replaced") == 1
+    assert c_o.get("replaced") == 1
+    tgt = get_target(x['PluginName'], x["Port"], x['Location'])
+    assert tgt['Optional']["Specific"] == specific
+    assert tgt['Optional']["Common"] == common
 

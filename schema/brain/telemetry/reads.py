@@ -28,7 +28,7 @@ def get_target(plugin, port, location, conn=None):
     :return: <str> id of the job
     """
     query = target_query(plugin, port, location)
-    cur = RBT.filter(query).limit(1).pluck(ID_FIELD).run(conn)
+    cur = RBT.filter(query).limit(1).run(conn)
     output = None
     for doc in cur:
         output = doc  # forces the cursor dereference

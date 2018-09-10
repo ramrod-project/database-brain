@@ -33,7 +33,9 @@ def update_specific(target_id, specific, conn=None):
 def update_common(target_id, common,
                   verify_telemetry=False, conn=None):
     output = {}
-    if common and verify_telemetry and verify(common, Telemetry.common()):
+    if common:
+        if verify_telemetry and not verify(common, Telemetry.common()):
+            raise ValueError("Invalid Common Telemetry")
         data = {TARGET_OPTIONAL_FIELD: {COMMON_FIELD: common}}
         output = RBT.get(target_id).update(data).run(conn)
     return output
