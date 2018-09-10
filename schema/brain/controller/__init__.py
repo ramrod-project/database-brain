@@ -5,6 +5,7 @@ manipulate the controller database
 NAME_KEY = "Name"
 ID_KEY = "id"
 SERVICE_KEY = "ServiceName"
+PLUGIN_STATE_KEY = "PluginState"
 UDP_KEY = "UDPPorts"
 TCP_KEY = "TCPPorts"
 TCP_STR = "tcp"
