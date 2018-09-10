@@ -10,7 +10,7 @@ from .brain import connect, r
 from .brain.connection import DefaultConnection, BrainNotReady
 from .brain import queries
 from .brain.jobs import WAITING, READY
-from .brain.queries.decorators import STATUS_FIELD, START_FIELD
+from .brain.static import STATUS_FIELD, START_FIELD
 from .brain.queries.writes import insert_jobs, transition_waiting
 from .brain.queries import RBJ
 

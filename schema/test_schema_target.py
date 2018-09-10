@@ -33,7 +33,7 @@ Bad_TARGET4 = {
     "PluginName": "WaterBalloon",
     "Location": "Patio",
     "Port": "West",
-    "Optional" : True,
+    "Optional": True,
 }
 
 def test_good_target():
