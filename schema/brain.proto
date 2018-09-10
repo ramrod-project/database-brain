@@ -28,8 +28,18 @@ message Target {
     optional Telemetry Optional = 5;
 }
 message Telemetry {
-    optional string id = 1;
-    //additional keys are allowed
+    optional string init = 1;
+    optional common Common = 2;
+    optional specific Specific = 3;
+    message specific {
+        // additional keys optional
+    }
+    message common {
+        optional float Checkin = 1;
+        optional bool Admin = 2;
+        optional string User = 3;
+        // user should not add other keys
+    }
 }
 message Job {
     optional string id = 1;
