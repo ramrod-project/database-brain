@@ -50,6 +50,7 @@ ERRORS_KEY = "errors"
 FIRST_ERROR = "first_error"
 CONFLICT_ERROR_STRING = "{} conflicts(s): {} in use on {}"
 UNKNOWN_PLUGIN_STRING = "Cannot update non-existent plugin!"
+DUPLICATE_SERVICE_STRING = "Duplicate service name exists {}"
 MOCK_ERROR_DICT = {ERRORS_KEY: 1,
                    FIRST_ERROR: ""}
 

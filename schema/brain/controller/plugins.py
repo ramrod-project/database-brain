@@ -15,6 +15,7 @@ from .interfaces import get_ports_by_ip
 from . import DESIRE_ACTIVE, DESIRE_STOP, DESIRE_RESTART
 from . import DESIRED_STATE_KEY, ALLOWED_DESIRED_STATES
 from . import ADDRESS_KEY, NAME_KEY, SERVICE_KEY, ID_KEY, ENV_KEY
+from . import MOCK_ERROR_DICT, DUPLICATE_SERVICE_STRING, FIRST_ERROR
 from .verification import verify_port_map
 
 
@@ -111,10 +112,9 @@ def create_plugin(plugin_data,
         success = RPC.insert(plugin_data,
                              conflict="update").run(conn)
     else:
-        success = {
-            "errors": 1,
-            "first_error": "Duplicate service name exists {}".format(
-                plugin_data[SERVICE_KEY])}
+        success = MOCK_ERROR_DICT
+        error_msg = DUPLICATE_SERVICE_STRING.format(plugin_data[SERVICE_KEY])
+        MOCK_ERROR_DICT[FIRST_ERROR] = error_msg
     return success
 
 

@@ -4,13 +4,21 @@ module holds static variables thay may be used elsewhere
 """
 from . import r
 
+
+ID_FIELD = "id"
 COMMAND_FIELD = "JobCommand"
+TARGET_FIELD = "JobTarget"
 INPUT_FIELD = "Inputs"
 OPTIONAL_FIELD = "OptionalInputs"
 VALUE_FIELD = "Value"
 STATUS_FIELD = "Status"
 START_FIELD = "StartTime"
 TARGET_OPTIONAL_FIELD = "Optional"
+LOCATION_FIELD = "Location"
+COMMAND_NAME_KEY = "CommandName"
+PLUGIN_NAME_KEY = "PluginName"
+OUTPUTJOB_FIELD = "OutputJob"
+CONTENT_FIELD = "Content"
 
 BEGIN = ""
 INVALID = "Invalid"
@@ -41,9 +49,12 @@ PLUGIN = "Plugin"
 PLUGINS_TABLE = "Plugins"
 PORTS_TABLE = "Ports"
 
-COMMAND_NAME_KEY = "CommandName"
 LOGLEVEL_KEY = "LOGLEVEL"
 STAGE_KEY = "STAGE"
+
+RDB_UPDATE = "update"
+RDB_REPLACE = "replace"
+
 
 PROD = "PROD"
 QA = "QA"
