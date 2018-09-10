@@ -16,6 +16,7 @@ from . import DESIRE_ACTIVE, DESIRE_STOP, DESIRE_RESTART
 from . import DESIRED_STATE_KEY, ALLOWED_DESIRED_STATES
 from . import ADDRESS_KEY, NAME_KEY, SERVICE_KEY, ID_KEY, ENV_KEY
 from . import MOCK_ERROR_DICT, DUPLICATE_SERVICE_STRING, FIRST_ERROR
+from . import PLUGIN_STATE_KEY
 from .verification import verify_port_map
 
 
@@ -218,14 +219,32 @@ def quick_change_desired_state(plugin_id, desired_state, conn=None):
 @wrap_rethink_errors
 @wrap_connection
 def recover_state(serv_name, conn=None):
-    curs = RPC.filter({"ServiceName":serv_name}).run(conn)
+    """
+    MAKE A DOCSTRING
+    :param serv_name:
+    :param conn:
+    :return:
+    """
+    serv_filter = {SERVICE_KEY: serv_name}
+    curs = RPC.filter(serv_filter).run(conn)
     doc = curs.next()
-    return doc["PluginState"]
+    return doc[PLUGIN_STATE_KEY]
+
 
 @wrap_rethink_errors
 @wrap_connection
 def record_state(serv_name, state, conn=None):
-    return RPC.filter({"ServiceName":serv_name}).update({"PluginState":state}).run(conn)
+    """
+    MAKE A DOCSTRING
+    :param serv_name:
+    :param state:
+    :param conn:
+    :return:
+    """
+    serv_filter = {SERVICE_KEY:serv_name}
+    updated = {PLUGIN_STATE_KEY: state}
+    return RPC.filter(serv_filter).update(updated).run(conn)
+
 
 def activate(plugin_id, conn=None):
     """
