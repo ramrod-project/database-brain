@@ -18,6 +18,13 @@ Goodjob2 = {"id": "string",
             "CompletedTime": 20.0,
             "JobCommand": GoodCommand,}
 
+Goodjob3 = {"id": "string",
+            "JobTarget": Good_TARGET,
+            "Status": "string",
+            "StartTime": 0,
+            "ExpireTime": 20.2,
+            "JobCommand": GoodCommand,}
+
 Badjob = {"id": "string",
            "JobTarget": None,
            "Status": "string",
@@ -85,16 +92,27 @@ Badjob9 = {"id": "string",
 Badjob10 = {"id": "string",
             "JobTarget": Good_TARGET,
             "Status": "string",
-            "StartTime": 0,
-            "CompletedTime": False,
+            "StartTime": 0.0,
+            "CompletedTime": 0.1,
             "JobCommand": GoodCommand,}
 
+Badjob11 = {"id": "string",
+            "JobTarget": Good_TARGET,
+            "Status": "string",
+            "StartTime": 0.0,
+            "ExpireTime": None,
+            "JobCommand": GoodCommand,}
 
 def test_good_job():
     assert verify(Goodjob, b.Job())
 
-def test_good_job():
+
+def test_good_job2():
     assert verify(Goodjob2, b.Job())
+
+
+def test_good_job3():
+    assert verify(Goodjob3, b.Job())
 
 
 def test_bad_job():
@@ -124,8 +142,13 @@ def test_bad_job6():
 def test_bad_job7():
     assert not verify(Badjob7, b.Job())
 
+
 def test_bad_job10():
     assert not verify(Badjob10, b.Job())
+
+
+def test_bad_job11():
+    assert not verify(Badjob11, b.Job())
 
 
 def test_good_job_from_jobs():
