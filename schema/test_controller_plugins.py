@@ -18,7 +18,7 @@ TEST_PLUGIN_DATA = {
     "ServiceName": "{}-5000".format(HARNESS_NAME),
     "State": "Available",
     "DesiredState": "",
-    "Interface": "",
+    "Interface": "192.168.1.1",
     "Environment": ["STAGE=DEV", "NORMAL=1"],
     "ExternalPorts": ["5000"],
     "InternalPorts": ["5000"]
@@ -49,6 +49,34 @@ TEST_PORT_DATA2 = {
     "Interface": "192.168.1.1",
     "TCPPorts": ["6000", "7000"],
     "UDPPorts": ["8000"]
+}
+
+TEST_TARGET = {"PluginName":"TestPlugin",
+               "Location": "192.168.1.1",
+               "Port": "0",
+               "Optional": "example"}
+
+TEST_CAPABILITY = [
+    {
+        "CommandName": "echo",
+        "Tooltip": "",
+        "Output": True,
+        "Inputs": [
+                {"Name": "EchoString",
+                 "Type": "textbox",
+                 "Tooltip": "This string will be echoed back",
+                 "Value": ""
+                 },
+                ],
+        "OptionalInputs": []
+    }
+]
+
+TEST_JOB = {
+    "JobTarget": TEST_TARGET,
+    "Status": "Ready",
+    "StartTime": 7,
+    "JobCommand": TEST_CAPABILITY[0]
 }
 
 @fixture(scope='module')
@@ -216,3 +244,14 @@ def test_get_interfaces(rethink):
     assert len(res) == 1
     assert TEST_PORT_DATA['Interface'] in res
     assert TEST_PORT_DATA2['Interface'] in res
+
+def test_record_state(rethink):
+    state = {"192.168.1.1": TEST_JOB}
+    plugins.record_state(TEST_PLUGIN_DATA["ServiceName"], state, r.connect())
+    res = plugins.get(TEST_PLUGIN_DATA["id"])
+    assert res["PluginState"] == state
+
+def test_recover_state(rethink):
+    state = plugins.recover_state(TEST_PLUGIN_DATA["ServiceName"], r.connect())
+    assert state["192.168.1.1"] == TEST_JOB
+    

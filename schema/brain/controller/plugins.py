@@ -215,6 +215,18 @@ def quick_change_desired_state(plugin_id, desired_state, conn=None):
         .run(conn)
 
 
+@wrap_rethink_errors
+@wrap_connection
+def recover_state(serv_name, conn=None):
+    curs = RPC.filter({"ServiceName":serv_name}).run(conn)
+    doc = curs.next()
+    return doc["PluginState"]
+
+@wrap_rethink_errors
+@wrap_connection
+def record_state(serv_name, state, conn=None):
+    return RPC.filter({"ServiceName":serv_name}).update({"PluginState":state}).run(conn)
+
 def activate(plugin_id, conn=None):
     """
 
