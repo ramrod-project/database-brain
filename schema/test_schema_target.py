@@ -5,28 +5,28 @@ Good_TARGET = {
     "PluginName": "WaterBalloon",
     "Location": "Patio",
     "Port": "West",
-    "Optional" : {"anything" : "anything"},
+    "Optional": {"anything": "anything"},
 }
 
 Bad_TARGET = {
     "PluginName": 456,
     "Location": "Patio",
     "Port": "West",
-    "Optional" : "anything",
+    "Optional": "anything",
 }
 
 Bad_TARGET2 = {
     "PluginName": "WaterBalloon",
     "Location": 456,
     "Port": "West",
-    "Optional" : "anything",
+    "Optional": "anything",
 }
 
 Bad_TARGET3 = {
     "PluginName": "WaterBalloon",
     "Location": "Patio",
     "Port": 456,
-    "Optional" : "anything",
+    "Optional": "anything",
 }
 
 Bad_TARGET4 = {

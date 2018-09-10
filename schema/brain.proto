@@ -25,13 +25,20 @@ message Target {
     required string PluginName = 2;
     required string Location = 3;
     required string Port = 4;
+    optional Telemetry Optional = 5;
+}
+message Telemetry {
+    optional string id = 1;
+    //additional keys are allowed
 }
 message Job {
     optional string id = 1;
     required Target JobTarget = 2;
     required string Status = 3;
     required float StartTime = 4;
-    required Command JobCommand = 5;
+    optional float ExpireTime = 5;
+    optional float CompletedTime = 6;
+    required Command JobCommand = 7;
 }
 message Output {
     optional string id = 1;
