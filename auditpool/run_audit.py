@@ -14,12 +14,7 @@ _CONTINUE = True
 TS = "ts"
 LOG_DIR = "/logs/"
 LOG_KEY = "new_val"
-DAY_STRING_RAW = asctime(gmtime(time())).split(" ")
-DAY_STRING = "_".join((
-    DAY_STRING_RAW[1],
-    DAY_STRING_RAW[2],
-    DAY_STRING_RAW[4]
-))
+DAY_STRING = "_".join(asctime(gmtime(time())).split(" "))
 _LOG_TEMPLATE = Template(
     """[{{ date_string }}] - ({{ namespace_string }}) ---- {{ other_stuff }}"""
 )
