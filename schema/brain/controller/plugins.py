@@ -227,10 +227,11 @@ def recover_state(serv_name, conn=None):
     """
     serv_filter = {SERVICE_KEY: serv_name}
     curs = RPC.filter(serv_filter).run(conn)
-    if len(curs) != 1:
-        raise ValueError("Duplicate Services found when recovering")
+    num_docs = 0
     for doc in curs:
-        pass
+        num_docs += 1
+    if num_docs != 1:
+        raise ValueError("Duplicate Services found when recovering")
     return doc[PLUGIN_STATE_KEY]
 
 
