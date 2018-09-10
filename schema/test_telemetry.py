@@ -59,7 +59,10 @@ def test_update_both(rethink):
     tid = get_target_id(x['PluginName'], x["Port"], x['Location'])
     common = {"User": "Grandma"}
     specific = {"Size": "Hose"}
-    s_o, c_o = update_telemetry(tid, specific, common, verify_telemetry=False)
+    s_o, c_o = update_telemetry(target_id=tid,
+                                specific=specific,
+                                common=common,
+                                verify_telemetry=False)
     assert s_o.get("replaced") == 1
     assert c_o.get("replaced") == 1
     tgt = get_target(x['PluginName'], x["Port"], x['Location'])
