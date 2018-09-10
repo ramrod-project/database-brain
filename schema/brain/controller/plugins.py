@@ -220,14 +220,17 @@ def quick_change_desired_state(plugin_id, desired_state, conn=None):
 @wrap_connection
 def recover_state(serv_name, conn=None):
     """
-    MAKE A DOCSTRING
-    :param serv_name:
-    :param conn:
-    :return:
+
+    :param serv_name: <str> service name of plugin
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <dictionary> last plugin state
     """
     serv_filter = {SERVICE_KEY: serv_name}
     curs = RPC.filter(serv_filter).run(conn)
-    doc = curs.next()
+    if len(curs) != 1:
+        raise ValueError("Duplicate Services found when recovering")
+    for doc in curs:
+        pass
     return doc[PLUGIN_STATE_KEY]
 
 
@@ -236,10 +239,10 @@ def recover_state(serv_name, conn=None):
 def record_state(serv_name, state, conn=None):
     """
     MAKE A DOCSTRING
-    :param serv_name:
-    :param state:
-    :param conn:
-    :return:
+    :param serv_name: <str> service name of plugin instance
+    :param state: <dictionary> plugin state
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: 
     """
     serv_filter = {SERVICE_KEY:serv_name}
     updated = {PLUGIN_STATE_KEY: state}
