@@ -23,53 +23,6 @@ LOGGER_KNOWN_EXCEPTIONS = (AttributeError,
                            IndexError,
                            TypeError)
 
-def format_list(input_list):
-    """Formats lists for rendering
-
-    Takes format_dictionary output list of tuples
-    and formats it for nicer printing. Calls recursively
-    for lists in each tuple.
-    
-    Arguments:
-        input {list[tuple]} -- list of tuples.
-    
-    Returns:
-        {str} -- printable string based on list
-    """
-    pre_format_list = []
-    for item in input_list:
-        if isinstance(item[1], list):
-            pre_format_list.append("{}: {}".format(item[0], format_list(item[1])))
-        else:
-            pre_format_list.append("{}: {}".format(item[0], item[1]))
-    return "[{}]".format(" -- ".join(pre_format_list))
-
-
-def format_dictionary(input_dict):
-    """Return a dictionary as a list of tuples
-    
-    Takes a dictionary and returns a list of tuples
-    (key, value). Calls recursively when type(value)
-    is dict.
-    
-    Arguments:
-        input {dict} -- dictionary.
-    
-    Returns:
-        {list} -- list of tuples (key, value)
-    """
-    formatted_list = []
-    for key, value in input_dict.items():
-        if key == "ts" or key == "id" or key == "Tooltip":
-            continue
-        elif isinstance(value, list):
-            formatted_list.append((key, [format_dictionary(val) for val in value]))
-        elif isinstance(value, dict):
-            formatted_list.append((key, format_dictionary(value)))
-        else:
-            formatted_list.append((key, value))
-    return formatted_list
-
 
 def write_log_file(namespace, document):
     """Writes a line to a log file

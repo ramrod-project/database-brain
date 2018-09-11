@@ -34,22 +34,6 @@ def something():
 			container.stop()
 			break
 
-def test_format_list():
-	"""Test the fomat_list function
-	"""
-	test_list = [("string", "tuple"), (1, 2), ("dict", {"key1": "value1"})]
-	result = run_audit.format_list(test_list)
-	assert isinstance(result, str)
-	assert result == "[string: tuple -- 1: 2 -- dict: {'key1': 'value1'}]"
-
-def test_format_dictionary():
-	"""Test the format_dictionary function
-	"""
-	test_dict = {"key1": "value1", "key2": 2, "key3": {"subkey1": "subvalue1", 3: 3}}
-	result = run_audit.format_dictionary(test_dict)
-	assert isinstance(result, list)
-	assert result == [('key1', 'value1'), ('key2', 2), ('key3', [('subkey1', 'subvalue1'), (3, 3)])]
-
 def test_write_log_file():
 	"""Test writing to a log file
 	"""
