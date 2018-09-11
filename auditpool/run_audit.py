@@ -1,9 +1,9 @@
+from json import dumps
 from multiprocessing import Pool
 from sys import argv, stderr
 from time import asctime, gmtime, sleep, time
 
 import rethinkdb as r
-from jinja2 import Template
 
 
 _AUDIT_DB = "AUDIT"
@@ -15,9 +15,6 @@ TS = "ts"
 LOG_DIR = "/logs/"
 LOG_KEY = "new_val"
 DAY_STRING = "_".join(asctime(gmtime(time())).split(" "))
-_LOG_TEMPLATE = Template(
-    """[{{ date_string }}] - ({{ namespace_string }}) ---- {{ other_stuff }}"""
-)
 
 LOGGER_KNOWN_EXCEPTIONS = (AttributeError,
                            KeyError,
@@ -25,53 +22,6 @@ LOGGER_KNOWN_EXCEPTIONS = (AttributeError,
                            IOError,
                            IndexError,
                            TypeError)
-
-def format_list(input_list):
-    """Formats lists for rendering
-
-    Takes format_dictionary output list of tuples
-    and formats it for nicer printing. Calls recursively
-    for lists in each tuple.
-    
-    Arguments:
-        input {list[tuple]} -- list of tuples.
-    
-    Returns:
-        {str} -- printable string based on list
-    """
-    pre_format_list = []
-    for item in input_list:
-        if isinstance(item[1], list):
-            pre_format_list.append("{}: {}".format(item[0], format_list(item[1])))
-        else:
-            pre_format_list.append("{}: {}".format(item[0], item[1]))
-    return "[{}]".format(" -- ".join(pre_format_list))
-
-
-def format_dictionary(input_dict):
-    """Return a dictionary as a list of tuples
-    
-    Takes a dictionary and returns a list of tuples
-    (key, value). Calls recursively when type(value)
-    is dict.
-    
-    Arguments:
-        input {dict} -- dictionary.
-    
-    Returns:
-        {list} -- list of tuples (key, value)
-    """
-    formatted_list = []
-    for key, value in input_dict.items():
-        if key == "ts" or key == "id" or key == "Tooltip":
-            continue
-        elif isinstance(value, list):
-            formatted_list.append((key, [format_dictionary(val) for val in value]))
-        elif isinstance(value, dict):
-            formatted_list.append((key, format_dictionary(value)))
-        else:
-            formatted_list.append((key, value))
-    return formatted_list
 
 
 def write_log_file(namespace, document):
@@ -83,11 +33,11 @@ def write_log_file(namespace, document):
     """
     log_timestamp = asctime(gmtime(document[TS]))
     with open("{}{}.{}.log".format(LOG_DIR, namespace, DAY_STRING), "a") as f:
-        log_string = _LOG_TEMPLATE.render(
-            date_string=log_timestamp.upper(),
-            namespace_string=namespace,
-            other_stuff=format_list(format_dictionary(document[LOG_KEY]))[1:-1]
-        )
+        log_string = dumps({
+            "datetime": log_timestamp.upper(),
+            "namespace": namespace,
+            "log": document[LOG_KEY]
+        })
         f.write("{}\n".format(log_string))
 
 
