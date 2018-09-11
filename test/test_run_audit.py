@@ -1,4 +1,6 @@
+
 from os import environ, remove
+from json import dumps
 import time as T
 
 import docker
@@ -95,11 +97,19 @@ def test_write_log_file():
 	run_audit.write_log_file("Brain.Jobs", sample_job)
 	with open("{}{}.{}.log".format(run_audit.LOG_DIR, "Brain.Targets", run_audit.DAY_STRING), "r") as f:
 		for line in f:
-			assert line.replace("\n", "") == "[THU JAN  1 00:00:15 1970] - (Brain.Targets) ---- Location: 192.168.1.3 -- Optional: [init: ] -- PluginName: Harness -- Port: 9800"
+			assert line.replace("\n", "") == dumps({
+				"datetime": T.asctime(T.gmtime(sample_target["ts"])).upper(),
+				"namespace": "Brain.Targets",
+				"log": sample_target["new_val"]
+			})
 	remove("{}{}.{}.log".format(run_audit.LOG_DIR, "Brain.Targets", run_audit.DAY_STRING))
 	with open("{}{}.{}.log".format(run_audit.LOG_DIR, "Brain.Jobs", run_audit.DAY_STRING), "r") as f:
 		for line in f:
-			assert line.replace("\n", "") == "[THU JAN  1 00:00:15 1970] - (Brain.Jobs) ---- JobCommand: [CommandName: echo -- Inputs: [('Name', 'EchoString'): ('Type', 'textbox')] -- OptionalInputs: [] -- Output: True] -- JobTarget: [Location: 192.168.1.1 -- PluginName: Harness -- Port: 0] -- StartTime: 0 -- Status: Ready"
+			assert line.replace("\n", "") == dumps({
+				"datetime": T.asctime(T.gmtime(sample_job["ts"])).upper(),
+				"namespace": "Brain.Jobs",
+				"log": sample_job["new_val"]
+			})
 	remove("{}{}.{}.log".format(run_audit.LOG_DIR, "Brain.Jobs", run_audit.DAY_STRING))
 
 def test_connect(something):

@@ -1,9 +1,9 @@
+from json import dumps
 from multiprocessing import Pool
 from sys import argv, stderr
 from time import asctime, gmtime, sleep, time
 
 import rethinkdb as r
-from jinja2 import Template
 
 
 _AUDIT_DB = "AUDIT"
@@ -15,9 +15,6 @@ TS = "ts"
 LOG_DIR = "/logs/"
 LOG_KEY = "new_val"
 DAY_STRING = "_".join(asctime(gmtime(time())).split(" "))
-_LOG_TEMPLATE = Template(
-    """[{{ date_string }}] - ({{ namespace_string }}) ---- {{ other_stuff }}"""
-)
 
 LOGGER_KNOWN_EXCEPTIONS = (AttributeError,
                            KeyError,
@@ -83,11 +80,11 @@ def write_log_file(namespace, document):
     """
     log_timestamp = asctime(gmtime(document[TS]))
     with open("{}{}.{}.log".format(LOG_DIR, namespace, DAY_STRING), "a") as f:
-        log_string = _LOG_TEMPLATE.render(
-            date_string=log_timestamp.upper(),
-            namespace_string=namespace,
-            other_stuff=format_list(format_dictionary(document[LOG_KEY]))[1:-1]
-        )
+        log_string = dumps({
+            "datetime": log_timestamp.upper(),
+            "namespace": namespace,
+            "log": document[LOG_KEY]
+        })
         f.write("{}\n".format(log_string))
 
 
