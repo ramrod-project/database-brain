@@ -7,7 +7,6 @@ dict-to-protobuf>=0.0.3.8
 docker==3.3.0
 docker-pycreds==0.2.3
 idna==2.6
-Jinja2==2.10
 MarkupSafe==1.0
 more-itertools==4.1.0
 pluggy==0.6.0
