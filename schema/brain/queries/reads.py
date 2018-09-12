@@ -29,8 +29,8 @@ def _jobs_cursor(plugin_name, location=None, port=None):
     cur = RBJ.get_all(READY, index=STATUS_FIELD)
     cur_filter = (r.row[TARGET_FIELD][PLUGIN_NAME_KEY] == plugin_name)
     cur_filter = cur_filter & \
-                 (r.row[EXPIRE_FIELD] <= time() |
-                  ~r.row.has_fields(EXPIRE_FIELD))
+                 (~r.row.has_fields(EXPIRE_FIELD) |
+                  r.row[EXPIRE_FIELD].ge(time()))
     if plugin_name and location and not port:
         cur_filter = cur_filter & \
                      (r.row[TARGET_FIELD][LOCATION_FIELD] == location)
