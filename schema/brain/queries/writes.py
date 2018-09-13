@@ -223,26 +223,12 @@ def transition_status_time(job_filter, status_change, conn=None):
 
 
 def transition_waiting(start_time, conn=None):
-    """
-
-    :param start_time: <float> from time.time()
-    :param conn: (optional) <rethinkdb connection>
-    :return: <dict>
-    :raises may raise reqlerror, wrapped into ValueError by decorator
-    """
     wait_filter = waiting_filter(start_time)
     status_change = {STATUS_FIELD: transition_success(WAITING)}
     return transition_status_time(wait_filter, status_change, conn)
 
 
 def transition_expired(expire_time, conn=None):
-    """
-
-    :param expire_time: <float> from time.time()
-    :param conn: (optional) <rethinkdb connection>
-    :return: <dict>
-    :raises may raise reqlerror, wrapped into ValueError by decorator
-    """
     expired_filter = expire_filter(expire_time)
     status_change = {STATUS_FIELD: transition_fail(READY)}
     return transition_status_time(expired_filter, status_change, conn)
