@@ -218,6 +218,10 @@ def update_plugin_controller(plugin_data,
 
 @wrap_rethink_errors
 @wrap_connection
+def transition_status_time(job_filter, status_change, conn=None):
+    return RBJ.filter(job_filter).update(status_change).run(conn)
+
+
 def transition_waiting(start_time, conn=None):
     """
 
@@ -228,11 +232,9 @@ def transition_waiting(start_time, conn=None):
     """
     wait_filter = waiting_filter(start_time)
     status_change = {STATUS_FIELD: transition_success(WAITING)}
-    return RBJ.filter(wait_filter).update(status_change).run(conn)
+    return transition_status_time(wait_filter, status_change, conn)
 
 
-@wrap_rethink_errors
-@wrap_connection
 def transition_expired(expire_time, conn=None):
     """
 
@@ -243,4 +245,4 @@ def transition_expired(expire_time, conn=None):
     """
     expired_filter = expire_filter(expire_time)
     status_change = {STATUS_FIELD: transition_fail(READY)}
-    return RBJ.filter(expired_filter).update(status_change).run(conn)
+    return transition_status_time(expired_filter, status_change, conn)
