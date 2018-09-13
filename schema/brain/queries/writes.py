@@ -214,6 +214,12 @@ def update_plugin_controller(plugin_data,
 @wrap_rethink_errors
 @wrap_connection
 def transition_waiting(start_time, conn=None):
+    """
+
+    :param start_time: <float> timestamp
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <dict> standard rethinkdb output dict
+    """
     wait_filter = waiting_filter(start_time)
     status_change = {STATUS_FIELD: transition_success(WAITING)}
     return RBJ.filter(wait_filter).update(status_change).run(conn)
@@ -224,9 +230,9 @@ def transition_waiting(start_time, conn=None):
 def transition_expired(expire_time, conn=None):
     """
 
-    :param expire_time:
-    :param conn:
-    :return:
+    :param expire_time: <float> timestamp
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <dict> standard rethinkdb output dict
     """
     expired_filter = expire_filter(expire_time)
     status_change = {STATUS_FIELD: transition_fail(READY)}
