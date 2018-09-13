@@ -57,6 +57,7 @@ STAGE_KEY = "STAGE"
 RDB_UPDATE = "update"
 RDB_REPLACE = "replace"
 
+TIMEOUT_ERROR = "Job Timeout"
 
 PROD = "PROD"
 QA = "QA"
