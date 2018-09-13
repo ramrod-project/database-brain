@@ -11,7 +11,7 @@ from .brain.connection import DefaultConnection, BrainNotReady
 from .brain import queries
 from .brain.jobs import WAITING, READY
 from .brain.static import STATUS_FIELD, START_FIELD, EXPIRE_FIELD
-from .brain.queries.writes import insert_jobs, transition_expired, transition_waiting, expire_filter
+from .brain.queries.writes import insert_jobs, transition_expired, transition_waiting, expire_filter, status_time_filter
 from .brain.queries import RBJ
 
 

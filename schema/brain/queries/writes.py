@@ -14,25 +14,35 @@ from .reads import plugin_exists, get_job_by_id
 
 VALID_STATES = STATES
 
+def status_time_filter(current_state, time_field, lte_time):
+    """
 
+    :param current_state: <str> from brain.jobs.states
+    :param time_field: a StartTime/ExpireTime/CompletedTime
+    :param lte_time: <float>
+    :return:
+    """
+    return ((r.row[STATUS_FIELD] == current_state) &
+            (r.row[time_field] <= lte_time))
+
+
+@deprecated_function(replacement="brain.queries.status_time_filter")
 def waiting_filter(lte_time):
     """
     generates a filter for status==waiting and
     time older than lte_time
-
-    :param lte_time: <float> time()
-    :return:
     """
-    return ((r.row[STATUS_FIELD] == WAITING) &
-            (r.row[START_FIELD] <= lte_time))
+    return status_time_filter(WAITING, START_FIELD, lte_time)
 
 
-def expire_filter(expire_time):
+@deprecated_function(replacement="brain.queries.status_time_filter")
+def expire_filter(lte_time):
     """
-    generates filter for ready but expired object
+    generates a filter for status==waiting and
+    time older than lte_time
     """
-    return ((r.row[STATUS_FIELD] == READY) &
-            (r.row[EXPIRE_FIELD] <= expire_time))
+    return status_time_filter(READY, EXPIRE_FIELD, lte_time)
+
 
 @deprecated_function(replacement="brain.controller.plugins.has_port_conflict")
 def _check_port_conflict(port_data,
