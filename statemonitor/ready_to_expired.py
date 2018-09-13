@@ -1,10 +1,6 @@
 from time import sleep, time
-import os
-import sys
 from random import randint
-
-_path = os.path.abspath(os.path.join(os.path.abspath(__file__), "../../"))+"/schema"
-sys.path.append(_path)
+import pathfix  # appears unused but don't remove!
 
 from brain.queries.writes import transition_expired
 
