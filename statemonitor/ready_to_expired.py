@@ -15,4 +15,3 @@ if __name__ == "__main__":
         except ValueError:
            pass  # forget it and restart
         sleep(randint(CHECKING_PERIOD-1, CHECKING_PERIOD+1))  # thundering herd
-
