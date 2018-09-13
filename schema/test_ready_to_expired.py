@@ -71,3 +71,9 @@ def test_confirm_job_can_expire(rethink):
     assert success["errors"] == 0
     assert success['replaced'] == 1
 
+def test_confirm_job_is_expired(rethink):
+    expired = 0
+    for x in RBJ.run(connect()):
+        if x['Status'] == "Error":
+            expired += 1
+    assert expired == 1
