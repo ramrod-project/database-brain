@@ -9,6 +9,7 @@ from ..decorators import deprecated_function
 from ..static import RPX, RBT, RBJ, RBO, COMMAND_NAME_KEY, LOCATION_FIELD, \
     PLUGIN_NAME_KEY, STATUS_FIELD, READY, TARGET_FIELD, START_FIELD, DONE, \
     ID_FIELD, OUTPUTJOB_FIELD, CONTENT_FIELD, EXPIRE_FIELD, PORT_FIELD
+from . import CUSTOM_FILTER_NAME
 from .decorators import wrap_connection
 from .decorators import wrap_rethink_generator_errors
 from .decorators import wrap_rethink_errors
@@ -16,7 +17,7 @@ from .decorators import wrap_job_cursor
 
 
 @wrap_job_cursor
-def _jobs_cursor(plugin_name, location=None, port=None):
+def _jobs_cursor(plugin_name, location=None, port=None, custom=None):
     """
     generates a reql cursor for plugin_name
     with status ready
@@ -37,6 +38,8 @@ def _jobs_cursor(plugin_name, location=None, port=None):
     if plugin_name and location and port:
         cur_filter = cur_filter & \
                      (r.row[TARGET_FIELD][PORT_FIELD] == port)
+    if custom:
+        cur_filter = cur_filter & custom
     return cur.filter(cur_filter).order_by(START_FIELD)
 
 
@@ -205,7 +208,7 @@ def get_jobs(plugin_name,
 @wrap_rethink_errors
 @wrap_connection
 def get_next_job(plugin_name, location=None, port=None,
-                 verify_job=False, conn=None):
+                 verify_job=False, conn=None, **kwargs):
     """
 
     :param plugin_name: <str>
@@ -213,7 +216,10 @@ def get_next_job(plugin_name, location=None, port=None,
     :param conn: <connection> or <NoneType>
     :return: <dict> or <NoneType>
     """
-    job_cur = _jobs_cursor(plugin_name, location, port).limit(1).run(conn)
+    custom_filter = kwargs.get(CUSTOM_FILTER_NAME)
+    job_cur = _jobs_cursor(plugin_name,
+                           location, port,
+                           custom_filter).limit(1).run(conn)
     for job in job_cur:
         if verify_job and not verify(job, Job()):
             continue
