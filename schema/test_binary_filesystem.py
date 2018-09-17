@@ -17,7 +17,7 @@ from .brain.brain_pb2 import Binary
 from .brain.binary import filesystem as bfs
 from .brain.binary.filesystem import BrainStoreConfig
 from .test_put_and_get_binary import test_ensure_files_table_exists as check_files_table
-
+from os import mkdir, rmdir
 
 CLIENT = docker.from_env()
 TEST_FILE_NAME = "TEST_FILE.txt"
@@ -35,16 +35,18 @@ def rethink():
         remove=True
     )
     check_files_table(None)
-    with tempfile.TemporaryDirectory() as tf:
-        sleep(3)
-        bsc = BrainStoreConfig(allow_remove=False, allow_list=True)
-        p = Process(target=bfs.start_filesystem, args=(tf, bsc, ))
-        p.start()
-        sleep(3)
-        assert p.is_alive()
-        yield tf
-        p.terminate()
-        p.join(5)
+    tf = "okokok"
+    mkdir(tf)
+    sleep(3)
+    bsc = BrainStoreConfig(allow_remove=False, allow_list=True)
+    p = Process(target=bfs.start_filesystem, args=(tf, bsc, ))
+    p.start()
+    sleep(3)
+    assert p.is_alive()
+    yield tf
+    p.terminate()
+    p.join(5)
+    rmdir(tf)
     # Teardown for module tests
     container.stop()
 
