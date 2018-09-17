@@ -15,6 +15,7 @@ from .brain.binary.data import put, get, list_dir, delete
 from .brain.queries import RBF
 from .brain.brain_pb2 import Binary
 from .brain.binary import filesystem as bfs
+from .brain.binary.filesystem import BrainStoreConfig
 from .test_put_and_get_binary import test_ensure_files_table_exists as check_files_table
 
 
@@ -35,7 +36,9 @@ def rethink():
     )
     check_files_table(None)
     with tempfile.TemporaryDirectory() as tf:
-        p = Process(target=bfs.start_filesystem, args=(tf,))
+        sleep(3)
+        bsc = BrainStoreConfig(allow_remove=False, allow_list=True)
+        p = Process(target=bfs.start_filesystem, args=(tf, bsc, ))
         p.start()
         sleep(3)
         assert p.is_alive()
