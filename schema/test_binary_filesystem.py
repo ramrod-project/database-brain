@@ -26,7 +26,7 @@ TEST_FILE_CONTENT = "content data is binary 灯火 标 and string stuff ".encode
 def rethink():
     tag = environ.get("TRAVIS_BRANCH", "dev").replace("master", "latest")
     container_name = "brainmoduletestFilesystem"
-    CLIENT.containers.run(
+    container = CLIENT.containers.run(
         "ramrodpcp/database-brain:{}".format(tag),
         name=container_name,
         detach=True,
@@ -41,11 +41,7 @@ def rethink():
         p.terminate()
         p.join(5)
     # Teardown for module tests
-    containers = CLIENT.containers.list()
-    for container in containers:
-        if container.name == container_name:
-            container.stop()
-            break
+    container.stop()
 
 
 def test_temp_folder_exists(rethink):
@@ -56,7 +52,7 @@ def test_temp_folder_exists(rethink):
 def test_write_a_file(rethink):
     with open("{}/{}".format(rethink, TEST_FILE_NAME), "wb") as f:
         f.write(TEST_FILE_CONTENT)
-    sleep(3) #push to database is async after close
+    sleep(10) #push to database is async after close
     assert get(TEST_FILE_NAME)
     assert TEST_FILE_NAME in list_dir()
 
