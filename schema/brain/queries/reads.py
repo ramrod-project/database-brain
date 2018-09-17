@@ -1,13 +1,14 @@
 """
 assortment of wrapped queries
 """
+from time import time
 from ..brain_pb2 import Job
 from ..checks import verify
 from ..connection import rethinkdb as r
 from ..decorators import deprecated_function
 from ..static import RPX, RBT, RBJ, RBO, COMMAND_NAME_KEY, LOCATION_FIELD, \
     PLUGIN_NAME_KEY, STATUS_FIELD, READY, TARGET_FIELD, START_FIELD, DONE, \
-    ID_FIELD, OUTPUTJOB_FIELD, CONTENT_FIELD
+    ID_FIELD, OUTPUTJOB_FIELD, CONTENT_FIELD, EXPIRE_FIELD, PORT_FIELD
 from .decorators import wrap_connection
 from .decorators import wrap_rethink_generator_errors
 from .decorators import wrap_rethink_errors
@@ -27,12 +28,15 @@ def _jobs_cursor(plugin_name, location=None, port=None):
     """
     cur = RBJ.get_all(READY, index=STATUS_FIELD)
     cur_filter = (r.row[TARGET_FIELD][PLUGIN_NAME_KEY] == plugin_name)
+    cur_filter = cur_filter & \
+                 (~r.row.has_fields(EXPIRE_FIELD) |
+                  r.row[EXPIRE_FIELD].ge(time()))
     if plugin_name and location and not port:
         cur_filter = cur_filter & \
                      (r.row[TARGET_FIELD][LOCATION_FIELD] == location)
     if plugin_name and location and port:
         cur_filter = cur_filter & \
-                     (r.row["JobTarget"]["Port"] == port)
+                     (r.row[TARGET_FIELD][PORT_FIELD] == port)
     return cur.filter(cur_filter).order_by(START_FIELD)
 
 

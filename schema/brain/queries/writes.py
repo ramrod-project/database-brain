@@ -3,11 +3,12 @@ assortment of wrapped queries
 """
 from ..brain_pb2 import Jobs, Target, Commands
 from ..checks import verify
-from ..jobs import WAITING, STATES, transition_success
+from ..jobs import WAITING, READY, STATES, transition_success, transition_fail
 from ..connection import rethinkdb as r
 from ..decorators import deprecated_function
 from ..static import START_FIELD, STATUS_FIELD, ID_FIELD, OUTPUTJOB_FIELD, \
-    CONTENT_FIELD, COMMAND_NAME_KEY, RDB_UPDATE, RDB_REPLACE
+    CONTENT_FIELD, COMMAND_NAME_KEY, RDB_UPDATE, RDB_REPLACE, EXPIRE_FIELD, \
+    TIMEOUT_ERROR
 from .decorators import wrap_connection, wrap_rethink_errors
 from . import RPX, RBT, RBJ, RPC, RPP, RBO
 from .reads import plugin_exists, get_job_by_id
@@ -19,12 +20,23 @@ def waiting_filter(lte_time):
     """
     generates a filter for status==waiting and
     time older than lte_time
-
-    :param lte_time: <float> time()
-    :return:
     """
     return ((r.row[STATUS_FIELD] == WAITING) &
             (r.row[START_FIELD] <= lte_time))
+
+
+def expire_filter(lte_time):
+    """
+    generates a filter for status==waiting and
+    time older than lte_time
+    """
+    return (
+            (
+                (r.row[STATUS_FIELD] == WAITING) |
+                (r.row[STATUS_FIELD] == READY)
+            ) &
+            (r.row[EXPIRE_FIELD] <= lte_time)
+    )
 
 
 @deprecated_function(replacement="brain.controller.plugins.has_port_conflict")
@@ -204,11 +216,27 @@ def update_plugin_controller(plugin_data,
 def transition_waiting(start_time, conn=None):
     """
 
-    :param start_time: <float> from time.time()
-    :param conn: (optional) <rethinkdb connection>
-    :return: <dict>
-    :raises may raise reqlerror, wrapped into ValueError by decorator
+    :param start_time: <float> timestamp
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <dict> standard rethinkdb output dict
     """
     wait_filter = waiting_filter(start_time)
     status_change = {STATUS_FIELD: transition_success(WAITING)}
     return RBJ.filter(wait_filter).update(status_change).run(conn)
+
+
+@wrap_rethink_errors
+@wrap_connection
+def transition_expired(expire_time, conn=None):
+    """
+
+    :param expire_time: <float> timestamp
+    :param conn: <rethinkdb.DefaultConnection>
+    :return: <dict> standard rethinkdb output dict
+    """
+    expired_filter = expire_filter(expire_time)
+    status_change = {STATUS_FIELD: transition_fail(READY)}
+    for job in RBJ.filter(expired_filter).run(conn):
+        job[STATUS_FIELD] = status_change[STATUS_FIELD]
+        write_output(job[ID_FIELD], TIMEOUT_ERROR, conn=conn)
+    return RBJ.filter(expired_filter).update(status_change).run(conn)
