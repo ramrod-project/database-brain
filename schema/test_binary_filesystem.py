@@ -56,7 +56,8 @@ def test_temp_folder_exists(rethink):
 def test_write_a_file(rethink):
     with open("{}/{}".format(rethink, TEST_FILE_NAME), "wb") as f:
         f.write(TEST_FILE_CONTENT)
-    sleep(2) #push to database is async after close
+    sleep(3) #push to database is async after close
+    assert get(TEST_FILE_NAME)
     assert TEST_FILE_NAME in list_dir()
 
 
