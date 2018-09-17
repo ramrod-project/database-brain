@@ -15,8 +15,9 @@ from .brain.binary.data import put, get, list_dir, delete
 from .brain.queries import RBF
 from .brain.brain_pb2 import Binary
 from .brain.binary import filesystem as bfs
+from .brain.binary.filesystem import BrainStoreConfig
 from .test_put_and_get_binary import test_ensure_files_table_exists as check_files_table
-
+from os import mkdir, rmdir
 
 CLIENT = docker.from_env()
 TEST_FILE_NAME = "TEST_FILE.txt"
@@ -26,7 +27,7 @@ TEST_FILE_CONTENT = "content data is binary 灯火 标 and string stuff ".encode
 def rethink():
     tag = environ.get("TRAVIS_BRANCH", "dev").replace("master", "latest")
     container_name = "brainmoduletestFilesystem"
-    CLIENT.containers.run(
+    container = CLIENT.containers.run(
         "ramrodpcp/database-brain:{}".format(tag),
         name=container_name,
         detach=True,
@@ -34,18 +35,20 @@ def rethink():
         remove=True
     )
     check_files_table(None)
-    with tempfile.TemporaryDirectory() as tf:
-        p = Process(target=bfs.start_filesystem, args=(tf,))
-        p.start()
-        yield tf
-        p.terminate()
-        p.join(5)
+    tf = "okokok"
+    mkdir(tf)
+    sleep(3)
+    bsc = BrainStoreConfig(allow_remove=False, allow_list=True)
+    p = Process(target=bfs.start_filesystem, args=(tf, bsc, ))
+    p.start()
+    sleep(3)
+    assert p.is_alive()
+    yield tf
+    p.terminate()
+    p.join(5)
+    rmdir(tf)
     # Teardown for module tests
-    containers = CLIENT.containers.list()
-    for container in containers:
-        if container.name == container_name:
-            container.stop()
-            break
+    container.stop()
 
 
 def test_temp_folder_exists(rethink):
@@ -56,7 +59,8 @@ def test_temp_folder_exists(rethink):
 def test_write_a_file(rethink):
     with open("{}/{}".format(rethink, TEST_FILE_NAME), "wb") as f:
         f.write(TEST_FILE_CONTENT)
-    sleep(2) #push to database is async after close
+    sleep(3) #push to database is async after close
+    assert get(TEST_FILE_NAME)
     assert TEST_FILE_NAME in list_dir()
 
 
