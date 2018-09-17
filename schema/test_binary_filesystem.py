@@ -37,6 +37,8 @@ def rethink():
     with tempfile.TemporaryDirectory() as tf:
         p = Process(target=bfs.start_filesystem, args=(tf,))
         p.start()
+        sleep(3)
+        assert p.is_alive()
         yield tf
         p.terminate()
         p.join(5)
@@ -52,7 +54,7 @@ def test_temp_folder_exists(rethink):
 def test_write_a_file(rethink):
     with open("{}/{}".format(rethink, TEST_FILE_NAME), "wb") as f:
         f.write(TEST_FILE_CONTENT)
-    sleep(10) #push to database is async after close
+    sleep(3) #push to database is async after close
     assert get(TEST_FILE_NAME)
     assert TEST_FILE_NAME in list_dir()
 
