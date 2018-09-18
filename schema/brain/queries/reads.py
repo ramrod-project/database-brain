@@ -191,7 +191,7 @@ def plugin_list(conn=None):
 @wrap_rethink_generator_errors
 @wrap_connection
 def get_jobs(plugin_name,
-             verify_job=False, conn=None):
+             verify_job=True, conn=None):
     """
     :param plugin_name: <str>
     :param verify_job: <bool>
@@ -208,7 +208,7 @@ def get_jobs(plugin_name,
 @wrap_rethink_errors
 @wrap_connection
 def get_next_job(plugin_name, location=None, port=None,
-                 verify_job=False, conn=None, **kwargs):
+                 verify_job=True, conn=None, **kwargs):
     """
 
     :param plugin_name: <str>
@@ -229,7 +229,7 @@ def get_next_job(plugin_name, location=None, port=None,
 
 @wrap_rethink_errors
 @wrap_connection
-def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
+def get_next_job_by_location(plugin_name, loc, verify_job=True, conn=None):
     """
     Deprecated - Use get_next_job
     """
@@ -238,7 +238,7 @@ def get_next_job_by_location(plugin_name, loc, verify_job=False, conn=None):
 
 @wrap_rethink_errors
 @wrap_connection
-def get_next_job_by_port(plugin_name, port, verify_job=False, conn=None):
+def get_next_job_by_port(plugin_name, port, verify_job=True, conn=None):
     """
     Deprecated - Use get_next_job
     """
