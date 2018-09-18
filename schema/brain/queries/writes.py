@@ -48,7 +48,7 @@ def _check_port_conflict(port_data,
 
 @wrap_rethink_errors
 @wrap_connection
-def insert_target(target, verify_target=False,
+def insert_target(target, verify_target=True,
                   conn=None):
     """
 
@@ -161,7 +161,7 @@ def destroy_plugin(plugin_name, conn=None):
 @wrap_rethink_errors
 @wrap_connection
 def advertise_plugin_commands(plugin_name, commands,
-                              verify_commands=False,
+                              verify_commands=True,
                               conn=None):
     """
 
@@ -183,7 +183,7 @@ def advertise_plugin_commands(plugin_name, commands,
 
 @deprecated_function(replacement="brain.controller.plugins.create_plugin")
 def create_plugin_controller(plugin_data,
-                             verify_commands=False,
+                             verify_commands=True,
                              conn=None):
     from ..controller.plugins import create_plugin
     return create_plugin(plugin_data,
@@ -193,7 +193,7 @@ def create_plugin_controller(plugin_data,
 
 @deprecated_function(replacement="brain.controller.plugins.create_port")
 def create_port_controller(port_data,
-                           verify_port=False,
+                           verify_port=True,
                            conn=None):
     from ..controller.plugins import create_port
     return create_port(port_data,
@@ -203,7 +203,7 @@ def create_port_controller(port_data,
 
 @deprecated_function(replacement="brain.controller.plugins.update_plugin")
 def update_plugin_controller(plugin_data,
-                             verify_plugin=False,
+                             verify_plugin=True,
                              conn=None):
     from ..controller.plugins import update_plugin
     return update_plugin(plugin_data,
