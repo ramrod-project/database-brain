@@ -15,31 +15,35 @@ HARNESS_NAME = "Harness"
 TEST_PLUGIN_DATA = {
     "id": HARNESS_ID,  # prod systems should allow auto-generated IDs
     "Name": HARNESS_NAME,
-    "ServiceName": "{}-5000".format(HARNESS_NAME),
+    "ServiceName": "{}-5000tcp".format(HARNESS_NAME),
     "State": "Available",
+    "OS": "posix",
     "DesiredState": "",
     "Interface": "192.168.1.1",
     "Environment": ["STAGE=DEV", "NORMAL=1"],
-    "ExternalPorts": ["5000"],
-    "InternalPorts": ["5000"]
+    "ExternalPorts": ["5000/tcp"],
+    "InternalPorts": ["5000/tcp"]
 }
 
 
 TEST_PROD_PLUGIN_DATA = {
     "Name": "AnotherThing",
-    "ServiceName": "AnotherThing-5600",
+    "ServiceName": "AnotherThing-5600tcp",
     "State": "Available",
     "DesiredState": "",
+    "OS": "posix",
     "Interface": "",
     "Environment": ["STAGE=DEV", "NORMAL=1"],
-    "ExternalPorts": ["5600"],
-    "InternalPorts": ["5600"]
+    "ExternalPorts": ["5600/tcp"],
+    "InternalPorts": ["5600/tcp"]
 }
 
 
 TEST_PORT_DATA = {
     "InterfaceName": "eth0",
     "Interface": "192.168.1.1",
+    "NodeHostName": "home",
+    "OS": "posix",
     "TCPPorts": ["5000"],
     "UDPPorts": []
 }
@@ -47,6 +51,8 @@ TEST_PORT_DATA = {
 TEST_PORT_DATA2 = {
     "InterfaceName": "eth0",
     "Interface": "192.168.1.1",
+    "NodeHostName": "home",
+    "OS": "posix",
     "TCPPorts": ["6000", "7000"],
     "UDPPorts": ["8000"]
 }

@@ -64,25 +64,31 @@ TEST_JOB_EARLY = {
 
 TEST_PLUGIN_DATA = {
     "Name": "Harness",
-    "ServiceName": "Harness-5000",
+    "ServiceName": "Harness-5000tcp",
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
+    "OS": "posix",
     "Environment": ["STAGE=DEV", "NORMAL=1"],
-    "ExternalPorts": ["5000"],
-    "InternalPorts": ["5000"]
+    "ExternalPorts": ["5000/tcp"],
+    "InternalPorts": ["5000/tcp"]
 }
 
 TEST_PORT_DATA = {
     "InterfaceName": "eth0",
     "Interface": "192.168.1.1",
+    "NodeHostName": "home",
+    "OS": "posix",
     "TCPPorts": ["5000"],
     "UDPPorts": []
 }
 
+
 TEST_PORT_DATA2 = {
     "InterfaceName": "eth0",
     "Interface": "192.168.1.1",
+    "NodeHostName": "home",
+    "OS": "posix",
     "TCPPorts": ["6000", "7000"],
     "UDPPorts": ["8000"]
 }
