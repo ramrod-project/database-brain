@@ -15,31 +15,35 @@ HARNESS_NAME = "Harness"
 TEST_PLUGIN_DATA = {
     "id": HARNESS_ID,  # prod systems should allow auto-generated IDs
     "Name": HARNESS_NAME,
-    "ServiceName": "{}-5000".format(HARNESS_NAME),
+    "ServiceName": "{}-5000tcp".format(HARNESS_NAME),
     "State": "Available",
+    "OS": "posix",
     "DesiredState": "",
-    "Interface": "",
+    "Interface": "192.168.1.1",
     "Environment": ["STAGE=DEV", "NORMAL=1"],
-    "ExternalPorts": ["5000"],
-    "InternalPorts": ["5000"]
+    "ExternalPorts": ["5000/tcp"],
+    "InternalPorts": ["5000/tcp"]
 }
 
 
 TEST_PROD_PLUGIN_DATA = {
     "Name": "AnotherThing",
-    "ServiceName": "AnotherThing-5600",
+    "ServiceName": "AnotherThing-5600tcp",
     "State": "Available",
     "DesiredState": "",
+    "OS": "posix",
     "Interface": "",
     "Environment": ["STAGE=DEV", "NORMAL=1"],
-    "ExternalPorts": ["5600"],
-    "InternalPorts": ["5600"]
+    "ExternalPorts": ["5600/tcp"],
+    "InternalPorts": ["5600/tcp"]
 }
 
 
 TEST_PORT_DATA = {
     "InterfaceName": "eth0",
     "Interface": "192.168.1.1",
+    "NodeHostName": "home",
+    "OS": "posix",
     "TCPPorts": ["5000"],
     "UDPPorts": []
 }
@@ -47,8 +51,38 @@ TEST_PORT_DATA = {
 TEST_PORT_DATA2 = {
     "InterfaceName": "eth0",
     "Interface": "192.168.1.1",
+    "NodeHostName": "home",
+    "OS": "posix",
     "TCPPorts": ["6000", "7000"],
     "UDPPorts": ["8000"]
+}
+
+TEST_TARGET = {"PluginName":"TestPlugin",
+               "Location": "192.168.1.1",
+               "Port": "0",
+               "Optional": "example"}
+
+TEST_CAPABILITY = [
+    {
+        "CommandName": "echo",
+        "Tooltip": "",
+        "Output": True,
+        "Inputs": [
+                {"Name": "EchoString",
+                 "Type": "textbox",
+                 "Tooltip": "This string will be echoed back",
+                 "Value": ""
+                 },
+                ],
+        "OptionalInputs": []
+    }
+]
+
+TEST_JOB = {
+    "JobTarget": TEST_TARGET,
+    "Status": "Ready",
+    "StartTime": 7,
+    "JobCommand": TEST_CAPABILITY[0]
 }
 
 @fixture(scope='module')
@@ -216,3 +250,14 @@ def test_get_interfaces(rethink):
     assert len(res) == 1
     assert TEST_PORT_DATA['Interface'] in res
     assert TEST_PORT_DATA2['Interface'] in res
+
+def test_record_state(rethink):
+    state = {"192.168.1.1": TEST_JOB}
+    plugins.record_state(TEST_PLUGIN_DATA["ServiceName"], state, r.connect())
+    res = plugins.get(TEST_PLUGIN_DATA["id"])
+    assert res["PluginState"] == state
+
+def test_recover_state(rethink):
+    state = plugins.recover_state(TEST_PLUGIN_DATA["ServiceName"], r.connect())
+    assert state["192.168.1.1"] == TEST_JOB
+    

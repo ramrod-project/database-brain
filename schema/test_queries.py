@@ -32,6 +32,20 @@ TEST_CAPABILITY = [
                 ],
         "OptionalInputs": []
     },
+    {
+        "CommandName": "aardvark",
+        "Tooltip": "should be first!",
+        "Output": False,
+        "Inputs": [],
+        "OptionalInputs": []
+    },
+    {
+        "CommandName": "zoom",
+        "Tooltip": "should be last!",
+        "Output": False,
+        "Inputs": [],
+        "OptionalInputs": []
+    },
 ]
 
 TEST_JOB = {
@@ -50,25 +64,31 @@ TEST_JOB_EARLY = {
 
 TEST_PLUGIN_DATA = {
     "Name": "Harness",
-    "ServiceName": "Harness-5000",
+    "ServiceName": "Harness-5000tcp",
     "State": "Available",
     "DesiredState": "",
     "Interface": "",
+    "OS": "posix",
     "Environment": ["STAGE=DEV", "NORMAL=1"],
-    "ExternalPorts": ["5000"],
-    "InternalPorts": ["5000"]
+    "ExternalPorts": ["5000/tcp"],
+    "InternalPorts": ["5000/tcp"]
 }
 
 TEST_PORT_DATA = {
     "InterfaceName": "eth0",
     "Interface": "192.168.1.1",
+    "NodeHostName": "home",
+    "OS": "posix",
     "TCPPorts": ["5000"],
     "UDPPorts": []
 }
 
+
 TEST_PORT_DATA2 = {
     "InterfaceName": "eth0",
     "Interface": "192.168.1.1",
+    "NodeHostName": "home",
+    "OS": "posix",
     "TCPPorts": ["6000", "7000"],
     "UDPPorts": ["8000"]
 }
@@ -185,8 +205,17 @@ def test_get_capability(rethink):
     g = queries.get_plugin_commands(TEST_TARGET['PluginName'])
     assert isinstance(g, GeneratorType)
     cmds = [x for x in g]
-    assert len(cmds) == 1
-    assert cmds[0]["CommandName"] == TEST_CAPABILITY[0]['CommandName']
+    assert len(cmds) == len(TEST_CAPABILITY)
+
+
+def test_get_capability_sorted(rethink):
+    g = queries.get_plugin_commands(TEST_TARGET['PluginName'])
+    assert isinstance(g, GeneratorType)
+    prior_x = ""
+    for x in g:
+        assert x['CommandName'] > prior_x
+        prior_x = x['CommandName']
+    assert x != prior_x
 
 def test_get_capability_2(rethink):
     res = queries.get_plugin_command(TEST_TARGET['PluginName'],

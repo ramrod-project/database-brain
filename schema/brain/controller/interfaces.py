@@ -25,7 +25,7 @@ def get_ports_by_ip(ip_address,
     """
     if ip_address == "":
         result = RPP.filter({
-            "Address": ip_address
+            ADDRESS_KEY: ip_address
         }).run(conn)
     else:
         result = RPP.filter(
@@ -65,7 +65,7 @@ def _get_existing_interface(existing, port_data):
 @wrap_rethink_errors
 @wrap_connection
 def create_port(port_data,
-                verify_port=False,
+                verify_port=True,
                 conn=None):
     """
 
