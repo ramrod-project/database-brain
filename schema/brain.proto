@@ -128,7 +128,10 @@ message Log {
     optional string id = 1;
     required float rt = 2;          // request time stamp
     optional int32 Severity = 3;    //
-    optional string msg = 4;
+    optional string msg = 4;         // An arbitrary message giving more
+                                     // details about the event. Multi-line
+                                     // entries can be produced by using
+                                     // as the new line separator.
     optional Message msgDoc = 5;
     optional string shost = 6;
     optional string sourceServiceName = 7;
@@ -137,10 +140,7 @@ message Log {
     message Message {
         // can be arbitrary object
 
-        // An arbitrary message giving more
-        // details about the event. Multi-line
-        // entries can be produced by using
-        // as the new line separator.
+
     }
 }
 
