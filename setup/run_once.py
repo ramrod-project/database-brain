@@ -1,4 +1,5 @@
 import rethinkdb as r
+from schema.brain.static import RECEIVE_TIME_STAMP
 
 def connect():
 	return r.connect("localhost").repl()
@@ -47,8 +48,8 @@ def brainfilescreate():
 
 def brainlogscreate():
 	r.db("Brain").table_create("Logs").run()
-	r.db("Brain").table("Logs").index_create("TimeStamp").run()
-	r.db("Brain").table("Logs").index_wait("TimeStamp").run()
+	r.db("Brain").table("Logs").index_create(RECEIVE_TIME_STAMP).run()
+	r.db("Brain").table("Logs").index_wait(RECEIVE_TIME_STAMP).run()
 
 def printdb():
 	print(r.db_list().run())

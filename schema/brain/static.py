@@ -21,7 +21,7 @@ COMMAND_NAME_KEY = "CommandName"
 PLUGIN_NAME_KEY = "PluginName"
 OUTPUTJOB_FIELD = "OutputJob"
 CONTENT_FIELD = "Content"
-TIMESTAMP_FIELD = "TimeStamp"
+RECEIVE_TIME_STAMP = "rt"
 
 BEGIN = ""
 INVALID = "Invalid"
