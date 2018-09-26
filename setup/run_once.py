@@ -45,6 +45,11 @@ def brainfilescreate():
 	return r.db("Brain").table_create("Files",
 									  primary_key="Name").run()
 
+def brainlogscreate():
+	r.db("Brain").table_create("Logs").run()
+	r.db("Brain").table("Logs").index_create("TimeStamp").run()
+	r.db("Brain").table("Logs").index_wait("TimeStamp").run()
+
 def printdb():
 	print(r.db_list().run())
 
@@ -61,6 +66,7 @@ if __name__ == "__main__":	# pragma: no cover
 	auditjobcreate()
 	audittargetcreate()
 	brainfilescreate()
+	brainlogscreate()
 	printdb()
 	controller_create()
 	controller_plugins_create()
