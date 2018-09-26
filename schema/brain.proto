@@ -122,3 +122,21 @@ message Port {
     required string NodeHostName = 5;
     required string OS = 6 [default = "posix"];
 }
+
+message Log {
+    optional string id = 1;
+    required float TimeStamp = 2;
+    optional int32 LogLevel = 3;
+    required Message msg = 4;
+    optional string SrcHost = 5;
+    optional string SrcContainer = 6;
+
+
+    message Message {
+        // can be arbitrary object
+    }
+}
+
+message Logs {
+    repeated Log Logs = 1;
+}
