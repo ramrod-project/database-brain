@@ -1,6 +1,5 @@
 """Creating db's and tables"""
 import rethinkdb as r
-from schema.brain.static import RECEIVE_TIME_STAMP
 
 
 def index_create_func(param_db, param_table, param_index):
@@ -134,7 +133,7 @@ def brainlogscreate():
     Logs table created in the brain database
     :return:
     """
-    index_create_func("Brain", "Logs", RECEIVE_TIME_STAMP)
+    index_create_func("Brain", "Logs", "rt")
 
 
 def printdb():
