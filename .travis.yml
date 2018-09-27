@@ -46,7 +46,7 @@ script:
   - docker logs Brain
   - docker stop Brain
   # e2e tests
-  - bash <(curl -s https://raw.githubusercontent.com/ramrod-project/integration-stack/$TRAVIS_BRANCH/scripts/e2e.sh)
+  # - bash <(curl -s https://raw.githubusercontent.com/ramrod-project/integration-stack/$TRAVIS_BRANCH/scripts/e2e.sh)
 
 after_success:
   - docker tag ramrodpcp/database-brain:test ramrodpcp/database-brain:$TAG
