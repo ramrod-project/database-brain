@@ -1,6 +1,5 @@
 """Creating db's and tables"""
 import rethinkdb as r
-# from schema.brain.static import RECEIVE_TIME_STAMP
 
 
 def index_create_func(param_db, param_table, param_index):
