@@ -131,3 +131,8 @@ def test_remove_placeholder(something):
 	T.sleep(1)
 	with raises(r.ReqlOpFailedError):
 		r.db("Plugins").table("Placeholder").run()
+
+def test_brainfilescreate(something):
+	run_once.brainfilescreate()
+	T.sleep(0.5)
+	assert "Files" in r.db("Brain").table_list().run()
