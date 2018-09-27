@@ -4,7 +4,7 @@ import rethinkdb as r
 
 def connect():
     """
-    Brain connection
+    Connect to the brain
     :return:
     """
     return r.connect("localhost").repl()
@@ -12,7 +12,7 @@ def connect():
 
 def plugincreate():
     """
-    Plugins db creation
+    Plugins database creation
     :return:
     """
     return r.db_create("Plugins").run()
@@ -119,7 +119,7 @@ def brainfilescreate():
 
 def brainlogscreate():
     """
-    Brain.Logs table creation
+    Logs table created in the brain database
     :return:
     """
     r.db("Brain").table_create("Logs").run()
