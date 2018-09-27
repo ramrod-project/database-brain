@@ -2,6 +2,19 @@
 import rethinkdb as r
 
 
+def index_create_func(param_db, param_table, param_index):
+    """
+
+    :param param_db:
+    :param param_table:
+    :param param_index:
+    :return:
+    """
+    r.db(param_db).table_create(param_table).run()
+    r.db(param_db).table(param_table).index_create(param_index).run()
+    r.db(param_db).table(param_table).index_wait(param_index).run()
+
+
 def connect():
     """
     Connect to the brain
@@ -55,9 +68,7 @@ def jobcreate():
     Brain.Jobs table creation
     :return:
     """
-    r.db("Brain").table_create("Jobs").run()
-    r.db("Brain").table("Jobs").index_create("Status").run()
-    r.db("Brain").table("Jobs").index_wait("Status").run()
+    index_create_func("Brain", "Jobs", "Status")
 
 
 def auditcreate():
@@ -122,9 +133,7 @@ def brainlogscreate():
     Logs table created in the brain database
     :return:
     """
-    r.db("Brain").table_create("Logs").run()
-    r.db("Brain").table("Logs").index_create("rt").run()
-    r.db("Brain").table("Logs").index_wait("rt").run()
+    index_create_func("Brain", "Logs", "rt")
 
 
 def printdb():
