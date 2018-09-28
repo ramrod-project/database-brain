@@ -1,69 +1,166 @@
+"""Creating db's and tables"""
 import rethinkdb as r
 
+
+def index_create_func(param_db, param_table, param_index):
+    """
+
+    :param param_db:
+    :param param_table:
+    :param param_index:
+    :return:
+    """
+    r.db(param_db).table_create(param_table).run()
+    r.db(param_db).table(param_table).index_create(param_index).run()
+    r.db(param_db).table(param_table).index_wait(param_index).run()
+
+
 def connect():
-	return r.connect("localhost").repl()
+    """
+    Connect to the brain
+    :return:
+    """
+    return r.connect("localhost").repl()
+
 
 def plugincreate():
-	return r.db_create("Plugins").run()
+    """
+    Plugins database creation
+    :return:
+    """
+    return r.db_create("Plugins").run()
+
 
 def placeholdercreate():
-	return r.db("Plugins").table_create("Placeholder").run()
- 
+    """
+    Plugins.Placeholder table creation
+    :return:
+    """
+    return r.db("Plugins").table_create("Placeholder").run()
+
+
 def braincreate():
-	return r.db_create("Brain").run()
+    """
+    Brain db creation
+    :return:
+    """
+    return r.db_create("Brain").run()
+
 
 def targetcreate():
-	return r.db("Brain").table_create("Targets").run()
+    """
+    Brain.Targets table creation
+    :return:
+    """
+    return r.db("Brain").table_create("Targets").run()
+
 
 def outputscreate():
-	return r.db("Brain").table_create("Outputs").run()
+    """
+    Brain.Outputs table creation
+    :return:
+    """
+    return r.db("Brain").table_create("Outputs").run()
+
 
 def jobcreate():
-	r.db("Brain").table_create("Jobs").run()
-	r.db("Brain").table("Jobs").index_create("Status").run()
-	r.db("Brain").table("Jobs").index_wait("Status").run()
+    """
+    Brain.Jobs table creation
+    :return:
+    """
+    index_create_func("Brain", "Jobs", "Status")
+
 
 def auditcreate():
-	return r.db_create("Audit").run()
+    """
+    Audit db creation
+    :return:
+    """
+    return r.db_create("Audit").run()
+
 
 def auditjobcreate():
-	return r.db("Audit").table_create("Jobs").run()
+    """
+    Audit.Jobs table creation
+    :return:
+    """
+    return r.db("Audit").table_create("Jobs").run()
+
 
 def audittargetcreate():
-	return r.db("Audit").table_create("Targets").run()
+    """
+    Audit.Targets table creation
+    :return:
+    """
+    return r.db("Audit").table_create("Targets").run()
+
 
 def controller_create():
-	return r.db_create("Controller").run()
+    """
+    Controller db creation
+    :return:
+    """
+    return r.db_create("Controller").run()
+
 
 def controller_plugins_create():
-	return r.db("Controller").table_create("Plugins").run()
+    """
+    Controller.Plugins table creation
+    :return:
+    """
+    return r.db("Controller").table_create("Plugins").run()
+
 
 def controller_ports_create():
-	return r.db("Controller").table_create("Ports").run()
+    """
+    Controller.Ports table creation
+    :return:
+    """
+    return r.db("Controller").table_create("Ports").run()
+
 
 def brainfilescreate():
-	return r.db("Brain").table_create("Files",
-									  primary_key="Name").run()
+    """
+    Brain.Files table creation
+    :return:
+    """
+    return r.db("Brain").table_create("Files",
+                                      primary_key="Name").run()
+
+
+def brainlogscreate():
+    """
+    Logs table created in the brain database
+    :return:
+    """
+    index_create_func("Brain", "Logs", "rt")
+
 
 def printdb():
-	print(r.db_list().run())
+    """
+    Printing a list of all databases
+    :return:
+    """
+    print(r.db_list().run())
 
-if __name__ == "__main__":	# pragma: no cover
 
-	connect()
-	plugincreate()
-	placeholdercreate()
-	braincreate()
-	targetcreate()
-	outputscreate()
-	jobcreate()
-	auditcreate()
-	auditjobcreate()
-	audittargetcreate()
-	brainfilescreate()
-	printdb()
-	controller_create()
-	controller_plugins_create()
-	controller_ports_create()
+if __name__ == "__main__":	 # pragma: no cover
 
-	print("complete")
+    connect()
+    plugincreate()
+    placeholdercreate()
+    braincreate()
+    targetcreate()
+    outputscreate()
+    jobcreate()
+    auditcreate()
+    auditjobcreate()
+    audittargetcreate()
+    brainfilescreate()
+    brainlogscreate()
+    printdb()
+    controller_create()
+    controller_plugins_create()
+    controller_ports_create()
+
+    print("complete")
