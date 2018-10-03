@@ -127,7 +127,7 @@ message Log {
     // These key names CEF v25
     optional string id = 1;
     required int64 rt = 2;           // NOTE: Milliseconds since 1970
-                                     // python == float, and cef == int32
+                                     // python == float, and cef == int
     optional int32 Severity = 3;
     optional string msg = 4;         // An arbitrary message giving more
                                      // details about the event. Multi-line
