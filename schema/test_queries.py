@@ -279,6 +279,8 @@ def test_set_job_complete(rethink):
     job = g.__next__()
     queries.RBJ.get(job['id']).update({"Status": "Done"}).run(connect())
     assert queries.is_job_complete(job['id'])
+    queries.RBO.insert({"OutputJob":job,
+                        "Content": "A"*1027}).run(connect())
     with raises(StopIteration):
         g.__next__()
 
