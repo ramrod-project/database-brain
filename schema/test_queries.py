@@ -268,7 +268,12 @@ def test_set_job_done(rethink):
     with raises(StopIteration):
         g.__next__()
 
+
 def test_set_job_complete(rethink):
+    res = queries.insert_jobs([TEST_JOB])
+    assert isinstance(res, dict)
+    assert isinstance(res['generated_keys'], list)
+    assert len(res['generated_keys']) == 1
     g = queries.get_jobs(TEST_TARGET['PluginName'])
     assert isinstance(g, GeneratorType)
     job = g.__next__()
