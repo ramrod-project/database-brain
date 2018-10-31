@@ -268,8 +268,23 @@ def test_set_job_done(rethink):
     with raises(StopIteration):
         g.__next__()
 
+def test_set_job_complete(rethink):
+    g = queries.get_jobs(TEST_TARGET['PluginName'])
+    assert isinstance(g, GeneratorType)
+    job = g.__next__()
+    queries.RBJ.get(job['id']).update({"Status": "Done"}).run(connect())
+    assert queries.is_job_complete(job['id'])
+    with raises(StopIteration):
+        g.__next__()
+
+
 def test_is_job_done_bad_id(rethink):
     assert not queries.is_job_done("notarealid")
+
+
+def test_is_job_complete_bad_id(rethink):
+    assert not queries.is_job_complete("notarealid")
+
 
 def test_verify_output_content(rethink):
     job = queries.RBJ.run(connect()).next()
