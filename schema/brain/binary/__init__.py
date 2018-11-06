@@ -6,5 +6,7 @@ PRIMARY_KEY = "id"
 CONTENT_FIELD = "Content"
 CONTENTTYPE_FIELD = "ContentType"
 TIMESTAMP_FIELD = "Timestamp"
+PARTS_FIELD = "Parts"
+PART_FIELD = "Part"
 
 from .data import *

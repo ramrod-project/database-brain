@@ -3,7 +3,6 @@ functions related to moving binary objects in/out of Brain.Files
 """
 
 from time import time
-from sys import getsizeof
 from .. import r
 from ..queries.decorators import wrap_connection, wrap_rethink_errors
 from ..queries.decorators import wrap_connection_reconnect_test
@@ -14,6 +13,7 @@ from .decorators import wrap_name_to_id, wrap_guess_content_type
 from .decorators import wrap_content_as_binary_if_needed
 from .decorators import wrap_split_big_content
 from . import PRIMARY_FIELD, CONTENT_FIELD, TIMESTAMP_FIELD
+from . import PART_FIELD, PARTS_FIELD
 
 BINARY = r.binary
 
@@ -67,11 +67,11 @@ def get(filename, conn=None):
     res_file = RBF.get(filename).run(conn)
     full_content = b""
     try:
-        for part in res_file["Parts"]:
+        for part in res_file[PARTS_FIELD]:
             part_file = RBF.get(part).run(conn)
-            full_content += part_file["Content"]
+            full_content += part_file[CONTENT_FIELD]
 
-        res_file["Content"] = full_content
+        res_file[CONTENT_FIELD] = full_content
     except KeyError:
         return res_file
     return res_file
@@ -85,7 +85,7 @@ def list_dir(conn=None):
     :param conn:
     :return: <list>
     """
-    available = RBF.filter({"Part": False}).pluck(PRIMARY_FIELD).run(conn)
+    available = RBF.filter({PART_FIELD: False}).pluck(PRIMARY_FIELD).run(conn)
     return [x[PRIMARY_FIELD] for x in available]
 
 
