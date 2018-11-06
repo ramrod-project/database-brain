@@ -13,7 +13,7 @@ from .decorators import wrap_name_to_id, wrap_guess_content_type
 from .decorators import wrap_content_as_binary_if_needed
 from .decorators import wrap_split_big_content
 from . import PRIMARY_FIELD, CONTENT_FIELD, TIMESTAMP_FIELD
-from . import PART_FIELD, PARTS_FIELD
+from . import PART_FIELD, PARTS_FIELD, PARENT_FIELD
 
 BINARY = r.binary
 
@@ -99,4 +99,4 @@ def delete(filename, conn=None):
     :param conn: <rethinkdb.DefaultConnection>
     :return: <dict>
     """
-    return RBF.get(filename).delete().run(conn)
+    return RBF.filter((r.row[PRIMARY_FIELD] == filename) | (r.row[PARENT_FIELD] == filename)).delete().run(conn)

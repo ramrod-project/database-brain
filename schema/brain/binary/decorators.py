@@ -5,7 +5,7 @@ from collections import Counter
 from decorator import decorator
 from .. import r
 from . import PRIMARY_FIELD, PRIMARY_KEY, TIMESTAMP_FIELD, \
-    CONTENT_FIELD, CONTENTTYPE_FIELD, PART_FIELD, PARTS_FIELD
+    CONTENT_FIELD, CONTENTTYPE_FIELD, PART_FIELD, PARTS_FIELD, PARENT_FIELD
 # import magic at bottom of file
 
 BINARY = r.binary
@@ -77,6 +77,7 @@ def _perform_chunking(func_, *args, **kwargs):
         end_point = file_count * MAX_PUT
         new_dict[CONTENT_FIELD] = obj_dict[CONTENT_FIELD][start_point: end_point]
         new_dict[PART_FIELD] = True
+        new_dict[PARENT_FIELD] = obj_dict[PRIMARY_FIELD]
         start_point = end_point
         new_args = (new_dict, args[1])
         resp_dict += Counter(func_(*new_args, **kwargs))

@@ -111,6 +111,13 @@ def test_list_dir_large_files(rethink):
 def test_huge_split_read(rethink):
     assert get(BIG_TEST_FILE_NAME)["Content"] == ("a"*134217727).encode("utf-8")
 
+def test_delete_split(rethink):
+    pre_count = RBF.count().run(connect())
+    assert delete(BIG_TEST_FILE_NAME)
+    assert BIG_TEST_FILE_NAME not in list_dir()
+    post_count = RBF.count().run(connect())
+    assert pre_count - post_count > 1
+
 def test_put_text_file(rethink):
     basic_put_object = {"Name": TEST_TEXT_NAME,
                         "Content": TEST_TEXT_CONTENT}

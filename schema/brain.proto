@@ -90,6 +90,7 @@ message Binary {
     required bytes Content = 5;
     optional bool Part = 6;
     repeated string Parts = 7;
+    optional string Parent = 8;
 }
 
 message Targets {

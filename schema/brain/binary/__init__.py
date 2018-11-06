@@ -8,5 +8,6 @@ CONTENTTYPE_FIELD = "ContentType"
 TIMESTAMP_FIELD = "Timestamp"
 PARTS_FIELD = "Parts"
 PART_FIELD = "Part"
+PARENT_FIELD = "Parent"
 
 from .data import *
