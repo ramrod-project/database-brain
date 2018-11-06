@@ -3,12 +3,15 @@ decorators fro the binary module
 """
 from decorator import decorator
 from .. import r
+from collections import Counter
 # import magic at bottom of file
 
 BINARY = r.binary
 from . import PRIMARY_FIELD, PRIMARY_KEY, \
     CONTENT_FIELD, CONTENTTYPE_FIELD
 
+MEGA_BYTE = 1048576
+MAX_PUT = MEGA_BYTE * 95
 
 @decorator
 def wrap_name_to_id(func_, *args, **kwargs):
@@ -24,6 +27,36 @@ def wrap_name_to_id(func_, *args, **kwargs):
     args[0][PRIMARY_KEY] = args[0].get(PRIMARY_FIELD, "")
     return func_(*args, **kwargs)
 
+@decorator
+def wrap_split_big_content(func_, *args, **kwargs):
+    obj_dict = args[0]
+    if len(obj_dict["Content"]) < MAX_PUT:
+        obj_dict["Part"] = False
+        return func_(*args, **kwargs)
+    else:
+        start_point = 0
+        file_count = 0
+        new_dict = {}
+        resp_dict = Counter({})
+        file_list = []
+        while start_point < len(obj_dict["Content"]):
+            file_count += 1
+            new_dict["Name"] = obj_dict["Name"] + str(file_count)
+            file_list.append(new_dict["Name"])
+            new_dict["ContentType"] = obj_dict["ContentType"]
+            new_dict["Timestamp"] = obj_dict["Timestamp"]
+            end_point = file_count * MAX_PUT
+            new_dict["Content"] = obj_dict["Content"][start_point : end_point]
+            new_dict["Part"] = True
+            start_point = end_point
+            new_args = (new_dict, args[1])
+            resp_dict += Counter(func_(*new_args, **kwargs))
+
+        obj_dict["Content"] = b""
+        obj_dict["Parts"] = file_list
+        new_args = (obj_dict, args[1])
+        resp_dict += Counter(func_(*new_args, **kwargs))
+        return resp_dict
 
 @decorator
 def wrap_guess_content_type(func_, *args, **kwargs):

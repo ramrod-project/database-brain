@@ -8,6 +8,7 @@ from os import environ
 from dict_to_protobuf import protobuf_to_dict
 from pytest import fixture, raises
 import docker
+from time import time
 
 from .brain import connect, r
 from .brain.binary.data import put, get, list_dir, delete
@@ -17,6 +18,7 @@ from .brain.brain_pb2 import Binary
 
 CLIENT = docker.from_env()
 TEST_FILE_NAME = "TEST_FILE.txt"
+BIG_TEST_FILE_NAME = "BIG_TEST_FILE.txt"
 TEST_FILE_CONTENT = "content data is binary 灯火 标 and string stuff ".encode('utf-8')
 TEST_TEXT_NAME = "TEST_TEXT.txt"
 TEST_TEXT_CONTENT = "standard text stuff"
@@ -85,7 +87,7 @@ def test_verify_put_command(rethink):
     put(obj_dict, verify=True)
 
 
-def test_huge_insert_fails_needs_split(rethink):
+def test_huge_insert_split(rethink):
     """
     134217727 is the biggest query size
     make an object bigger than that
@@ -95,16 +97,19 @@ def test_huge_insert_fails_needs_split(rethink):
     """
     big_content = ("a"*134217727).encode("utf-8")
     bin_obj = Binary()
-    bin_obj.Name = TEST_FILE_NAME
+    bin_obj.Name = BIG_TEST_FILE_NAME
     bin_obj.Content = TEST_FILE_CONTENT
+    bin_obj.Timestamp = time()
     obj_dict = protobuf_to_dict(bin_obj)
     obj_dict["Content"] = big_content
-    with raises(ValueError):
-        try:
-            put(obj_dict)
-        except ValueError as ValErr:
-            assert "greater than maximum (134217727)" in str(ValErr)
-            raise ValErr
+    resp = put(obj_dict)
+    assert resp["inserted"] > 1
+
+def test_list_dir_large_files(rethink):
+    assert BIG_TEST_FILE_NAME + "1" not in list_dir()
+
+def test_huge_split_read(rethink):
+    assert get(BIG_TEST_FILE_NAME)["Content"] == ("a"*134217727).encode("utf-8")
 
 def test_put_text_file(rethink):
     basic_put_object = {"Name": TEST_TEXT_NAME,
