@@ -19,12 +19,12 @@ BINARY = r.binary
 
 
 @wrap_rethink_errors
+@wrap_connection_reconnect_test
+@wrap_connection
 @wrap_name_to_id
 @wrap_guess_content_type
 @wrap_split_big_content
 @wrap_content_as_binary_if_needed
-@wrap_connection_reconnect_test
-@wrap_connection
 def put(obj_dict, conn=None, **kwargs):
     """
     This function might thorw an error like:

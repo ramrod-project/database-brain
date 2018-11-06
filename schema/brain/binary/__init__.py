@@ -10,4 +10,5 @@ PARTS_FIELD = "Parts"
 PART_FIELD = "Part"
 PARENT_FIELD = "Parent"
 
+CHUNK_POSTFIX = "{}.{}"
 from .data import *
