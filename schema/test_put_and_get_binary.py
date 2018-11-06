@@ -103,7 +103,7 @@ def test_huge_insert_split(rethink):
     obj_dict = protobuf_to_dict(bin_obj)
     obj_dict["Content"] = big_content
     resp = put(obj_dict)
-    assert resp["inserted"] > 1
+    assert resp["inserted"] == 3
 
 def test_list_dir_large_files(rethink):
     assert BIG_TEST_FILE_NAME + "1" not in list_dir()
@@ -116,7 +116,7 @@ def test_delete_split(rethink):
     assert delete(BIG_TEST_FILE_NAME)
     assert BIG_TEST_FILE_NAME not in list_dir()
     post_count = RBF.count().run(connect())
-    assert pre_count - post_count > 1
+    assert pre_count - post_count == 3
 
 def test_put_text_file(rethink):
     basic_put_object = {"Name": TEST_TEXT_NAME,
