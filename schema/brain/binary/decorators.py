@@ -4,7 +4,9 @@ decorators fro the binary module
 from collections import Counter
 from decorator import decorator
 from .. import r
+from ..queries import RBF
 from . import PRIMARY_FIELD, PRIMARY_KEY, TIMESTAMP_FIELD, \
+    CHUNK_POSTFIX, CHUNK_ZPAD, \
     CONTENT_FIELD, CONTENTTYPE_FIELD, PART_FIELD, PARTS_FIELD, PARENT_FIELD
 # import magic at bottom of file
 
@@ -50,6 +52,29 @@ def wrap_split_big_content(func_, *args, **kwargs):
         return _perform_chunking(func_, *args, **kwargs)
 
 
+@decorator
+def _only_if_file_not_exist(func_, *args, **kwargs):
+    """
+    horribly non-atomic
+
+    :param func_:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj_dict = args[1]
+    conn = args[-1]
+    try:
+        RBF.get(obj_dict[PRIMARY_FIELD]).pluck(PRIMARY_FIELD).run(conn)
+        err_str = "Duplicate primary key `Name`: {}".format(obj_dict[PRIMARY_FIELD])
+        err_dict = {'errors': 1,
+                    'first_error':  err_str}
+        return err_dict
+    except r.errors.ReqlNonExistenceError:
+        return func_(*args, **kwargs)
+
+
+@_only_if_file_not_exist
 def _perform_chunking(func_, *args, **kwargs):
     """
     internal function alled only by
@@ -70,12 +95,15 @@ def _perform_chunking(func_, *args, **kwargs):
     file_list = []
     while start_point < len(obj_dict[CONTENT_FIELD]):
         file_count += 1
-        new_dict[PRIMARY_FIELD] = obj_dict[PRIMARY_FIELD] + str(file_count)
+        chunk_fn = CHUNK_POSTFIX.format(obj_dict[PRIMARY_FIELD],
+                                        str(file_count).zfill(CHUNK_ZPAD))
+        new_dict[PRIMARY_FIELD] = chunk_fn
         file_list.append(new_dict[PRIMARY_FIELD])
         new_dict[CONTENTTYPE_FIELD] = obj_dict[CONTENTTYPE_FIELD]
         new_dict[TIMESTAMP_FIELD] = obj_dict[TIMESTAMP_FIELD]
         end_point = file_count * MAX_PUT
-        new_dict[CONTENT_FIELD] = obj_dict[CONTENT_FIELD][start_point: end_point]
+        sliced = obj_dict[CONTENT_FIELD][start_point: end_point]
+        new_dict[CONTENT_FIELD] = sliced
         new_dict[PART_FIELD] = True
         new_dict[PARENT_FIELD] = obj_dict[PRIMARY_FIELD]
         start_point = end_point
@@ -84,6 +112,7 @@ def _perform_chunking(func_, *args, **kwargs):
 
     obj_dict[CONTENT_FIELD] = b""
     obj_dict[PARTS_FIELD] = file_list
+    obj_dict[PART_FIELD] = False
     new_args = (obj_dict, args[1])
     resp_dict += Counter(func_(*new_args, **kwargs))
     return resp_dict

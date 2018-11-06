@@ -11,7 +11,7 @@ import docker
 from time import time
 
 from .brain import connect, r
-from .brain.binary.data import put, get, list_dir, delete
+from .brain.binary.data import put, get, list_dir, delete, put_buffer
 from .brain.queries import RBF
 from .brain.brain_pb2 import Binary
 
@@ -58,6 +58,13 @@ def test_put_binary(rethink):
     bin_obj.Content = TEST_FILE_CONTENT
     obj_dict = protobuf_to_dict(bin_obj)
     put(obj_dict)
+    assert TEST_FILE_NAME in list_dir()
+
+
+def test_put_binary_again(rethink):
+    assert TEST_FILE_NAME in list_dir()
+    response = put_buffer(TEST_FILE_NAME, TEST_FILE_CONTENT)
+    assert response['errors'] == 1
 
 
 def test_obj_in_listing(rethink):
@@ -105,11 +112,25 @@ def test_huge_insert_split(rethink):
     resp = put(obj_dict)
     assert resp["inserted"] == 3
 
+def test_huge_insert_again(rethink):
+    assert BIG_TEST_FILE_NAME in list_dir()
+    post_count = RBF.count().run(connect())
+    big_content = ("a" * 134217727).encode("utf-8")
+    response = put_buffer(BIG_TEST_FILE_NAME, big_content)
+    post_count_after = RBF.count().run(connect())
+    assert post_count_after == post_count
+    assert response['errors'] == 1
+
+
 def test_list_dir_large_files(rethink):
-    assert BIG_TEST_FILE_NAME + "1" not in list_dir()
+    the_dir = list_dir()
+    assert BIG_TEST_FILE_NAME in the_dir
+    assert BIG_TEST_FILE_NAME + "001" not in the_dir
+
 
 def test_huge_split_read(rethink):
     assert get(BIG_TEST_FILE_NAME)["Content"] == ("a"*134217727).encode("utf-8")
+
 
 def test_delete_split(rethink):
     pre_count = RBF.count().run(connect())
@@ -117,6 +138,7 @@ def test_delete_split(rethink):
     assert BIG_TEST_FILE_NAME not in list_dir()
     post_count = RBF.count().run(connect())
     assert pre_count - post_count == 3
+
 
 def test_put_text_file(rethink):
     basic_put_object = {"Name": TEST_TEXT_NAME,
