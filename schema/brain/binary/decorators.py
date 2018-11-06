@@ -1,17 +1,18 @@
 """
 decorators fro the binary module
 """
+from collections import Counter
 from decorator import decorator
 from .. import r
-from collections import Counter
+from . import PRIMARY_FIELD, PRIMARY_KEY, TIMESTAMP_FIELD, \
+    CONTENT_FIELD, CONTENTTYPE_FIELD, PART_FIELD, PARTS_FIELD
 # import magic at bottom of file
 
 BINARY = r.binary
-from . import PRIMARY_FIELD, PRIMARY_KEY, \
-    CONTENT_FIELD, CONTENTTYPE_FIELD
 
 MEGA_BYTE = 1048576
 MAX_PUT = MEGA_BYTE * 95
+
 
 @decorator
 def wrap_name_to_id(func_, *args, **kwargs):
@@ -27,36 +28,65 @@ def wrap_name_to_id(func_, *args, **kwargs):
     args[0][PRIMARY_KEY] = args[0].get(PRIMARY_FIELD, "")
     return func_(*args, **kwargs)
 
+
 @decorator
 def wrap_split_big_content(func_, *args, **kwargs):
+    """
+    chunk the content into smaller binary blobs before inserting
+
+    this function should chunk in such a way that this
+    is completely transparent to the user.
+
+    :param func_:
+    :param args:
+    :param kwargs:
+    :return: <dict> RethinkDB dict from insert
+    """
     obj_dict = args[0]
-    if len(obj_dict["Content"]) < MAX_PUT:
-        obj_dict["Part"] = False
+    if len(obj_dict[CONTENT_FIELD]) < MAX_PUT:
+        obj_dict[PART_FIELD] = False
         return func_(*args, **kwargs)
     else:
-        start_point = 0
-        file_count = 0
-        new_dict = {}
-        resp_dict = Counter({})
-        file_list = []
-        while start_point < len(obj_dict["Content"]):
-            file_count += 1
-            new_dict["Name"] = obj_dict["Name"] + str(file_count)
-            file_list.append(new_dict["Name"])
-            new_dict["ContentType"] = obj_dict["ContentType"]
-            new_dict["Timestamp"] = obj_dict["Timestamp"]
-            end_point = file_count * MAX_PUT
-            new_dict["Content"] = obj_dict["Content"][start_point : end_point]
-            new_dict["Part"] = True
-            start_point = end_point
-            new_args = (new_dict, args[1])
-            resp_dict += Counter(func_(*new_args, **kwargs))
+        return _perform_chunking(func_, *args, **kwargs)
 
-        obj_dict["Content"] = b""
-        obj_dict["Parts"] = file_list
-        new_args = (obj_dict, args[1])
+
+def _perform_chunking(func_, *args, **kwargs):
+    """
+    internal function alled only by
+    wrap_split_big_content
+
+    performs the actual chunking.
+
+    :param func_:
+    :param args:
+    :param kwargs:
+    :return: <dict> RethinkDB dict from insert
+    """
+    obj_dict = args[0]
+    start_point = 0
+    file_count = 0
+    new_dict = {}
+    resp_dict = Counter({})
+    file_list = []
+    while start_point < len(obj_dict[CONTENT_FIELD]):
+        file_count += 1
+        new_dict[PRIMARY_FIELD] = obj_dict[PRIMARY_FIELD] + str(file_count)
+        file_list.append(new_dict[PRIMARY_FIELD])
+        new_dict[CONTENTTYPE_FIELD] = obj_dict[CONTENTTYPE_FIELD]
+        new_dict[TIMESTAMP_FIELD] = obj_dict[TIMESTAMP_FIELD]
+        end_point = file_count * MAX_PUT
+        new_dict[CONTENT_FIELD] = obj_dict[CONTENT_FIELD][start_point: end_point]
+        new_dict[PART_FIELD] = True
+        start_point = end_point
+        new_args = (new_dict, args[1])
         resp_dict += Counter(func_(*new_args, **kwargs))
-        return resp_dict
+
+    obj_dict[CONTENT_FIELD] = b""
+    obj_dict[PARTS_FIELD] = file_list
+    new_args = (obj_dict, args[1])
+    resp_dict += Counter(func_(*new_args, **kwargs))
+    return resp_dict
+
 
 @decorator
 def wrap_guess_content_type(func_, *args, **kwargs):
