@@ -11,4 +11,6 @@ PART_FIELD = "Part"
 PARENT_FIELD = "Parent"
 
 CHUNK_POSTFIX = "{}.{}"
+CHUNK_ZPAD = 3
+
 from .data import *
