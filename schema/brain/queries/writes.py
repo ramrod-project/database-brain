@@ -21,8 +21,7 @@ def waiting_filter(lte_time):
     generates a filter for status==waiting and
     time older than lte_time
     """
-    return ((r.row[STATUS_FIELD] == WAITING) &
-            (r.row[START_FIELD] <= lte_time))
+    return ((r.row[START_FIELD] <= lte_time))
 
 
 def expire_filter(lte_time):
@@ -30,12 +29,7 @@ def expire_filter(lte_time):
     generates a filter for status==waiting and
     time older than lte_time
     """
-    return (
-            (
-                (r.row[STATUS_FIELD] == WAITING) |
-                (r.row[STATUS_FIELD] == READY)
-            ) &
-            (r.row[EXPIRE_FIELD] <= lte_time)
+    return ((r.row[EXPIRE_FIELD] <= lte_time)
     )
 
 
@@ -99,9 +93,8 @@ def update_job_status(job_id, status, conn=None):
     job_update = RBJ.get(job_id).update({STATUS_FIELD: status}).run(conn)
     if job_update["replaced"] == 0 and job_update["unchanged"] == 0:
         raise ValueError("Unknown job_id: {}".format(job_id))
-    id_filter = (r.row[OUTPUTJOB_FIELD][ID_FIELD] == job_id)
     output_job_status = {OUTPUTJOB_FIELD: {STATUS_FIELD: status}}
-    output_update = RBO.filter(id_filter).update(output_job_status).run(conn)
+    output_update = RBO.get_all(job_id, index="Output_jobs").update(output_job_status).run(conn)
     return {str(RBJ): job_update, str(RBO): output_update}
 
 
@@ -222,7 +215,7 @@ def transition_waiting(start_time, conn=None):
     """
     wait_filter = waiting_filter(start_time)
     status_change = {STATUS_FIELD: transition_success(WAITING)}
-    return RBJ.filter(wait_filter).update(status_change).run(conn)
+    return RBJ.get_all(WAITING, index="Status").filter(wait_filter).update(status_change).run(conn)
 
 
 @wrap_rethink_errors
@@ -239,4 +232,4 @@ def transition_expired(expire_time, conn=None):
     for job in RBJ.filter(expired_filter).run(conn):
         job[STATUS_FIELD] = status_change[STATUS_FIELD]
         write_output(job[ID_FIELD], TIMEOUT_ERROR, conn=conn)
-    return RBJ.filter(expired_filter).update(status_change).run(conn)
+    return RBJ.get_all(WAITING, READY, index="Status").filter(expired_filter).update(status_change).run(conn)
