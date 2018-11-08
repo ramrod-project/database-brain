@@ -13,6 +13,7 @@ from .brain.jobs import WAITING, READY, ERROR, PENDING, DONE
 from .brain.static import STATUS_FIELD, START_FIELD, EXPIRE_FIELD, ID_FIELD, TIMEOUT_ERROR
 from .brain.queries.writes import insert_jobs, transition_expired, transition_waiting, expire_filter
 from .brain.queries import RBJ, get_output_content
+from .brain.queries import RBO, IDX_OUTPUT_JOB_ID, IDX_STATUS
 
 
 CLIENT = docker.from_env()
@@ -75,8 +76,12 @@ def test_confirm_job_is_ready(rethink):
 def test_filter_provides_record(rethink):
     test_now_time = time() + TEST_TIMER_BIG_OFFSET
     need_to_expire = 0
-    for x in RBJ.filter(expire_filter(test_now_time)).run(connect()):
-        need_to_expire += 1
+    if RBO.index_list().contains(IDX_OUTPUT_JOB_ID).run(connect()):
+        for x in RBJ.get_all(WAITING, READY, index=IDX_STATUS).filter(test_now_time).run(connect()):
+            need_to_expire += 1
+    else:
+        for x in RBJ.filter(expire_filter(test_now_time)).run(connect()):
+            need_to_expire += 1
     assert need_to_expire == 2
 
 
