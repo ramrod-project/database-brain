@@ -52,7 +52,7 @@ def targetcreate():
     Brain.Targets table creation
     :return:
     """
-    return r.db("Brain").table_create("Targets").run()
+    index_create_func("Brain", "Targets", "PluginName")
 
 
 def outputscreate():
@@ -60,7 +60,10 @@ def outputscreate():
     Brain.Outputs table creation
     :return:
     """
-    return r.db("Brain").table_create("Outputs").run()
+    # Create table with a nested index
+    r.db("Brain").table_create("Outputs").run()
+    r.db("Brain").table("Outputs").index_create("Output_job_id", r.row["OutputJob"]["id"]).run()
+    r.db("Brain").table("Outputs").index_wait("Output_job_id").run()
 
 
 def jobcreate():
