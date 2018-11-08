@@ -77,7 +77,7 @@ def test_filter_provides_record(rethink):
     test_now_time = time() + TEST_TIMER_BIG_OFFSET
     need_to_expire = 0
     if RBO.index_list().contains(IDX_OUTPUT_JOB_ID).run(connect()):
-        for x in RBJ.get_all(WAITING, READY, index=IDX_STATUS).filter(test_now_time).run(connect()):
+        for x in RBJ.get_all(WAITING, READY, index=IDX_STATUS).filter(expire_filter(test_now_time, r.connect())).run(connect()):
             need_to_expire += 1
     else:
         for x in RBJ.filter(expire_filter(test_now_time, r.connect())).run(connect()):
