@@ -94,7 +94,7 @@ def update_job_status(job_id, status, conn=None):
     if job_update["replaced"] == 0 and job_update["unchanged"] == 0:
         raise ValueError("Unknown job_id: {}".format(job_id))
     output_job_status = {OUTPUTJOB_FIELD: {STATUS_FIELD: status}}
-    output_update = RBO.get_all(job_id, index="Output_jobs").update(output_job_status).run(conn)
+    output_update = RBO.get_all(job_id, index="Output_job_id").update(output_job_status).run(conn)
     return {str(RBJ): job_update, str(RBO): output_update}
 
 

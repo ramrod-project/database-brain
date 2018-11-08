@@ -62,8 +62,8 @@ def outputscreate():
     """
     # Create table with a nested index
     r.db("Brain").table_create("Outputs").run()
-    r.db("Brain").table("Outputs").index_create("Output_jobs", r.row["OutputJob"]["id"]).run()
-    r.db("Brain").table("Outputs").index_wait("Output_jobs").run()
+    r.db("Brain").table("Outputs").index_create("Output_job_id", r.row["OutputJob"]["id"]).run()
+    r.db("Brain").table("Outputs").index_wait("Output_job_id").run()
 
 
 def jobcreate():
